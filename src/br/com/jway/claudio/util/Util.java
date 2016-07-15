@@ -283,6 +283,7 @@ public class Util {
 
 	public String trataCep(String cep) {
 		if (!isEmptyOrNull(cep)) {
+			cep = cep.replaceAll("-", "");
 			if (cep.length() < 8) {
 				cep = completarZerosDireita(cep, 8);
 				return cep;
@@ -352,6 +353,13 @@ public class Util {
 			return date;
 		}
 		return null;
+	}
+
+	public String getCpfCnpj(String cpfCnpj) {
+		cpfCnpj = cpfCnpj.replaceAll(".","");
+		cpfCnpj = cpfCnpj.replaceAll("-","");
+		cpfCnpj = cpfCnpj.replaceAll("/","");
+		return cpfCnpj;
 	}
 
 

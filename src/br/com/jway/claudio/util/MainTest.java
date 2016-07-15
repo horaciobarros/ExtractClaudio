@@ -10,12 +10,6 @@ public class MainTest {
 
 		ExtractorService extractorService = new ExtractorService();
 		
-		System.out.println("Lendo Associação Guias x Notas Fiscais");
-		List<String> dadosList = extractorService.lerArquivo("GuiasNFS-e");
-		extractorService.processaAssociacaoGuiasNotasFiscais(dadosList);
-		System.out.println("--- Associação Guias x Notas Fiscais ---");
-
-		
 		
 	}
 

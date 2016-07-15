@@ -15,7 +15,7 @@ public class Controller {
 
 	public void importaNfe() {
 
-		int nivelProcessamento = 4;
+		int nivelProcessamento = 1;
 
 		// limpando o banco
 		System.out.println("Limpando o banco...");
@@ -45,13 +45,13 @@ public class Controller {
 
 		if (nivelProcessamento == 1) {
 			System.out.println("Lendo contribuintes");
-			dadosList = extractorService.lerArquivo("contribuinte");
+			dadosList = extractorService.lerArquivosClaudio("contribuintes");
 			System.out.println("Gravando contribuintes");
 			extractorService.processaDadosContribuinte(dadosList);
 			System.out.println("--- Fim de contribuintes ---");
 
 			System.out.println("Lendo atividade de contribuintes");
-			dadosList = extractorService.lerArquivo("AtvEconomica");
+			dadosList = extractorService.lerArquivosClaudio("AtvEconomica");
 			System.out.println("Gravando atividades");
 			extractorService.processaDadosAtividadeEconomicaContribuinte(dadosList);
 			System.out.println("--- Fim de atividade de contribuintes ---");
@@ -59,46 +59,27 @@ public class Controller {
 
 		if (nivelProcessamento <= 2) {
 			System.out.println("Lendo guias pagas"); // a ordem é essa mesma
-			dadosList = extractorService.lerArquivo("GuiasPagas");
+			dadosList = extractorService.lerArquivosClaudio("GuiasPagas");
 
 			extractorService.processaDadosGuiasPagas(dadosList);
 			System.out.println("--- Fim de guias paga ---");
 
 			System.out.println("Lendo guias geradas");
-			dadosList = extractorService.lerArquivo("GuiasGeradas");
+			dadosList = extractorService.lerArquivosClaudio("GuiasGeradas");
 			System.out.println("Gravando competencias e guias");
 			extractorService.processaDadosGuiasGeradas(dadosList);
 			System.out.println("--- Fim de guias geradas ---");
 
-			System.out.println("Lendo guias DA");
-			dadosList = extractorService.lerArquivo("GuiasDA");
-			extractorService.processaDadosGuiasDA(dadosList);
-			System.out.println("--- Fim de guias DA ---");
-
-			System.out.println("Lendo guias suspensas");
-			dadosList = extractorService.lerArquivo("GuiasSuspensas");
-			extractorService.processaDadosGuiaSuspensas(dadosList);
-			System.out.println("--- Fim de guias suspensas ---");
-
-			System.out.println("Lendo guias canceladas");
-			dadosList = extractorService.lerArquivo("GuiasCanceladas");
-			extractorService.processaDadosGuiaCanceladas(dadosList);
-			System.out.println("--- Fim de guias canceladas ---");
 		}
 
 		if (nivelProcessamento <= 3) {
 
 			System.out.println("Lendo Notas Fiscais");
-			dadosList = extractorService.lerArquivo("NotasFiscais");
+			dadosList = extractorService.lerArquivosClaudio("NotasFiscais");
 			System.out.println("Gravando Notas Fiscais");
 			extractorService.processaDadosNotasFiscais(dadosList);
 			System.out.println("--- Fim de Notas Fiscais ---");
 		}
-
-		System.out.println("Lendo Associação Guias x Notas Fiscais");
-		dadosList = extractorService.lerArquivo("GuiasNFS-e");
-		extractorService.processaAssociacaoGuiasNotasFiscais(dadosList);
-		System.out.println("--- Fim de Associação Guias x Notas Fiscais ---");
 
 		System.out.println("--- Processo encerrado. Registros gravados: ");
 
