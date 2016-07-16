@@ -22,6 +22,7 @@ import br.com.jway.claudio.dao.PrestadoresDao;
 import br.com.jway.claudio.dao.PrestadoresOptanteSimplesDao;
 import br.com.jway.claudio.dao.TomadoresDao;
 import br.com.jway.claudio.entidadesOrigem.ContribuinteOrigem;
+import br.com.jway.claudio.entidadesOrigem.GuiaOrigem;
 import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
 import br.com.jway.claudio.model.Competencias;
 import br.com.jway.claudio.model.Guias;
@@ -95,11 +96,21 @@ public class ExtractorService {
 			br.readLine();
 			while (br.ready()) {
 				String linha = br.readLine();
+				while (linha.contains("\"\"")) {
+					linha = linha.replaceAll("\"\"", "\"");
+				}
+				while (linha.contains(";")) {
+					linha = linha.replaceAll(";", "");
+				}
+
 				while (linha.contains(",,")) {
 					linha = linha.replaceAll(",,", ", ,");
 				}
 				while (linha.contains(",,,")) {
 					linha = linha.replaceAll(",,,", ", , ,");
+				}
+				while (linha.contains(";")) {
+					linha = linha.replaceAll(";", "");
 				}
 				linha = linha.trim();
 				if (linha.substring(linha.length() - 1).equals(",")) {
@@ -161,17 +172,21 @@ public class ExtractorService {
 				p.setMunicipio(c.getCidade());
 				if (c.getEstado() == null || c.getEstado().isEmpty()) {
 					c.setEstado("MG");
+				} else {
+					if (c.getEstado().contains("\"")) {
+						c.setEstado(c.getEstado().replace("\"", ""));
+					}
 				}
 				try {
 					p.setMunicipioIbge(Long.valueOf(municipiosIbgeDao.getCodigoIbge(c.getCidade(), c.getEstado())));
 				} catch (Exception e) {
-					System.out.println("Não encontrado codigo ibge: " + c.getCidade() + "-" + c.getEstado()); 
+					System.out.println("Não encontrado codigo ibge: " + c.getCidade() + "-" + c.getEstado());
 					e.printStackTrace();
 				}
 				p.setNome(c.getNomeRazaoSocial());
 				p.setNomeFantasia(c.getNomeFantasia());
 				p.setNumero(c.getNumero());
-				p.setPessoaId(Long.valueOf(c.getId()));
+				p.setPessoaId(Long.valueOf(c.getId().replace("\"", "")));
 				try {
 					p.setTipoPessoa(util.getTipoPessoa(c.getCpfCnpj().trim()));
 				} catch (Exception e) {
@@ -184,13 +199,25 @@ public class ExtractorService {
 				p.setUf(c.getEstado());
 				p = trataNumerosTelefones(p);
 				p = anulaCamposVazios(p);
-			
+
 				p = pessoaDao.save(p);
 				try {
-					
+
+					Prestadores pr = new Prestadores();
+					pr.setAutorizado("N");
+					pr.setCelular(p.getCelular());
+					pr.setEmail(p.getEmail());
+					pr.setInscricaoMunicipal(p.getInscricaoMunicipal());
+					pr.setInscricaoPrestador(p.getCnpjCpf());
+					pr.setTelefone(p.getTelefone());
+					pr.setEnquadramento("N");
+					pr = trataNumerosTelefones(pr);
+					pr = anulaCamposVazios(pr);
+					prestadoresDao.save(pr);
+
 				} catch (Exception e) {
-					
-					System.out.println("Prestador não gravada: " + p.getCep());
+
+					System.out.println("Prestador não gravado: " + p.getNome());
 					e.printStackTrace();
 				}
 
@@ -219,13 +246,90 @@ public class ExtractorService {
 
 	}
 
-	public void processaDadosGuiasGeradas(List<String> dadosList) {
+	public void processaDadosGuias(List<String> dadosList) {
 		int count = 0;
 
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				continue;
 			}
+
+			String[] arrayAux = linha.split(",");
+			
+			GuiaOrigem guiaOrigem = new GuiaOrigem(arrayAux[0], arrayAux[1], arrayAux[2], arrayAux[3], arrayAux[4], arrayAux[5],
+					arrayAux[6], arrayAux[7], arrayAux[8], arrayAux[9], arrayAux[10], arrayAux[11],
+					arrayAux[12], arrayAux[13], arrayAux[14], arrayAux[15], arrayAux[16], arrayAux[17]);
+			
+			String descricao = util.getNomeMes(guiaOrigem.getCompetencia().substring(5, 7)) + "/" + guiaOrigem.getCompetencia().substring(0, 4);
+			Competencias cp = competenciasDao.findByDescricao(descricao);
+			
+			try {
+				if (cp == null || cp.getId() == 0) { // acertar datas
+					cp = new Competencias();
+					cp.setDescricao(descricao.trim());
+					cp.setDataInicio(util.getFirstDayOfMonth(guiaOrigem.getCompetencia().substring(0, 4), guiaOrigem.getCompetencia().substring(5, 7)));
+					cp.setDataFim(util.getLastDayOfMonth(guiaOrigem.getCompetencia().substring(0, 4), guiaOrigem.getCompetencia().substring(5, 7)));
+					cp.setDataVencimento(util.getDecimoDiaMesPosterior(cp.getDataFim()));
+
+					competenciasDao.save(cp);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+			
+			try {
+				Guias guias = new Guias();
+				guias.setCompetencias(cp);
+				guias.setDataVencimento(util.getStringToDateHoursMinutes(guiaOrigem.getDataDeVencimento()));
+				Pessoa p = pessoaDao.findByPessoaId(guiaOrigem.getIdContribuinte());
+				guias.setInscricaoPrestador(p.getCnpjCpf());
+				
+				guias.setIntegrarGuia("N"); // TODO sanar dï¿½vida
+
+				String numeroGuia = guiaOrigem.getId();
+				int proximoNumeroGuia = 60000000 + Integer.parseInt(numeroGuia);
+				guias.setNumeroGuia(Long.valueOf(proximoNumeroGuia));
+				
+				Prestadores prestadores = prestadoresDao.findByInscricao(guias.getInscricaoPrestador());
+				guias.setPrestadores(prestadores);
+				String situacao = "A";
+				if (guiaOrigem.getDataDePagamento() != null && !guiaOrigem.getDataDePagamento().isEmpty()) {
+					situacao = "P";
+				}
+				guias.setSituacao(situacao);
+
+				guias.setTipo("P");
+
+				guias.setValorDesconto(BigDecimal.valueOf(0.00));
+				guias.setValorGuia(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getValorTotal())));
+				guias.setValorImposto(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getValor())));
+				guiasDao.save(guias);
+
+				// pagamentos
+				if (guias.getSituacao().equals("P")) {
+					try {
+						Pagamentos pg = new Pagamentos();
+						pg.setDataPagamento(util.getStringToDateHoursMinutes(guiaOrigem.getDataDePagamento()));
+						pg.setGuias(guias);
+						pg.setNumeroGuia(guias.getId());
+						pg.setNumeroPagamento(guias.getId());
+						pg.setTipoPagamento("N");
+						pg.setValorCorrecao(BigDecimal.ZERO);
+						pg.setValorJuro(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getJuros())));
+						pg.setValorMulta(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getMulta())));
+						pg.setValorPago(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getValorTotal())));
+						pagamentosDao.save(pg);
+					} catch (Exception e) {
+						System.out.println(guiaOrigem.getId());
+						e.printStackTrace();
+					}
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+				
 
 		}
 

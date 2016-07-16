@@ -103,5 +103,21 @@ public class PessoaDao {
 
 		return lista.get(0);
 	}
+	
+	public Pessoa findByPessoaId(String pessoaId) {
+		Query query = sessionFactory.openSession()
+				.createQuery("from Pessoa p  " + " where p.pessoaId = " + pessoaId.trim());
+
+		try {
+			List<Pessoa> pessoa = query.list();
+
+			if (pessoa.size() > 0) {
+				return pessoa.get(0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }

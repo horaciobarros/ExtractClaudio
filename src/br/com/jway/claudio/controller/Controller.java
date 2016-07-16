@@ -15,7 +15,7 @@ public class Controller {
 
 	public void importaNfe() {
 
-		int nivelProcessamento = 1;
+		int nivelProcessamento = 2;
 
 		// limpando o banco
 		System.out.println("Limpando o banco...");
@@ -58,17 +58,11 @@ public class Controller {
 		}
 
 		if (nivelProcessamento <= 2) {
-			System.out.println("Lendo guias pagas"); // a ordem é essa mesma
-			dadosList = extractorService.lerArquivosClaudio("GuiasPagas");
-
-			extractorService.processaDadosGuiasPagas(dadosList);
-			System.out.println("--- Fim de guias paga ---");
-
-			System.out.println("Lendo guias geradas");
-			dadosList = extractorService.lerArquivosClaudio("GuiasGeradas");
+			System.out.println("Lendo guias "); // a ordem é essa mesma
+			dadosList = extractorService.lerArquivosClaudio("Guias");
 			System.out.println("Gravando competencias e guias");
-			extractorService.processaDadosGuiasGeradas(dadosList);
-			System.out.println("--- Fim de guias geradas ---");
+			extractorService.processaDadosGuias(dadosList);
+			System.out.println("--- Fim de guias paga ---");
 
 		}
 
