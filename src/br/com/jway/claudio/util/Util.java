@@ -142,6 +142,18 @@ public class Util {
 
 		return null;
 	}
+	
+	public Date getStringToDate(String data, String pattern) {
+		DateFormat formatter = new SimpleDateFormat(pattern);
+		try {
+			Date date = (Date) formatter.parse(data);
+			return date;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 
 	public String getOptantePeloSimplesNacional(String optantePeloSimplesNacional) {
 		return optantePeloSimplesNacional.substring(0, 1);

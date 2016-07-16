@@ -280,7 +280,7 @@ public class ExtractorService {
 			try {
 				Guias guias = new Guias();
 				guias.setCompetencias(cp);
-				guias.setDataVencimento(util.getStringToDateHoursMinutes(guiaOrigem.getDataDeVencimento()));
+				guias.setDataVencimento(util.getStringToDate(guiaOrigem.getDataDeVencimento(), "yyyy-MM-dd"));
 				Pessoa p = pessoaDao.findByPessoaId(guiaOrigem.getIdContribuinte());
 				guias.setInscricaoPrestador(p.getCnpjCpf());
 				
@@ -303,13 +303,15 @@ public class ExtractorService {
 				guias.setValorDesconto(BigDecimal.valueOf(0.00));
 				guias.setValorGuia(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getValorTotal())));
 				guias.setValorImposto(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getValor())));
+				
+				guias.setIdGuiaRecolhimento(guiaOrigem.getId());
 				guiasDao.save(guias);
 
 				// pagamentos
 				if (guias.getSituacao().equals("P")) {
 					try {
 						Pagamentos pg = new Pagamentos();
-						pg.setDataPagamento(util.getStringToDateHoursMinutes(guiaOrigem.getDataDePagamento()));
+						pg.setDataPagamento(util.getStringToDate(guiaOrigem.getDataDePagamento(), "yyyy-MM-dd"));
 						pg.setGuias(guias);
 						pg.setNumeroGuia(guias.getId());
 						pg.setNumeroPagamento(guias.getId());
@@ -318,6 +320,7 @@ public class ExtractorService {
 						pg.setValorJuro(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getJuros())));
 						pg.setValorMulta(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getMulta())));
 						pg.setValorPago(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getValorTotal())));
+						pg.setDataPagamento(util.getStringToDate(guiaOrigem.getDataDePagamento(), "yyyy-MM-dd"));
 						pagamentosDao.save(pg);
 					} catch (Exception e) {
 						System.out.println(guiaOrigem.getId());
