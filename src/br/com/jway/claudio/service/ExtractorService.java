@@ -21,9 +21,11 @@ import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
 import br.com.jway.claudio.dao.PrestadoresDao;
 import br.com.jway.claudio.dao.PrestadoresOptanteSimplesDao;
 import br.com.jway.claudio.dao.TomadoresDao;
+import br.com.jway.claudio.entidadesOrigem.CnaeServicosContribuinte;
 import br.com.jway.claudio.entidadesOrigem.ContribuinteOrigem;
 import br.com.jway.claudio.entidadesOrigem.GuiaOrigem;
 import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
+import br.com.jway.claudio.entidadesOrigem.ServicosOrigem;
 import br.com.jway.claudio.model.Competencias;
 import br.com.jway.claudio.model.Guias;
 import br.com.jway.claudio.model.GuiasNotasFiscais;
@@ -54,6 +56,7 @@ public class ExtractorService {
 	private MunicipiosIbgeDao municipiosIbgeDao = new MunicipiosIbgeDao();
 	private PessoaDao pessoaDao = new PessoaDao();
 	private GuiasNotasFiscaisDao guiasNotasFiscaisDao = new GuiasNotasFiscaisDao();
+	private Map<String, ServicosOrigem> mapServicos = new Hashtable<String, ServicosOrigem>();
 
 	public List<String> excluiParaProcessarNivel1() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
@@ -113,7 +116,7 @@ public class ExtractorService {
 					linha = linha.replaceAll(";", "");
 				}
 				linha = linha.trim();
-				if (linha.substring(linha.length() - 1).equals(",")) {
+				if (!linha.isEmpty() && linha.substring(linha.length() - 1).equals(",")) {
 					linha = linha + " ";
 				}
 				dadosList.add(linha);
@@ -231,12 +234,48 @@ public class ExtractorService {
 	public void processaDadosAtividadeEconomicaContribuinte(List<String> dadosList) {
 		int count = 0;
 
+		if (mapServicos == null || mapServicos.isEmpty()) {
+			try {
+				throw new Exception("Tabela de Serviços não encontrada.");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				continue;
 			}
-			count++;
 
+			String[] arrayAux = linha.split(",");
+
+			try {
+
+				CnaeServicosContribuinte cnae = new CnaeServicosContribuinte(arrayAux[0], arrayAux[1], arrayAux[2],
+						arrayAux[3], arrayAux[4], arrayAux[5], arrayAux[6], arrayAux[7], arrayAux[8], arrayAux[9],
+						arrayAux[10], arrayAux[11], arrayAux[12]);
+
+				Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
+				Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
+				ServicosOrigem servico = mapServicos.get(cnae.getIdServico());
+
+				try {
+					PrestadoresAtividades pa = new PrestadoresAtividades();
+					pa.setAliquota(BigDecimal.valueOf(Double.parseDouble(cnae.getAliquota())));
+					pa.setCodigoAtividade(cnae.getCnaeCodigo());
+					pa.setIcnaes(cnae.getIdCnae());
+					pa.setIlistaservicos(servico.getCodigo());
+					pa.setInscricaoPrestador(pr.getInscricaoPrestador());
+					pa.setPrestadores(pr);
+					prestadoresAtividadesDao.save(pa);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			} catch (Exception e) {
+
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -255,41 +294,44 @@ public class ExtractorService {
 			}
 
 			String[] arrayAux = linha.split(",");
-			
-			GuiaOrigem guiaOrigem = new GuiaOrigem(arrayAux[0], arrayAux[1], arrayAux[2], arrayAux[3], arrayAux[4], arrayAux[5],
-					arrayAux[6], arrayAux[7], arrayAux[8], arrayAux[9], arrayAux[10], arrayAux[11],
+
+			GuiaOrigem guiaOrigem = new GuiaOrigem(arrayAux[0], arrayAux[1], arrayAux[2], arrayAux[3], arrayAux[4],
+					arrayAux[5], arrayAux[6], arrayAux[7], arrayAux[8], arrayAux[9], arrayAux[10], arrayAux[11],
 					arrayAux[12], arrayAux[13], arrayAux[14], arrayAux[15], arrayAux[16], arrayAux[17]);
-			
-			String descricao = util.getNomeMes(guiaOrigem.getCompetencia().substring(5, 7)) + "/" + guiaOrigem.getCompetencia().substring(0, 4);
+
+			String descricao = util.getNomeMes(guiaOrigem.getCompetencia().substring(5, 7)) + "/"
+					+ guiaOrigem.getCompetencia().substring(0, 4);
 			Competencias cp = competenciasDao.findByDescricao(descricao);
-			
+
 			try {
 				if (cp == null || cp.getId() == 0) { // acertar datas
 					cp = new Competencias();
 					cp.setDescricao(descricao.trim());
-					cp.setDataInicio(util.getFirstDayOfMonth(guiaOrigem.getCompetencia().substring(0, 4), guiaOrigem.getCompetencia().substring(5, 7)));
-					cp.setDataFim(util.getLastDayOfMonth(guiaOrigem.getCompetencia().substring(0, 4), guiaOrigem.getCompetencia().substring(5, 7)));
+					cp.setDataInicio(util.getFirstDayOfMonth(guiaOrigem.getCompetencia().substring(0, 4),
+							guiaOrigem.getCompetencia().substring(5, 7)));
+					cp.setDataFim(util.getLastDayOfMonth(guiaOrigem.getCompetencia().substring(0, 4),
+							guiaOrigem.getCompetencia().substring(5, 7)));
 					cp.setDataVencimento(util.getDecimoDiaMesPosterior(cp.getDataFim()));
 
 					competenciasDao.save(cp);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			}	
-			
+			}
+
 			try {
 				Guias guias = new Guias();
 				guias.setCompetencias(cp);
 				guias.setDataVencimento(util.getStringToDate(guiaOrigem.getDataDeVencimento(), "yyyy-MM-dd"));
 				Pessoa p = pessoaDao.findByPessoaId(guiaOrigem.getIdContribuinte());
 				guias.setInscricaoPrestador(p.getCnpjCpf());
-				
+
 				guias.setIntegrarGuia("N"); // TODO sanar dï¿½vida
 
 				String numeroGuia = guiaOrigem.getId();
 				int proximoNumeroGuia = 60000000 + Integer.parseInt(numeroGuia);
 				guias.setNumeroGuia(Long.valueOf(proximoNumeroGuia));
-				
+
 				Prestadores prestadores = prestadoresDao.findByInscricao(guias.getInscricaoPrestador());
 				guias.setPrestadores(prestadores);
 				String situacao = "A";
@@ -303,7 +345,7 @@ public class ExtractorService {
 				guias.setValorDesconto(BigDecimal.valueOf(0.00));
 				guias.setValorGuia(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getValorTotal())));
 				guias.setValorImposto(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getValor())));
-				
+
 				guias.setIdGuiaRecolhimento(guiaOrigem.getId());
 				guiasDao.save(guias);
 
@@ -331,8 +373,6 @@ public class ExtractorService {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
-				
 
 		}
 
@@ -466,6 +506,27 @@ public class ExtractorService {
 		}
 
 		return t;
+	}
+
+	public void processaDadosServicos(List<String> dadosList) {
+		for (String linha : dadosList) {
+			if (linha == null || linha.trim().isEmpty()) {
+				break;
+			}
+
+			String[] arrayAux = linha.split(",");
+
+			ServicosOrigem servicos = new ServicosOrigem(arrayAux[0], arrayAux[1], arrayAux[2], arrayAux[3],
+					arrayAux[4], arrayAux[5]);
+
+			try {
+				mapServicos.put(servicos.getId(), servicos);
+
+			} catch (Exception e) {
+
+			}
+		}
+
 	}
 
 }

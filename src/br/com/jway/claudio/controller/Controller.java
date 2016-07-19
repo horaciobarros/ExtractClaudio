@@ -49,15 +49,23 @@ public class Controller {
 			System.out.println("Gravando contribuintes");
 			extractorService.processaDadosContribuinte(dadosList);
 			System.out.println("--- Fim de contribuintes ---");
-
-			System.out.println("Lendo atividade de contribuintes");
-			dadosList = extractorService.lerArquivosClaudio("AtvEconomica");
-			System.out.println("Gravando atividades");
-			extractorService.processaDadosAtividadeEconomicaContribuinte(dadosList);
-			System.out.println("--- Fim de atividade de contribuintes ---");
+			
 		}
 
 		if (nivelProcessamento <= 2) {
+			System.out.println("Lendo serviços");
+			dadosList = extractorService.lerArquivosClaudio("servicos");
+			System.out.println("Gravando servicos");
+			extractorService.processaDadosServicos(dadosList);
+			System.out.println("--- Fim de servicos ---");
+
+			System.out.println("Lendo atividade de contribuintes");
+			dadosList = extractorService.lerArquivosClaudio("cnae_servicos_contribuintes");
+			System.out.println("Gravando atividades");
+			extractorService.processaDadosAtividadeEconomicaContribuinte(dadosList);
+			System.out.println("--- Fim de atividade de contribuintes ---");
+			
+			
 			System.out.println("Lendo guias "); // a ordem é essa mesma
 			dadosList = extractorService.lerArquivosClaudio("Guias");
 			System.out.println("Gravando competencias e guias");
