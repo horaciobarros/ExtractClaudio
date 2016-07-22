@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -374,5 +375,21 @@ public class Util {
 		return cpfCnpj;
 	}
 
+	public List<String> splitRegistro(String linha){
+		StringBuilder builder = new StringBuilder(linha);
+		boolean inQuotes = false;
+		for (int currentIndex = 0; currentIndex < builder.length(); currentIndex++) {
+		    char currentChar = builder.charAt(currentIndex);
+		    if (currentChar == '\"') inQuotes = !inQuotes;
+		    if (currentChar == ',' && inQuotes) {
+		        builder.setCharAt(currentIndex, ';');
+		    }
+		}
+		List<String> result = Arrays.asList(builder.toString().split(","));
+		for (String a : result){
+			System.out.println(a);
+		}
+		return result;
+	}
 
 }
