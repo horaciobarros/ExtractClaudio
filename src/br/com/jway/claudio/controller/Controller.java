@@ -46,7 +46,7 @@ public class Controller {
 		if (nivelProcessamento == 1) {
 			System.out.println("Lendo contribuintes");
 			dadosList = extractorService.lerArquivosClaudio("contribuintes");
-			System.out.println("Gravando contribuintes");
+			System.out.println("Gravando contribuintes e prestadores");
 			extractorService.processaDadosContribuinte(dadosList);
 			System.out.println("--- Fim de contribuintes ---");
 			
