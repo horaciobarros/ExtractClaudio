@@ -240,7 +240,7 @@ public class ExtractorService {
 
 				try {
 					PrestadoresAtividades pa = new PrestadoresAtividades();
-					pa.setAliquota(BigDecimal.valueOf(Double.parseDouble(cnae.getAliquota())));
+					pa.setAliquota(BigDecimal.valueOf(util.corrigeDouble(cnae.getAliquota())));
 					pa.setCodigoAtividade(cnae.getCnaeCodigo());
 					pa.setIcnaes(cnae.getIdCnae());
 					pa.setIlistaservicos(servico.getCodigo());
@@ -322,8 +322,8 @@ public class ExtractorService {
 				guias.setTipo("P");
 
 				guias.setValorDesconto(BigDecimal.valueOf(0.00));
-				guias.setValorGuia(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getValorTotal())));
-				guias.setValorImposto(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getValor())));
+				guias.setValorGuia(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValorTotal())));
+				guias.setValorImposto(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValor())));
 
 				guias.setIdGuiaRecolhimento(guiaOrigem.getId());
 				guiasDao.save(guias);
@@ -338,9 +338,9 @@ public class ExtractorService {
 						pg.setNumeroPagamento(guias.getId());
 						pg.setTipoPagamento("N");
 						pg.setValorCorrecao(BigDecimal.ZERO);
-						pg.setValorJuro(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getJuros())));
-						pg.setValorMulta(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getMulta())));
-						pg.setValorPago(BigDecimal.valueOf(Double.parseDouble(guiaOrigem.getValorTotal())));
+						pg.setValorJuro(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getJuros())));
+						pg.setValorMulta(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getMulta())));
+						pg.setValorPago(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValorTotal())));
 						pg.setDataPagamento(util.getStringToDate(guiaOrigem.getDataDePagamento(), "yyyy-MM-dd"));
 						pagamentosDao.save(pg);
 					} catch (Exception e) {
