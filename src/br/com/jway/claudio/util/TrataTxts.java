@@ -87,6 +87,9 @@ public class TrataTxts {
 								linha = linha.substring(1);
 							}
 						}
+						if (linha.endsWith(";;")){
+							linha = linha.substring(0,  linha.length()-2);
+						}
 						linhaDefinitiva = new StringBuilder(linhaDefinitiva.toString() + linha);
 						campos = util.splitRegistro(linhaDefinitiva.toString());
 					}
