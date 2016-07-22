@@ -94,7 +94,7 @@ public class ExtractorService {
 		BufferedReader br;
 		List<String> dadosList = new ArrayList<String>();
 		try {
-			br = new BufferedReader(new InputStreamReader(new FileInputStream("c:/TEMP/claudio/" + arquivoIn + ".csv"), "utf-8"));
+			br = new BufferedReader(new InputStreamReader(new FileInputStream("c:/TEMP/claudio/tratados/" + arquivoIn + ".csv"), "utf-8"));
 			br.readLine();
 			while (br.ready()) {
 				String linha = br.readLine();

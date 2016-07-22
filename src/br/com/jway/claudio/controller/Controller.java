@@ -3,6 +3,7 @@ package br.com.jway.claudio.controller;
 import java.util.List;
 
 import br.com.jway.claudio.service.ExtractorService;
+import br.com.jway.claudio.util.TrataTxts;
 
 /**
  * 
@@ -38,6 +39,12 @@ public class Controller {
 				e.printStackTrace();
 			}
 		}
+		
+		// limpando o banco
+		System.out.println("Tratando arquivos...");
+		TrataTxts tratamento = new TrataTxts();
+		tratamento.processa();
+
 
 		// Inï¿½cio
 		System.out.println("Importação de dados de arquivos txt - Início");

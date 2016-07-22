@@ -376,6 +376,7 @@ public class Util {
 	}
 
 	public List<String> splitRegistro(String linha){
+		//return Arrays.asList(linha.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
 		StringBuilder builder = new StringBuilder(linha);
 		boolean inQuotes = false;
 		for (int currentIndex = 0; currentIndex < builder.length(); currentIndex++) {
@@ -386,9 +387,7 @@ public class Util {
 		    }
 		}
 		List<String> result = Arrays.asList(builder.toString().split(","));
-		for (String a : result){
-			System.out.println(a);
-		}
+
 		return result;
 	}
 
