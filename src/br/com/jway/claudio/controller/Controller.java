@@ -39,6 +39,12 @@ public class Controller {
 			}
 		}
 
+		// limpando o banco
+		System.out.println("Tratando arquivos...");
+		TrataTxts tratamento = new TrataTxts();
+		tratamento.processa();
+
+
 		// Inï¿½cio
 		System.out.println("Importação de dados de arquivos txt - Início");
 		List<String> dadosList;

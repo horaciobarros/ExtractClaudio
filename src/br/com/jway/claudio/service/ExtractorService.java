@@ -94,31 +94,10 @@ public class ExtractorService {
 		BufferedReader br;
 		List<String> dadosList = new ArrayList<String>();
 		try {
-			br = new BufferedReader(
-					new InputStreamReader(new FileInputStream("c:/TEMP/claudio/" + arquivoIn + ".csv"), "utf-8"));
+			br = new BufferedReader(new InputStreamReader(new FileInputStream("c:/TEMP/claudio/tratados/" + arquivoIn + ".csv"), "utf-8"));
 			br.readLine();
 			while (br.ready()) {
 				String linha = br.readLine();
-				while (linha.contains("\"\"")) {
-					linha = linha.replaceAll("\"\"", "\"");
-				}
-				while (linha.contains(";")) {
-					linha = linha.replaceAll(";", "");
-				}
-
-				while (linha.contains(",,")) {
-					linha = linha.replaceAll(",,", ", ,");
-				}
-				while (linha.contains(",,,")) {
-					linha = linha.replaceAll(",,,", ", , ,");
-				}
-				while (linha.contains(";")) {
-					linha = linha.replaceAll(";", "");
-				}
-				linha = linha.trim();
-				if (!linha.isEmpty() && linha.substring(linha.length() - 1).equals(",")) {
-					linha = linha + " ";
-				}
 				dadosList.add(linha);
 			}
 			br.close();
@@ -152,14 +131,14 @@ public class ExtractorService {
 				break;
 			}
 
-			String[] arrayAux = linha.split(",");
+			List<String> arrayAux = util.splitRegistro(linha);
 
 			try {
-				ContribuinteOrigem c = new ContribuinteOrigem(arrayAux[0], arrayAux[1], arrayAux[2], arrayAux[3],
-						arrayAux[4], arrayAux[5], arrayAux[6], arrayAux[7], arrayAux[8], arrayAux[9], arrayAux[10],
-						arrayAux[11], arrayAux[12], arrayAux[13], arrayAux[14], arrayAux[15], arrayAux[16],
-						arrayAux[17], arrayAux[18], arrayAux[19], arrayAux[20], arrayAux[21], arrayAux[22],
-						arrayAux[23], arrayAux[24], arrayAux[25]);
+				ContribuinteOrigem c = new ContribuinteOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2), arrayAux.get(3),
+						arrayAux.get(4), arrayAux.get(5), arrayAux.get(6), arrayAux.get(7), arrayAux.get(8), arrayAux.get(9), arrayAux.get(10),
+						arrayAux.get(11), arrayAux.get(12), arrayAux.get(13), arrayAux.get(14), arrayAux.get(15), arrayAux.get(16),
+						arrayAux.get(17), arrayAux.get(18), arrayAux.get(19), arrayAux.get(20), arrayAux.get(21), arrayAux.get(22),
+						arrayAux.get(23), arrayAux.get(24), arrayAux.get(25));
 				count++;
 
 				Pessoa p = new Pessoa();
@@ -247,13 +226,13 @@ public class ExtractorService {
 				continue;
 			}
 
-			String[] arrayAux = linha.split(",");
+			List<String> arrayAux = util.splitRegistro(linha);
 
 			try {
 
-				CnaeServicosContribuinte cnae = new CnaeServicosContribuinte(arrayAux[0], arrayAux[1], arrayAux[2],
-						arrayAux[3], arrayAux[4], arrayAux[5], arrayAux[6], arrayAux[7], arrayAux[8], arrayAux[9],
-						arrayAux[10], arrayAux[11], arrayAux[12]);
+				CnaeServicosContribuinte cnae = new CnaeServicosContribuinte(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2),
+						arrayAux.get(3), arrayAux.get(4), arrayAux.get(5), arrayAux.get(6), arrayAux.get(7), arrayAux.get(8), arrayAux.get(9),
+						arrayAux.get(10), arrayAux.get(11), arrayAux.get(12));
 
 				Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
 				Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
@@ -293,11 +272,11 @@ public class ExtractorService {
 				continue;
 			}
 
-			String[] arrayAux = linha.split(",");
+			List<String> arrayAux = util.splitRegistro(linha);
 
-			GuiaOrigem guiaOrigem = new GuiaOrigem(arrayAux[0], arrayAux[1], arrayAux[2], arrayAux[3], arrayAux[4],
-					arrayAux[5], arrayAux[6], arrayAux[7], arrayAux[8], arrayAux[9], arrayAux[10], arrayAux[11],
-					arrayAux[12], arrayAux[13], arrayAux[14], arrayAux[15], arrayAux[16], arrayAux[17]);
+			GuiaOrigem guiaOrigem = new GuiaOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2), arrayAux.get(3), arrayAux.get(4),
+					arrayAux.get(5), arrayAux.get(6), arrayAux.get(7), arrayAux.get(8), arrayAux.get(9), arrayAux.get(10), arrayAux.get(11),
+					arrayAux.get(12), arrayAux.get(13), arrayAux.get(14), arrayAux.get(15), arrayAux.get(16), arrayAux.get(17));
 
 			String descricao = util.getNomeMes(guiaOrigem.getCompetencia().substring(5, 7)) + "/"
 					+ guiaOrigem.getCompetencia().substring(0, 4);
@@ -514,10 +493,10 @@ public class ExtractorService {
 				break;
 			}
 
-			String[] arrayAux = linha.split(",");
+			List<String> arrayAux = util.splitRegistro(linha);
 
-			ServicosOrigem servicos = new ServicosOrigem(arrayAux[0], arrayAux[1], arrayAux[2], arrayAux[3],
-					arrayAux[4], arrayAux[5]);
+			ServicosOrigem servicos = new ServicosOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2), arrayAux.get(3),
+					arrayAux.get(4), arrayAux.get(5));
 
 			try {
 				mapServicos.put(servicos.getId(), servicos);
