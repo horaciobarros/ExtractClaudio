@@ -370,7 +370,7 @@ public class Util {
 	}
 
 	public String getCpfCnpj(String cpfCnpj) {
-		cpfCnpj = cpfCnpj.replaceAll(".","");
+		cpfCnpj = cpfCnpj.replaceAll("\\.","");
 		cpfCnpj = cpfCnpj.replaceAll("-","");
 		cpfCnpj = cpfCnpj.replaceAll("/","");
 		return cpfCnpj;

@@ -9,7 +9,8 @@ import br.com.jway.claudio.dao.NotasFiscaisPrestadoresDao;
 import br.com.jway.claudio.dao.NotasFiscaisServicosDao;
 import br.com.jway.claudio.dao.NotasFiscaisTomadoresDao;
 import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
-import br.com.jway.claudio.entidadesOrigem.DadosLivroPrestador;
+import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
+import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
 import br.com.jway.claudio.model.Guias;
 import br.com.jway.claudio.model.GuiasNotasFiscais;
 import br.com.jway.claudio.model.NotasFiscais;
@@ -18,6 +19,7 @@ import br.com.jway.claudio.model.NotasFiscaisEmails;
 import br.com.jway.claudio.model.NotasFiscaisPrestadores;
 import br.com.jway.claudio.model.NotasFiscaisServicos;
 import br.com.jway.claudio.model.NotasFiscaisTomadores;
+import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.model.Prestadores;
 import br.com.jway.claudio.model.PrestadoresAtividades;
 import br.com.jway.claudio.model.Tomadores;
@@ -27,7 +29,7 @@ import br.com.jway.claudio.util.Util;
 public class NotasThreadService implements Runnable {
 	private Prestadores pr;
 	private NotasFiscais nf;
-	private DadosLivroPrestador dlp;
+	private NotasFiscaisOrigem nfOrigem;
 	private FileLog log;
 	private String linha;
 	private String tipoNotaFilha;
@@ -41,35 +43,15 @@ public class NotasThreadService implements Runnable {
 	private Tomadores tomadores;
 	private NotasFiscaisTomadoresDao notasFiscaisTomadoresDao = new NotasFiscaisTomadoresDao();
 	private PrestadoresAtividadesDao prestadoresAtividadesDao = new PrestadoresAtividadesDao();
+	private Pessoa pessoa;
 
-	public NotasThreadService(Prestadores p, NotasFiscais nf, DadosLivroPrestador dlp, FileLog log, String linha,
-			String tipoNotaFilha) {
-		this.pr = p;
+
+	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem dlp, FileLog log, String linha,
+			String tipoNotaFilha, Guias guia, Tomadores tomadores, Pessoa pessoa) {
+		this.pessoa = pessoa;
+		this.pr = pr;
 		this.nf = nf;
-		this.dlp = dlp;
-		this.log = log;
-		this.linha = linha;
-		this.tipoNotaFilha = tipoNotaFilha;
-
-	}
-
-	public NotasThreadService(Prestadores p, NotasFiscais nf, DadosLivroPrestador dlp, FileLog log, String linha,
-			String tipoNotaFilha, Guias guia) {
-		this.pr = p;
-		this.nf = nf;
-		this.dlp = dlp;
-		this.log = log;
-		this.linha = linha;
-		this.tipoNotaFilha = tipoNotaFilha;
-		this.guia = guia;
-
-	}
-
-	public NotasThreadService(Prestadores p, NotasFiscais nf, DadosLivroPrestador dlp, FileLog log, String linha,
-			String tipoNotaFilha, Guias guia, Tomadores tomadores) {
-		this.pr = p;
-		this.nf = nf;
-		this.dlp = dlp;
+		this.nfOrigem = dlp;
 		this.log = log;
 		this.linha = linha;
 		this.tipoNotaFilha = tipoNotaFilha;
@@ -80,38 +62,27 @@ public class NotasThreadService implements Runnable {
 
 	@Override
 	public void run() {
-		if (tipoNotaFilha.equals("S")) { // serviÃ§os
+		if (tipoNotaFilha.equals("S")) { // serviços
 			try {
 
 				NotasFiscaisServicos nfs = new NotasFiscaisServicos();
-				nfs.setInscricaoPrestador(dlp.getCnpjPrestador());
-				nfs.setNumeroNota(Long.valueOf(dlp.getNumeroNota()));
+				nfs.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
+				nfs.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
 				nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
-				nfs.setItemListaServico(dlp.getItemListaServico());
+				
 				if (nfs.getItemListaServico() == null || nfs.getItemListaServico().isEmpty()) {
 					nfs.setItemListaServico("1401");
 				}
-				nfs.setDescricao(dlp.getDiscriminacaoServico());
-				if (util.isEmptyOrNull(nfs.getDescricao())) {
-					PrestadoresAtividades pa = prestadoresAtividadesDao.findByInscricao(nfs.getInscricaoPrestador());
-					if (pa != null) {
-						nfs.setDescricao(pa.getIlistaservicos());
-					} else {
-						nfs.setDescricao("Serviços Diversos");
-					}
-				}
-				nfs.setAliquota(BigDecimal.valueOf(dlp.getValorAliquota()));
-				nfs.setValorServico(BigDecimal.valueOf(dlp.getValorServico()));
+				nfs.setDescricao(nfOrigem.getDescricaoDoServico());
+				
+				nfs.setAliquota(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getAliquota())));
+				nfs.setValorServico(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 				nfs.setQuantidade(BigDecimal.valueOf(1));
-				nfs.setValorServico(BigDecimal.valueOf(dlp.getValorServico()));
-				nfs.setValorDeducao(BigDecimal.valueOf(dlp.getValorDeducao()));
-				nfs.setValorDescCondicionado(BigDecimal.valueOf(dlp.getValorDescontoCondicionado()));
-				nfs.setValorDescIncondicionado(BigDecimal.valueOf(dlp.getValorDescontoIncondicionado()));
-				nfs.setValorBaseCalculo(BigDecimal.valueOf(dlp.getValorBaseCalculo()));
-				nfs.setAliquota(BigDecimal.valueOf(dlp.getValorAliquota()));
-				nfs.setValorIss(BigDecimal.valueOf(dlp.getValorIss()));
+				nfs.setValorDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
+				nfs.setValorBaseCalculo(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
+				nfs.setValorIss(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDoIssqnDevido())));
 				nfs.setNotasFiscais(nf);
-				nfs.setValorUnitario(BigDecimal.valueOf(dlp.getValorServico()));
+				nfs.setValorUnitario(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 				if (nfs.getAliquota().compareTo(BigDecimal.ZERO) == 0) {
 					nfs.setAliquota(BigDecimal.valueOf(1));
 				}
@@ -125,13 +96,11 @@ public class NotasThreadService implements Runnable {
 		if (tipoNotaFilha.equals("C")) { // canceladas
 			try {
 				NotasFiscaisCanceladas nfc = new NotasFiscaisCanceladas();
-				nfc.setDatahoracancelamento(util.getStringToDateHoursMinutes(dlp.getDataCancelamento()));
 				if (nfc.getDatahoracancelamento().getTime() < nf.getDataHoraEmissao().getTime()) {
-					nfc.setDatahoracancelamento(util.getStringToDateHoursMinutes(dlp.getDataEmissao()));
+					nfc.setDatahoracancelamento(util.getStringToDateHoursMinutes(nfOrigem.getDataEmissaoRps()));
 				}
-				nfc.setInscricaoPrestador(dlp.getCnpjPrestador());
-				nfc.setNumeroNota(Long.valueOf(dlp.getNumeroNota()));
-				nfc.setMotivo(dlp.getMotivoCancelamento());
+				nfc.setInscricaoPrestador(nfOrigem.getCpfCnpjPrestador());
+				nfc.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
 				if (util.isEmptyOrNull(nfc.getMotivo())) {
 					nfc.setMotivo("Dados incorretos");
 				}
@@ -147,9 +116,9 @@ public class NotasThreadService implements Runnable {
 			try {
 				NotasFiscaisEmails nfe = new NotasFiscaisEmails();
 				nfe.setEmail(pr.getEmail());
-				nfe.setInscricaoPrestador(dlp.getCnpjPrestador());
+				nfe.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
 				nfe.setNotasFiscais(nf);
-				nfe.setNumeroNota(Long.valueOf(dlp.getNumeroNota()));
+				nfe.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
 				notasFiscaisEmailsDao.save(nfe);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -159,20 +128,20 @@ public class NotasThreadService implements Runnable {
 		if (tipoNotaFilha.equals("P")) { // prestadores
 			try {
 				NotasFiscaisPrestadores nfp = new NotasFiscaisPrestadores();
-				nfp.setBairro(dlp.getEnderecoBairroPrestador());
-				nfp.setCelular(util.getLimpaTelefone(dlp.getTelefonePrestador()));
-				nfp.setCep(dlp.getCepPrestador());
-				nfp.setComplemento(dlp.getEnderecoComplementoPrestador());
+				nfp.setBairro(pessoa.getBairro());
+				nfp.setCelular(util.getLimpaTelefone(nfOrigem.getTelefonePrestador()));
+				nfp.setCep(pessoa.getCep());
+				nfp.setComplemento(pessoa.getComplemento());
 				nfp.setEmail(pr.getEmail());
-				nfp.setEndereco(dlp.getEnderecoPrestador());
-				nfp.setInscricaoPrestador(dlp.getCnpjPrestador());
-				nfp.setNome(dlp.getRazaoSocialPrestador());
-				nfp.setNomeFantasia(dlp.getNomeFantasiaPrestador());
+				nfp.setEndereco(pessoa.getEndereco());
+				nfp.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
+				nfp.setNome(nfOrigem.getRazaoSocialPrestador());
+				nfp.setNomeFantasia(pessoa.getNomeFantasia());
 				nfp.setNotasFiscais(nf);
-				nfp.setNumero(dlp.getEnderecoNumeroPrestador());
-				nfp.setNumeroNota(Long.valueOf(dlp.getNumeroNota()));
-				nfp.setOptanteSimples(dlp.getOptantePeloSimplesNacional().substring(0, 1));
-				nfp.setTipoPessoa(util.getTipoPessoa(dlp.getCnpjPrestador()));
+				nfp.setNumero(pessoa.getNumero());
+				nfp.setNumeroNota(nf.getNumeroNota());
+				nfp.setOptanteSimples("N"); // TODO resolver
+				nfp.setTipoPessoa(util.getTipoPessoa(nfOrigem.getCpfCnpjPrestador()));
 				notasFiscaisPrestadoresDao.save(nfp);
 
 			} catch (Exception e) {

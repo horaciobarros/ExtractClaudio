@@ -24,6 +24,7 @@ import br.com.jway.claudio.dao.PrestadoresOptanteSimplesDao;
 import br.com.jway.claudio.dao.TomadoresDao;
 import br.com.jway.claudio.entidadesOrigem.CnaeServicosContribuinte;
 import br.com.jway.claudio.entidadesOrigem.ContribuinteOrigem;
+import br.com.jway.claudio.entidadesOrigem.EscrituracoesOrigem;
 import br.com.jway.claudio.entidadesOrigem.GuiaOrigem;
 import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosOrigem;
@@ -59,6 +60,7 @@ public class ExtractorService {
 	private GuiasNotasFiscaisDao guiasNotasFiscaisDao = new GuiasNotasFiscaisDao();
 	private Map<String, ServicosOrigem> mapServicos = new Hashtable<String, ServicosOrigem>();
 	private BufferedWriter bw;
+	private Map<String, EscrituracoesOrigem> mapEscrituracoes = new Hashtable<String, EscrituracoesOrigem>();
 
 	public List<String> excluiParaProcessarNivel1() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
@@ -112,9 +114,13 @@ public class ExtractorService {
 
 	}
 
-	public void processaDadosNotasFiscais(List<String> dadosList) {
-
+	public void processaDadosNotasFiscais(List<String> dadosList) throws Exception {
+		
 		FileLog log = new FileLog("notas_fiscais");
+		
+		if (mapEscrituracoes == null || mapEscrituracoes.isEmpty()) {
+				throw new Exception("Tabela de Escrituracoes vazia.");
+		}
 
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
@@ -139,6 +145,7 @@ public class ExtractorService {
 
 				String inscricaoPrestador = util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador().trim());
 				Prestadores pr = prestadoresDao.findByInscricao(inscricaoPrestador);
+				Pessoa pessoa = pessoaDao.findByCnpjCpf(inscricaoPrestador);
 				try {
 					if (pr == null || pr.getId() == 0 || !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
 						System.out.println("Prestador não encontrado:" + inscricaoPrestador);
@@ -149,13 +156,14 @@ public class ExtractorService {
 				}
 
 				NotasFiscais nf = new NotasFiscais();
-				nf.setDataHoraEmissao(util.getStringToDateHoursMinutes(nfOrigem.getDataEmissaoRps()));
+				EscrituracoesOrigem escrituracoes = mapEscrituracoes.get(nfOrigem.getId());
+				nf.setDataHoraEmissao(util.getStringToDateHoursMinutes(nfOrigem.getDataDeCriacao()));
 				nf.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
 				nf.setInscricaoTomador(util.getCpfCnpj(nfOrigem.getCnpjCpfTomador()));
 				nf.setNaturezaOperacao(nfOrigem.getNaturezaDaOperacao());
 				nf.setNomePrestador(nfOrigem.getRazaoSocialPrestador());
 				nf.setNomeTomador(nfOrigem.getRazaoSocialTomador());
-				nf.setNumeroNota(Long.valueOf(nfOrigem.getNumeroRps()));
+				nf.setNumeroNota(Long.valueOf(escrituracoes.getNumeroNotaFiscal()));
 				nf.setOptanteSimples("N"); // // TODO resolver
 				nf.setPrestadores(pr);
 				if (util.getTipoPessoa(pr.getInscricaoPrestador()).equals("J")) {
@@ -184,6 +192,8 @@ public class ExtractorService {
 				if (nf.getValorLiquido().compareTo(BigDecimal.ZERO) == -1) {
 					nf.setValorLiquido(nf.getValorLiquido().multiply(BigDecimal.valueOf(-1)));
 				}
+				
+				nf.setSituacaoOriginal("N");
 
 				nf = notasFiscaisDao.save(nf);
 
@@ -193,7 +203,7 @@ public class ExtractorService {
 				if (!util.isEmptyOrNull(nf.getInscricaoTomador()) && !util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())) {
 					Pessoa pessoaTomador = pessoaDao.findByCnpjCpf(util.getCpfCnpj(nfOrigem.getCnpjCpfTomador()));
 					t = tomadoresDao.findByInscricao(nf.getInscricaoTomador(), nf.getInscricaoPrestador());
-					if (t == null || t.getId() == null) {
+					if ((t == null || t.getId() == null) && pessoaTomador != null) {
 						try {
 							t = new Tomadores();
 							t.setOptanteSimples(util.getOptantePeloSimplesNacional("N"));
@@ -231,7 +241,7 @@ public class ExtractorService {
 					}
 				}
 
-				//processaDemaisTiposNotas(pr, nf, nfOrigem, log, linha, t);
+				processaDemaisTiposNotas(pr, nf, nfOrigem, log, linha, t, pessoa);
 
 			} catch (Exception e2) {
 				log.fillError(linha, "Erro NotasFiscais " + e2.getMessage());
@@ -243,22 +253,22 @@ public class ExtractorService {
 	}
 
 	private void processaDemaisTiposNotas(Prestadores p, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log,
-			String linha, Tomadores t) {
+			String linha, Tomadores t, Pessoa pessoa) {
 		// -- serviços
-		NotasThreadService nfServico = new NotasThreadService(p, nf, nfOrigem, log, linha, "S");
+		NotasThreadService nfServico = new NotasThreadService(p, nf, nfOrigem, log, linha, "S", null, t, pessoa);
 		Thread s = new Thread(nfServico);
 		s.start();
 
 		// -- canceladas
 		if (nf.getSituacaoOriginal().substring(0, 1).equals("C")) {
-			NotasThreadService nfCanceladas = new NotasThreadService(p, nf, nfOrigem, log, linha, "C");
+			NotasThreadService nfCanceladas = new NotasThreadService(p, nf, nfOrigem, log, linha, "C", null, t, pessoa);
 			Thread c = new Thread(nfCanceladas);
 			c.start();
 		}
 
 		// email
 		if (nfOrigem.getEmailPrestador() != null && !nfOrigem.getEmailPrestador().isEmpty()) {
-			NotasThreadService nfEmail = new NotasThreadService(p, nf, nfOrigem, log, linha, "E");
+			NotasThreadService nfEmail = new NotasThreadService(p, nf, nfOrigem, log, linha, "E", null, t, pessoa);
 			Thread e = new Thread(nfEmail);
 			e.start();
 		}
@@ -268,7 +278,7 @@ public class ExtractorService {
 		// notas-fiscais-obras ??
 
 		// notas-fiscais-prestadores
-		NotasThreadService nfPrestadores = new NotasThreadService(p, nf, nfOrigem, log, linha, "P");
+		NotasThreadService nfPrestadores = new NotasThreadService(p, nf, nfOrigem, log, linha, "P", null, t, pessoa);
 		Thread prestadoresThread = new Thread(nfPrestadores);
 		prestadoresThread.start();
 
@@ -290,7 +300,7 @@ public class ExtractorService {
 		// notas fiscais tomadores
 
 		if (t != null && t.getId() != null) {
-			NotasThreadService nfTomadores = new NotasThreadService(p, nf, nfOrigem, log, linha, "T", t);
+			NotasThreadService nfTomadores = new NotasThreadService(p, nf, nfOrigem, log, linha, "T", null, t, pessoa);
 			Thread nftThread = new Thread(nfTomadores);
 			nftThread.start();
 		}
@@ -698,15 +708,32 @@ public class ExtractorService {
 		}
 
 	}
+	
+	public void processaDadosEscrituracoes(List<String> dadosList) {
+		
+		for (String linha : dadosList) {
+			if (linha == null || linha.trim().isEmpty()) {
+				break;
+			}
 
-	private void fillErrorLog(String linha, Exception e, BufferedWriter bw) {
-		String linhaAux = linha.replaceAll("#", "|");
-		try {
-			bw.write("erro --> " + " conteudo da linha:" + linhaAux + "\n" + e);
-		} catch (Exception e1) {
-			e1.printStackTrace();
+			List<String> arrayAux = util.splitRegistro(linha);
+
+			EscrituracoesOrigem escrituracoes = new EscrituracoesOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2),
+						arrayAux.get(3), arrayAux.get(4), arrayAux.get(5), arrayAux.get(6), arrayAux.get(7),
+						arrayAux.get(8), arrayAux.get(9), arrayAux.get(10), arrayAux.get(11), arrayAux.get(12),
+						arrayAux.get(13), arrayAux.get(14), arrayAux.get(15), arrayAux.get(16), arrayAux.get(17),
+						arrayAux.get(18), arrayAux.get(19), arrayAux.get(20));
+
+			try {
+				mapEscrituracoes.put(escrituracoes.getIdNotaFiscal(), escrituracoes);
+
+			} catch (Exception e) {
+
+			}
 		}
 
+
+		
 	}
 
 }
