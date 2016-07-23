@@ -90,6 +90,14 @@ public class TrataTxts {
 						if (linha.endsWith(";;")){
 							linha = linha.substring(0,  linha.length()-2);
 						}
+						if (linha.endsWith(";")){
+							linha = linha.substring(0,  linha.length()-1);
+						}
+						if (linha.endsWith("\"")){
+							linha = linha.substring(0,  linha.length()-1);
+						}
+						linha = linha.replace("\"\"\"\"", "");
+						linha = linha.replace("\";", "");
 						linhaDefinitiva = new StringBuilder(linhaDefinitiva.toString() + linha);
 						campos = util.splitRegistro(linhaDefinitiva.toString());
 					}
