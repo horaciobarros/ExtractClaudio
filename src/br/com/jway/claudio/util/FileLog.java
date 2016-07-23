@@ -34,7 +34,7 @@ public class FileLog {
 	}
 	
 	private void ativaLog() {
-		file = new File("c:/TEMP/lagoa/zzz_" + fileName + "_err.txt");
+		file = new File("c:/TEMP/claudio/zzz_" + fileName + "_err.txt");
 		try {
 			fw = new FileWriter(file);
 			bw = new BufferedWriter(fw);

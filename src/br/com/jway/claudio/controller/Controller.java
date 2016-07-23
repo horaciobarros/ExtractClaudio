@@ -3,6 +3,7 @@ package br.com.jway.claudio.controller;
 import java.util.List;
 
 import br.com.jway.claudio.service.ExtractorService;
+import br.com.jway.claudio.util.TrataTxts;
 
 /**
  * 
@@ -15,7 +16,7 @@ public class Controller {
 
 	public void importaNfe() {
 
-		int nivelProcessamento = 2;
+		int nivelProcessamento = 1;
 
 		// limpando o banco
 		System.out.println("Limpando o banco...");
