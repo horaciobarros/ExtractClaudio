@@ -262,7 +262,7 @@ public class TrataTxts {
 	public void testa(){
 		String texto = "n,\"O \"\"M\"\"E.\",2";
 		texto = removeAspasIncorretas(texto);
-		System.out.println(texto);
+		//System.out.println(texto);
 	}
 }
 
