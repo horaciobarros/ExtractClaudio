@@ -238,14 +238,14 @@ public class TrataTxts {
 		        builder.setCharAt(currentIndex, ';');
 		    }
 		}
-		System.out.println(builder.toString());
+		//System.out.println(builder.toString());
 		return builder.toString();
 	}
 
 	public void testa(){
 		String texto = "n,\"O \"\"M\"\"E.\",2";
 		texto = removeAspasIncorretas(texto);
-		System.out.println(texto);
+		//System.out.println(texto);
 	}
 }
 

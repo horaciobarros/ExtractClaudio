@@ -49,6 +49,12 @@ public class Controller {
 		// Inï¿½cio
 		System.out.println("Importação de dados de arquivos txt - Início");
 		List<String> dadosList;
+		
+		System.out.println("Lendo serviços");
+		dadosList = extractorService.lerArquivosClaudio("servicos");
+		System.out.println("Gravando servicos");
+		extractorService.processaDadosServicos(dadosList);
+		System.out.println("--- Fim de servicos ---");
 
 		if (nivelProcessamento == 1) {
 			System.out.println("Lendo contribuintes");
@@ -60,11 +66,6 @@ public class Controller {
 		}
 
 		if (nivelProcessamento <= 2) {
-			System.out.println("Lendo serviços");
-			dadosList = extractorService.lerArquivosClaudio("servicos");
-			System.out.println("Gravando servicos");
-			extractorService.processaDadosServicos(dadosList);
-			System.out.println("--- Fim de servicos ---");
 
 			System.out.println("Lendo atividade de contribuintes");
 			dadosList = extractorService.lerArquivosClaudio("cnae_servicos_contribuintes");
@@ -84,9 +85,15 @@ public class Controller {
 		if (nivelProcessamento <= 3) {
 			System.out.println("Lendo escrituracoes");
 			dadosList = extractorService.lerArquivosClaudio("escrituracoes");
-			System.out.println("Gravando escrituracoes");
+			System.out.println("Guardando escrituracoes em Map");
 			extractorService.processaDadosEscrituracoes(dadosList);
 			System.out.println("--- Fim de escrituracoes ---");
+			
+			System.out.println("Lendo Serviços Notas Fiscais");
+			dadosList = extractorService.lerArquivosClaudio("servicos_notas_fiscais");
+			System.out.println("Guardando Serviços Notas Fiscais em Map");
+			extractorService.processaDadosServicosNotasFiscais(dadosList);
+			System.out.println("--- Fim de Serviços Notas fiscais ---");
 			
 			System.out.println("Lendo Notas Fiscais");
 			dadosList = extractorService.lerArquivosClaudio("notas_fiscais");

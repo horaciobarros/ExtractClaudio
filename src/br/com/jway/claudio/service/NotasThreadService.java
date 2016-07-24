@@ -1,6 +1,8 @@
 package br.com.jway.claudio.service;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 import br.com.jway.claudio.dao.GuiasNotasFiscaisDao;
 import br.com.jway.claudio.dao.NotasFiscaisCanceladasDao;
@@ -10,6 +12,8 @@ import br.com.jway.claudio.dao.NotasFiscaisServicosDao;
 import br.com.jway.claudio.dao.NotasFiscaisTomadoresDao;
 import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
 import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
+import br.com.jway.claudio.entidadesOrigem.ServicosNotasFiscaisOrigem;
+import br.com.jway.claudio.entidadesOrigem.ServicosOrigem;
 import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
 import br.com.jway.claudio.model.Guias;
 import br.com.jway.claudio.model.GuiasNotasFiscais;
@@ -44,14 +48,15 @@ public class NotasThreadService implements Runnable {
 	private NotasFiscaisTomadoresDao notasFiscaisTomadoresDao = new NotasFiscaisTomadoresDao();
 	private PrestadoresAtividadesDao prestadoresAtividadesDao = new PrestadoresAtividadesDao();
 	private Pessoa pessoa;
+	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem;
+	private Map<String, ServicosOrigem> mapServicos;
 
-
-	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem dlp, FileLog log, String linha,
+	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
 			String tipoNotaFilha, Guias guia, Tomadores tomadores, Pessoa pessoa) {
 		this.pessoa = pessoa;
 		this.pr = pr;
 		this.nf = nf;
-		this.nfOrigem = dlp;
+		this.nfOrigem = nfOrigem;
 		this.log = log;
 		this.linha = linha;
 		this.tipoNotaFilha = tipoNotaFilha;
@@ -60,26 +65,60 @@ public class NotasThreadService implements Runnable {
 
 	}
 
+	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
+			String tipoNotaFilha, Guias g, Tomadores t, Pessoa pessoa,
+			Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem,
+			Map<String, ServicosOrigem> mapServicos) {
+		this.pessoa = pessoa;
+		this.pr = pr;
+		this.nf = nf;
+		this.nfOrigem = nfOrigem;
+		this.log = log;
+		this.linha = linha;
+		this.tipoNotaFilha = tipoNotaFilha;
+		this.mapServicosNotasFiscaisOrigem = mapServicosNotasFiscaisOrigem;
+		this.mapServicos = mapServicos;
+
+	}
+
 	@Override
 	public void run() {
 		if (tipoNotaFilha.equals("S")) { // serviços
+			NotasFiscaisServicos nfs = new NotasFiscaisServicos();
 			try {
 
-				NotasFiscaisServicos nfs = new NotasFiscaisServicos();
+				List<ServicosNotasFiscaisOrigem> listaItens = mapServicosNotasFiscaisOrigem.get(nfOrigem.getId());
+
 				nfs.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
 				nfs.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
 				nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
-				
-				if (nfs.getItemListaServico() == null || nfs.getItemListaServico().isEmpty()) {
+
+				StringBuilder sbItem = new StringBuilder();
+				if (!listaItens.isEmpty()) {
+					ServicosOrigem servico = mapServicos.get(listaItens.get(0).getIdServico().trim());
+					if (servico != null) {
+						String codigoServico = servico.getCodigo();
+						codigoServico = codigoServico.replaceAll("\\.", "");
+						sbItem.append(codigoServico);
+					}
+				}
+
+				nfs.setItemListaServico(sbItem.toString());
+				if (nfs.getItemListaServico() == null || nfs.getItemListaServico().equals("null") || nfs.getItemListaServico().isEmpty()) {
 					nfs.setItemListaServico("1401");
 				}
+				if (nfs.getItemListaServico().equals("1601a")) {
+					nfs.setItemListaServico("1601");
+				}
+
 				nfs.setDescricao(nfOrigem.getDescricaoDoServico());
-				
+
 				nfs.setAliquota(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getAliquota())));
 				nfs.setValorServico(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 				nfs.setQuantidade(BigDecimal.valueOf(1));
 				nfs.setValorDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
-				nfs.setValorBaseCalculo(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
+				nfs.setValorBaseCalculo(
+						BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 				nfs.setValorIss(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDoIssqnDevido())));
 				nfs.setNotasFiscais(nf);
 				nfs.setValorUnitario(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
@@ -89,6 +128,7 @@ public class NotasThreadService implements Runnable {
 				notasFiscaisServicosDao.save(nfs);
 
 			} catch (Exception e) {
+				System.out.println(nfs.getItemListaServico());
 				e.printStackTrace();
 			}
 		}
@@ -148,7 +188,6 @@ public class NotasThreadService implements Runnable {
 				e.printStackTrace();
 			}
 		}
-
 
 		if (tipoNotaFilha.equals("T") && tomadores != null && tomadores.getId() != null) {
 			try {
