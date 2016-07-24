@@ -105,25 +105,42 @@ public class TrataTxts {
 						if (linha.endsWith("\";;")){
 							linha = linha.substring(0,  linha.length()-3);
 						}
-						if (linha.endsWith(";")){
+						while (linha.endsWith(";")){
 							linha = linha.substring(0,  linha.length()-1);
 						}
 						if (linha.endsWith(",")){
 							linha = linha +" ";
 						}
-						if (linha.contains("\";\"")){
+						while (linha.contains("\";\"")){
 							linha = linha.replace("\";\"", "");
 						}
 						if (arqOrigem.getName().equals("contribuintes.csv")){
-							if (linha.startsWith("\"")){
+							while (linha.startsWith("\"")){
 								linha = linha.substring(1);
 							}
-							if (linha.endsWith("\"")){
+							while (linha.endsWith("\"")){
 								linha = linha.substring(0,linha.length()-1);
+							}
+							
+							if (linha.contains("Blinice Industria, Com")){
+								linha = linha.replace("Blinice Industria, Com", "Blinice Industria - Com");
+							} 
+							if (linha.contains("31,5\"")){
+								linha = linha.replace("31,5\"", "31-5");
+							} else
+							if (linha.contains("KM 41,3")){
+								linha = linha.replace("KM 41,3", "KM 41-3");
+							} else
+							if (linha.contains("ROD MG-260, KM 71,5")){
+								linha = linha.replace("ROD MG-260, KM 71,5", "ROD MG-260 KM 71-5");
+							} else {
+								if (linha.contains("KM")){
+									System.out.println(linha);
+								}
 							}
 						}
 						if (arqOrigem.getName().equals("cnae_servicos_contribuintes.csv")){
-							if (linha.contains("\"\"MINHA CASA MINHA VIDA\"\"")){
+							while (linha.contains("\"\"MINHA CASA MINHA VIDA\"\"")){
 								linha = linha.replace("\"\"MINHA CASA MINHA VIDA\"\"", "MINHA CASA MINHA VIDA");
 							}
 						}
@@ -238,7 +255,7 @@ public class TrataTxts {
 		        builder.setCharAt(currentIndex, ';');
 		    }
 		}
-		System.out.println(builder.toString());
+		//System.out.println(builder.toString());
 		return builder.toString();
 	}
 
