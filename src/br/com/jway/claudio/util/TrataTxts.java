@@ -133,11 +133,7 @@ public class TrataTxts {
 							} else
 							if (linha.contains("ROD MG-260, KM 71,5")){
 								linha = linha.replace("ROD MG-260, KM 71,5", "ROD MG-260 KM 71-5");
-							} else {
-								if (linha.contains("KM")){
-									System.out.println(linha);
-								}
-							}
+							} 
 						}
 						if (arqOrigem.getName().equals("cnae_servicos_contribuintes.csv")){
 							while (linha.contains("\"\"MINHA CASA MINHA VIDA\"\"")){
