@@ -337,7 +337,13 @@ public class ExtractorService {
 			}
 
 			List<String> arrayAux = util.splitRegistro(linha);
-
+			if (arrayAux.size()!=26){
+				System.out.println(linha);
+				continue;
+			}
+			else if (arrayAux.size()!=0){
+				continue;
+			}
 			try {
 				ContribuinteOrigem c = new ContribuinteOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2),
 						arrayAux.get(3), arrayAux.get(4), arrayAux.get(5), arrayAux.get(6), arrayAux.get(7),
@@ -404,13 +410,13 @@ public class ExtractorService {
 
 				} catch (Exception e) {
 					log.fillError(linha, e.getMessage());
-					System.out.println("Prestador não gravado: " + p.getNome());
+					System.out.println("Prestador não gravado: " + p.getNome()+" quatidade de campos: "+arrayAux.size());
 					e.printStackTrace();
 				}
 
 			} catch (Exception e) {
 				log.fillError(linha, e.getMessage());
-				System.out.println("Pessoa não gravada: " + linha);
+				System.out.println("Pessoa não gravada: " + linha+" quatidade de campos: "+arrayAux.size());
 				e.printStackTrace();
 			}
 
@@ -451,9 +457,9 @@ public class ExtractorService {
 				try {
 					PrestadoresAtividades pa = new PrestadoresAtividades();
 					pa.setAliquota(BigDecimal.valueOf(util.corrigeDouble(cnae.getAliquota())));
-					pa.setCodigoAtividade(cnae.getCnaeCodigo());
+					pa.setCodigoAtividade(cnae.getCnaeCodigo().replace("-", "").replace("/", "").substring(0, 5));
 					pa.setIcnaes(cnae.getIdCnae());
-					pa.setIlistaservicos(servico.getCodigo());
+					pa.setIlistaservicos(servico.getCodigo().replace(".", ""));
 					pa.setInscricaoPrestador(pr.getInscricaoPrestador());
 					pa.setPrestadores(pr);
 					prestadoresAtividadesDao.save(pa);
