@@ -75,5 +75,18 @@ public class NotasFiscaisDao {
 		}
 		return null;
 	}
+	
+	public NotasFiscais findById(Long id) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from NotasFiscais nf where id = " + id);
+		List<NotasFiscais> lista = query.list();
+		tx.commit();
+		session.close();
+		if (lista.size() > 0) {
+			return lista.get(0);
+		}
+		return null;
+	}
 
 }

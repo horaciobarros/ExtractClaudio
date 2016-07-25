@@ -76,8 +76,8 @@ public class ExtractorService {
 	public List<String> excluiParaProcessarNivel2() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
 				"NotasFiscaisEmails", "NotasFiscaisObras", "NotasFiscaisPrestadores", "NotasFiscaisServicos",
-				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "Pagamentos", "PrestadoresAtividades",
-				"PrestadoresOptanteSimples", "Guias", "Competencias");
+				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais", "Pagamentos",
+				"PrestadoresAtividades", "PrestadoresOptanteSimples", "Guias", "Competencias");
 
 	}
 
@@ -163,6 +163,7 @@ public class ExtractorService {
 
 				NotasFiscais nf = new NotasFiscais();
 				EscrituracoesOrigem escrituracoes = mapEscrituracoes.get(nfOrigem.getId());
+				nf.setIdOrigem(Long.parseLong(nfOrigem.getId()));
 				nf.setDataHoraEmissao(util.getStringToDateHoursMinutes(nfOrigem.getDataDeCriacao()));
 				nf.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
 				nf.setInscricaoTomador(util.getCpfCnpj(nfOrigem.getCnpjCpfTomador()));
@@ -265,7 +266,8 @@ public class ExtractorService {
 	private void processaDemaisTiposNotas(Prestadores p, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log,
 			String linha, Tomadores t, Pessoa pessoa) {
 		// -- serviços
-		NotasThreadService nfServico = new NotasThreadService(p, nf, nfOrigem, log, linha, "S", null, t, pessoa, mapServicosNotasFiscaisOrigem, mapServicos);
+		NotasThreadService nfServico = new NotasThreadService(p, nf, nfOrigem, log, linha, "S", null, t, pessoa,
+				mapServicosNotasFiscaisOrigem, mapServicos);
 		Thread s = new Thread(nfServico);
 		s.start();
 
@@ -428,6 +430,7 @@ public class ExtractorService {
 
 		FileLog log = new FileLog("cnae_servicos_contribuintes");
 		for (String linha : dadosList) {
+
 			if (linha == null || linha.trim().isEmpty()) {
 				continue;
 			}
@@ -535,6 +538,7 @@ public class ExtractorService {
 				guias.setValorImposto(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValor())));
 
 				guias.setIdGuiaRecolhimento(guiaOrigem.getId());
+				guias.setIdNotasFiscais(guiaOrigem.getIdNotasFiscais());
 				guiasDao.save(guias);
 
 				// pagamentos
@@ -760,7 +764,7 @@ public class ExtractorService {
 
 			try {
 				List<ServicosNotasFiscaisOrigem> list = mapServicosNotasFiscaisOrigem.get(arrayAux.get(0));
-				
+
 				if (list == null) {
 					list = new ArrayList<ServicosNotasFiscaisOrigem>();
 				}
@@ -768,10 +772,36 @@ public class ExtractorService {
 				mapServicosNotasFiscaisOrigem.put(snf.getIdNotaFiscal(), list);
 
 			} catch (Exception e) {
+				e.printStackTrace();
 				log.fillError(linha, e.getMessage());
 			}
 		}
-		
+
+	}
+
+	public void processaDadosGuiasNotasFiscais() {
+
+		FileLog log = new FileLog("guias_notas_fiscais");
+		for (Guias guia : guiasDao.findAll()) {
+			try {
+				if (guia.getIdNotasFiscais() != null && !guia.getIdNotasFiscais().isEmpty()) {
+					String[] lista = guia.getIdNotasFiscais().split(",");
+					for (int i = 0; i < lista.length; i++) {
+						NotasFiscais nf = notasFiscaisDao.findById(Long.parseLong(lista[i]));
+						if (nf != null) {
+							GuiasNotasFiscais gnf = new GuiasNotasFiscais();
+							gnf.setGuias(guia);
+							gnf.setInscricaoPrestador(guia.getInscricaoPrestador()); //
+							gnf.setNumeroGuia(guia.getNumeroGuia());
+							gnf.setNumeroNota(nf.getNumeroNota());
+							guiasNotasFiscaisDao.save(gnf);
+						}
+					}
+				}
+			} catch (Exception e) {
+				log.fillError(guia.toString(), e.getMessage());
+			}
+		}
 	}
 
 }

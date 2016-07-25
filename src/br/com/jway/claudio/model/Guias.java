@@ -17,6 +17,16 @@ import javax.persistence.Table;
 @Table(name = "guias")
 public class Guias implements Serializable {
 
+	@Override
+	public String toString() {
+		return "Guias [id=" + id + ", prestadores=" + prestadores + ", competencias=" + competencias
+				+ ", inscricaoPrestador=" + inscricaoPrestador + ", numeroGuia=" + numeroGuia + ", situacao=" + situacao
+				+ ", dataVencimento=" + dataVencimento + ", valorDesconto=" + valorDesconto + ", valorTaxaExpediente="
+				+ valorTaxaExpediente + ", valorGuia=" + valorGuia + ", valorImposto=" + valorImposto + ", tipo=" + tipo
+				+ ", integrarGuia=" + integrarGuia + ", dhEnvio=" + dhEnvio + ", hash=" + hash + ", idGuiaRecolhimento="
+				+ idGuiaRecolhimento + ", idNotasFiscais=" + idNotasFiscais + "]";
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -70,6 +80,17 @@ public class Guias implements Serializable {
 
 	@Column(name = "id_guia_recolhimento")
 	private String idGuiaRecolhimento;
+	
+	public String getIdNotasFiscais() {
+		return idNotasFiscais;
+	}
+
+	public void setIdNotasFiscais(String idNotasFiscais) {
+		this.idNotasFiscais = idNotasFiscais;
+	}
+
+	@Column(name = "idNotasFiscais")
+	private String idNotasFiscais;
 
 	public String getIdGuiaRecolhimento() {
 		return idGuiaRecolhimento;

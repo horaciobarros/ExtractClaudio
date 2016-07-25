@@ -145,6 +145,17 @@ public class NotasFiscais implements Serializable {
 
 	@Column(name = "situacao_original")
 	private String situacaoOriginal;
+	
+	@Column(name = "id_origem")
+	private Long idOrigem;
+
+	public Long getIdOrigem() {
+		return idOrigem;
+	}
+
+	public void setIdOrigem(Long idOrigem) {
+		this.idOrigem = idOrigem;
+	}
 
 	public String getSituacaoOriginal() {
 		return situacaoOriginal;

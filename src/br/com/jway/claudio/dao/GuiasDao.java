@@ -85,6 +85,18 @@ public class GuiasDao {
 			return null;
 		}
 	}
+	
+	public List<Guias> findAll() {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from Guias g ");
+		List<Guias> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
+	}
+
 
 
 }
