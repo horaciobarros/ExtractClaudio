@@ -244,7 +244,7 @@ public class ExtractorService {
 
 							t = tomadoresDao.save(t);
 						} catch (Exception e) {
-							log.fillError(linha, "Erro Tomadores " + e.getMessage());
+							log.fillError(linha, "Erro Tomadores " , e);
 							e.printStackTrace();
 							t = null;
 						}
@@ -255,7 +255,7 @@ public class ExtractorService {
 				processaDemaisTiposNotas(pr, nf, nfOrigem, log, linha, t, pessoa);
 
 			} catch (Exception e2) {
-				log.fillError(linha, "Erro NotasFiscais " + e2.getMessage());
+				log.fillError(linha, "Erro NotasFiscais ", e2);
 				e2.printStackTrace();
 			}
 
@@ -337,13 +337,6 @@ public class ExtractorService {
 			}
 
 			List<String> arrayAux = util.splitRegistro(linha);
-			if (arrayAux.size()!=26){
-				System.out.println(linha);
-				continue;
-			}
-			else if (arrayAux.size()!=0){
-				continue;
-			}
 			try {
 				ContribuinteOrigem c = new ContribuinteOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2),
 						arrayAux.get(3), arrayAux.get(4), arrayAux.get(5), arrayAux.get(6), arrayAux.get(7),
@@ -363,6 +356,9 @@ public class ExtractorService {
 				p.setInscricaoEstadual(c.getInscricaoEstadual());
 				p.setInscricaoMunicipal(c.getInscricaoMunicipal());
 				p.setMunicipio(c.getCidade());
+				if (util.isEmptyOrNull(c.getCidade())) {
+					c.setCidade("Cláudio");
+				}
 				if (c.getEstado() == null || c.getEstado().isEmpty()) {
 					c.setEstado("MG");
 				} else {
@@ -407,15 +403,15 @@ public class ExtractorService {
 					pr = trataNumerosTelefones(pr);
 					pr = anulaCamposVazios(pr);
 					prestadoresDao.save(pr);
-
+ 
 				} catch (Exception e) {
-					log.fillError(linha, e.getMessage());
+					log.fillError(linha, "Prestador não gravado" , e);
 					System.out.println("Prestador não gravado: " + p.getNome()+" quatidade de campos: "+arrayAux.size());
 					e.printStackTrace();
 				}
 
 			} catch (Exception e) {
-				log.fillError(linha, e.getMessage());
+				log.fillError(linha, "Pessoa não gravada", e);
 				System.out.println("Pessoa não gravada: " + linha+" quatidade de campos: "+arrayAux.size());
 				e.printStackTrace();
 			}
@@ -464,7 +460,7 @@ public class ExtractorService {
 					pa.setPrestadores(pr);
 					prestadoresAtividadesDao.save(pa);
 				} catch (Exception e) {
-					log.fillError(linha, e.getMessage());
+					log.fillError(linha, "Prestadores atividades " , e);
 					e.printStackTrace();
 				}
 
@@ -569,7 +565,7 @@ public class ExtractorService {
 				}
 
 			} catch (Exception e) {
-				log.fillError(linha, e.getMessage());
+				log.fillError(linha, "pagamentos", e);
 				e.printStackTrace();
 			}
 
@@ -631,6 +627,14 @@ public class ExtractorService {
 		if (pessoa.getComplemento() != null && pessoa.getComplemento().trim().isEmpty()) {
 			pessoa.setComplemento(null);
 		}
+		if (util.isEmptyOrNull(pessoa.getEndereco())) {
+			pessoa.setEndereco(null);
+		}
+		if (util.isEmptyOrNull(pessoa.getBairro())) {
+			pessoa.setBairro(null);
+		}
+		
+		
 
 		return pessoa;
 	}
@@ -723,7 +727,7 @@ public class ExtractorService {
 				mapServicos.put(servicos.getId(), servicos);
 
 			} catch (Exception e) {
-				log.fillError(linha, e.getMessage());
+				log.fillError(linha, "serviços", e);
 
 			}
 		}
@@ -749,7 +753,7 @@ public class ExtractorService {
 				mapEscrituracoes.put(escrituracoes.getIdNotaFiscal(), escrituracoes);
 
 			} catch (Exception e) {
-				log.fillError(linha, e.getMessage());
+				log.fillError(linha,"", e);
 
 			}
 		}
@@ -779,7 +783,7 @@ public class ExtractorService {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				log.fillError(linha, e.getMessage());
+				log.fillError(linha, "", e);
 			}
 		}
 
@@ -805,7 +809,7 @@ public class ExtractorService {
 					}
 				}
 			} catch (Exception e) {
-				log.fillError(guia.toString(), e.getMessage());
+				log.fillError(guia.toString(), "guias notas fiscais", e);
 			}
 		}
 	}

@@ -55,27 +55,14 @@ public class FileLog {
 		
 	}
 	
-	public void fillError(String linha, Exception e) {
+	public void fillError(String linha, String msg, Exception e) {
 		String linhaAux = linha.replaceAll("#", "|");
 		try {
-			bw.write("erro --> " + " conteudo da linha:" + linhaAux + "\n" + e);
+			bw.write("erro --> " + msg + " - conteudo da linha:" + linhaAux + "\n" + e.toString());
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 
 	}
-
-	public void fillError(String linha, String msg) {
-		String linhaAux = linha.replaceAll("#", "|");
-		try {
-			bw.write("erro --> " +  msg + linhaAux + "\n");
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
-
-	}
-
-	
-	
 
 }
