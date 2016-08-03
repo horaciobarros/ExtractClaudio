@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.InputMismatchException;
@@ -224,7 +225,7 @@ public class Util {
 	}
 
 	public static void main(String args[]) {
-		System.out.print(new Util().getCpfCnpj("088160670001000"));
+		System.out.print(new Util().getLimpaTelefone("379979909_"));
 	}
 
 	public String getLimpaTelefone(String telefone) {
@@ -234,6 +235,7 @@ public class Util {
 		telefone = telefone.trim();
 		telefone = telefone.replaceAll(" ", "");
 		telefone = telefone.replaceAll("-", "");
+		telefone = telefone.replaceAll("_", "");
 		telefone = telefone.replaceAll("\\(", "");
 		telefone = telefone.replaceAll("\\)", "");
 		if (telefone.length()>=11) {
@@ -298,6 +300,7 @@ public class Util {
 	public String trataCep(String cep) {
 		if (!isEmptyOrNull(cep)) {
 			cep = cep.replaceAll("-", "");
+			cep = cep.replaceAll("_", "");
 			if (cep.length() < 8) {
 				cep = completarZerosDireita(cep, 8);
 				return cep;
@@ -487,7 +490,7 @@ public class Util {
 		    }
 		}
 		List<String> result = Arrays.asList(builder.toString().split(","));
-
+		Collections.replaceAll(result, "\"", "");
 		return result;
 	}
 	
