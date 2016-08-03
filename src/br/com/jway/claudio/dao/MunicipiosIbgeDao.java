@@ -20,8 +20,11 @@ public class MunicipiosIbgeDao  {
 	
 	public String getCodigoIbge(String nomeMunicipio, String uf) {
 		Query query = sessionFactory.openSession()
-				.createQuery("from MunicipiosIbge m  " + " where upper(m.municipio) like '%" + nomeMunicipio.trim().toUpperCase() + "%' "
-						+ " and upper(m.uf) like '%" + uf.trim().toUpperCase() + "%'");
+				.createQuery("from MunicipiosIbge m  where upper(m.municipio) like :nomemun"
+						+ " and upper(m.uf) like :uf")
+		.setParameter("nomemun", "%" + nomeMunicipio.trim().toUpperCase()+ "%")
+		.setParameter("uf", "%" + uf.trim().toUpperCase() + "%");
+		
 
 		try {
 			List<MunicipiosIbge> municipios = query.list();
@@ -38,8 +41,8 @@ public class MunicipiosIbgeDao  {
 
 	public String findUfByCodigoIbge(Long codigo) {
 		Query query = sessionFactory.openSession()
-				.createQuery("from MunicipiosIbge m where m.codigo = " + codigo 
-						);
+				.createQuery("from MunicipiosIbge m where m.codigo = :codigo" 
+						).setParameter("codigo", codigo);
 
 		try {
 			List<MunicipiosIbge> municipios = query.list();

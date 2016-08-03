@@ -21,14 +21,18 @@ public class NotasFiscaisDao {
 
 	public NotasFiscais save(NotasFiscais nf) {
 		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		try {
+		try{
+			session.beginTransaction();
 			session.save(nf);
-		} catch (Exception e) {
-			e.printStackTrace();
+			session.getTransaction().commit();
 		}
-		session.beginTransaction().commit();
-		session.close();
+		catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+		finally{
+			session.close();
+		}
 		return nf;
 	}
 

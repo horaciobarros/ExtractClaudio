@@ -335,7 +335,9 @@ public class ExtractorService {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
 			}
-
+			if (linha.startsWith("9785")){
+				System.out.println(linha);
+			}
 			List<String> arrayAux = util.splitRegistro(linha);
 			try {
 				ContribuinteOrigem c = new ContribuinteOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2),
@@ -347,7 +349,7 @@ public class ExtractorService {
 
 				Pessoa p = new Pessoa();
 				p.setBairro(c.getBairro());
-				p.setCelular(c.getTelefoneCelular());
+				p.setCelular(util.getLimpaTelefone(c.getTelefoneCelular()));
 				p.setCep(util.trataCep(c.getCep().trim()));
 				p.setComplemento(c.getComplemento());
 				p.setEmail(c.getEmail());
@@ -389,7 +391,7 @@ public class ExtractorService {
 				if (p.getTipoPessoa().equals("F")) {
 					p.setSexo("M");
 				}
-				p.setTelefone(c.getTelefone());
+				p.setTelefone(util.getLimpaTelefone(c.getTelefone()));
 				p.setUf(c.getEstado());
 				p = trataNumerosTelefones(p);
 				p = anulaCamposVazios(p);

@@ -29,23 +29,23 @@ public class TrataTxts {
 			switch (arqOrigem.getName()) {
 				case "cnae_servicos_contribuintes.csv":
 					lerArquivo(arqOrigem, 13);
-					lerArquivoCorrigeAspas(arqOrigem, 13);
-					lerArquivo(arqOrigem, 13);
+					//lerArquivoCorrigeAspas(arqOrigem, 13);
+					//lerArquivo(arqOrigem, 13);
 					break;
 				case "contribuintes.csv":
 					lerArquivo(arqOrigem, 26);
-					lerArquivoCorrigeAspas(arqOrigem, 26);
-					lerArquivo(arqOrigem, 26);
+					//lerArquivoCorrigeAspas(arqOrigem, 26);
+					//lerArquivo(arqOrigem, 26);
 					break;
 				case "escrituracoes.csv":
 					lerArquivo(arqOrigem, 21);
-					lerArquivoCorrigeAspas(arqOrigem, 21);
-					lerArquivo(arqOrigem, 21);
+					//lerArquivoCorrigeAspas(arqOrigem, 21);
+					//lerArquivo(arqOrigem, 21);
 					break;
 				case "guias.csv":
 					lerArquivo(arqOrigem, 18);
-					lerArquivoCorrigeAspas(arqOrigem, 18);
-					lerArquivo(arqOrigem, 18);
+					//lerArquivoCorrigeAspas(arqOrigem, 18);
+					//lerArquivo(arqOrigem, 18);
 					break;
 				case "notas_fiscais.csv":
 					lerArquivo(arqOrigem, 50);
@@ -54,23 +54,23 @@ public class TrataTxts {
 					break;
 				case "servicos.csv":
 					lerArquivo(arqOrigem, 6);
-					lerArquivoCorrigeAspas(arqOrigem, 6);
-					lerArquivo(arqOrigem, 6);
+					//lerArquivoCorrigeAspas(arqOrigem, 6);
+					//lerArquivo(arqOrigem, 6);
 					break;
 				case "servicos_escrituracoes.csv":
 					lerArquivo(arqOrigem, 6);
-					lerArquivoCorrigeAspas(arqOrigem, 6);
-					lerArquivo(arqOrigem, 6);
+					//lerArquivoCorrigeAspas(arqOrigem, 6);
+					//lerArquivo(arqOrigem, 6);
 					break;
 				case "servicos_notas_fiscais.csv":
 					lerArquivo(arqOrigem, 6);
-					lerArquivoCorrigeAspas(arqOrigem, 6);
-					lerArquivo(arqOrigem, 6);
+					//lerArquivoCorrigeAspas(arqOrigem, 6);
+					//lerArquivo(arqOrigem, 6);
 					break;
 				case "solicitacoes.csv":
 					lerArquivo(arqOrigem, 10);
-					lerArquivoCorrigeAspas(arqOrigem, 10);
-					lerArquivo(arqOrigem, 10);
+					//lerArquivoCorrigeAspas(arqOrigem, 10);
+					//lerArquivo(arqOrigem, 10);
 					break;
 					
 				default:
@@ -121,19 +121,7 @@ public class TrataTxts {
 							while (linha.endsWith("\"")){
 								linha = linha.substring(0,linha.length()-1);
 							}
-							
-							if (linha.contains("Blinice Industria, Com")){
-								linha = linha.replace("Blinice Industria, Com", "Blinice Industria - Com");
-							} 
-							if (linha.contains("31,5\"")){
-								linha = linha.replace("31,5\"", "31-5");
-							} else
-							if (linha.contains("KM 41,3")){
-								linha = linha.replace("KM 41,3", "KM 41-3");
-							} else
-							if (linha.contains("ROD MG-260, KM 71,5")){
-								linha = linha.replace("ROD MG-260, KM 71,5", "ROD MG-260 KM 71-5");
-							} 
+
 						}
 						if (arqOrigem.getName().equals("cnae_servicos_contribuintes.csv")){
 							while (linha.contains("\"\"MINHA CASA MINHA VIDA\"\"")){

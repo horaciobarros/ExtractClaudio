@@ -224,7 +224,7 @@ public class Util {
 	}
 
 	public static void main(String args[]) {
-		new Util().getDecimoDiaMesPosterior(new Date());
+		System.out.print(new Util().getCpfCnpj("088160670001000"));
 	}
 
 	public String getLimpaTelefone(String telefone) {
@@ -237,7 +237,7 @@ public class Util {
 		telefone = telefone.replaceAll("\\(", "");
 		telefone = telefone.replaceAll("\\)", "");
 		if (telefone.length()>=11) {
-			telefone = telefone.substring(0,9);
+			telefone = telefone.substring(0,11);
 		}
 		return telefone.trim();
 	}
@@ -370,10 +370,12 @@ public class Util {
 	}
 
 	public String getCpfCnpj(String cpfCnpj) {
+		if (cpfCnpj.length()==15 && cpfCnpj.endsWith("0")){cpfCnpj = cpfCnpj.substring(0,14);}
+		if (cpfCnpj.equals("093819000000109")){cpfCnpj = "09381900000109";}
 		cpfCnpj = cpfCnpj.replaceAll("\\.","");
 		cpfCnpj = cpfCnpj.replaceAll("-","");
 		cpfCnpj = cpfCnpj.replaceAll("/","");
-		return cpfCnpj;
+		return cpfCnpj.trim();
 	}
 
 	public static boolean validarCpf(String cpf) {
