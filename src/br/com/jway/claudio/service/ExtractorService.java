@@ -349,10 +349,14 @@ public class ExtractorService {
 				p.setBairro(c.getBairro());
 				p.setCelular(c.getTelefoneCelular());
 				p.setCep(util.trataCep(c.getCep().trim()));
-				p.setCnpjCpf(util.getCpfCnpj(c.getCpfCnpj()));
 				p.setComplemento(c.getComplemento());
 				p.setEmail(c.getEmail());
-				p.setEndereco(c.getLogradouro());
+				if (c.getLogradouro().trim().length() > 50) {
+					p.setEndereco(util.trataEndereco(c.getLogradouro()));
+				} else {
+					p.setEndereco(c.getLogradouro());
+				}
+				
 				p.setInscricaoEstadual(c.getInscricaoEstadual());
 				p.setInscricaoMunicipal(c.getInscricaoMunicipal());
 				p.setMunicipio(c.getCidade());
@@ -376,8 +380,9 @@ public class ExtractorService {
 				p.setNomeFantasia(c.getNomeFantasia());
 				p.setNumero(c.getNumero());
 				p.setPessoaId(Long.valueOf(c.getId().replace("\"", "")));
+				p.setCnpjCpf(util.getCpfCnpj(c.getCpfCnpj()));
 				try {
-					p.setTipoPessoa(util.getTipoPessoa(c.getCpfCnpj().trim()));
+					p.setTipoPessoa(util.getTipoPessoa(p.getCnpjCpf().trim()));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

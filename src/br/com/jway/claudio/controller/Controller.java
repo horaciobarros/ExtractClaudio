@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.jway.claudio.service.ExtractorService;
 import br.com.jway.claudio.util.TrataTxts;
+import br.com.jway.claudio.util.Util;
 
 /**
  * 
@@ -47,7 +48,7 @@ public class Controller {
 
 
 		// Inï¿½cio
-		System.out.println("Importação de dados de arquivos txt - Início");
+		System.out.println("Importação de dados de arquivos txt - Início: " + Util.getDataHoraAtual());
 		List<String> dadosList;
 		
 		System.out.println("Lendo serviços");
@@ -113,7 +114,7 @@ public class Controller {
 		}
 		
 
-		System.out.println("--- Processo encerrado. Registros gravados: ");
+		System.out.println("--- Processo encerrado. " + Util.getDataHoraAtual() + " Registros gravados: ");
 
 		for (String nomeEntidade : entidades) {
 			try {

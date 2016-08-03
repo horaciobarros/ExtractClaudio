@@ -511,12 +511,36 @@ public class Util {
 		catch(Exception e){}
 		try{
 			if (obj!=null){
-				valor = Double.valueOf((Integer) obj);
+			 	valor = Double.valueOf((Integer) obj);
 			}
 		}
 		catch(Exception e){}
 		
 		return valor;
+	}
+
+	public String trataEndereco(String logradouro) {
+		
+		String logradouroAux = logradouro.replaceAll("\\.","");
+		logradouroAux = logradouroAux.replaceAll(",","");
+		logradouroAux = logradouroAux.replaceAll("-","");
+		logradouroAux = logradouroAux.replaceAll("Rua","R.");
+		logradouroAux = logradouroAux.replaceAll("\"","");
+		if (!logradouroAux.isEmpty()) {
+			if (logradouroAux.length() > 50) {
+				logradouroAux = logradouroAux.substring(0,50);
+			}
+			logradouro = logradouroAux;
+ 		}
+		return logradouro;
+	}
+	
+	public static String getDataHoraAtual() {
+		Calendar calendar = new GregorianCalendar();
+		SimpleDateFormat out = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+		Date date = new Date();
+		calendar.setTime(date);
+		return (out.format(calendar.getTime()));
 	}
 
 }
