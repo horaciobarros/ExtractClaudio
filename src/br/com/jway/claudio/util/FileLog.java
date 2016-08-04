@@ -60,7 +60,12 @@ public class FileLog {
 		try {
 			bw.write("erro --> " + msg + " Motivo: "+ e.getLocalizedMessage()+" - "+e.getCause().getMessage()+" - conteudo da linha: " + linhaAux + "\n" );
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			//e1.printStackTrace();
+			try {
+				bw.write("erro --> " + msg + " Motivo: "+ e.getMessage()+" - conteudo da linha: " + linhaAux + "\n" );
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
 		}
 
 	}

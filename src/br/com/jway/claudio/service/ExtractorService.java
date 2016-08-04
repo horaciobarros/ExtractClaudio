@@ -214,11 +214,9 @@ public class ExtractorService {
 				// tomadores
 				Tomadores t = null;
 
-				if (!util.isEmptyOrNull(nf.getInscricaoTomador())
-						&& !util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())) {
-					Pessoa pessoaTomador = pessoaDao.findByCnpjCpf(util.getCpfCnpj(nfOrigem.getCnpjCpfTomador()));
+				if (!util.isEmptyOrNull(nf.getInscricaoTomador())&& !util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())) {
 					t = tomadoresDao.findByInscricao(nf.getInscricaoTomador(), nf.getInscricaoPrestador());
-					if ((t == null || t.getId() == null) && pessoaTomador != null) {
+					if (t == null || t.getId() == null) {
 						try {
 							t = new Tomadores();
 							t.setOptanteSimples(util.getOptantePeloSimplesNacional("N"));
@@ -226,23 +224,20 @@ public class ExtractorService {
 							t.setNomeFantasia(nfOrigem.getRazaoSocialTomador());
 							t.setPrestadores(nf.getPrestadores());
 							t.setTipoPessoa(util.getTipoPessoa(nf.getInscricaoTomador()));
-							t.setInscricaoTomador(nf.getInscricaoTomador());
-							t.setBairro(pessoaTomador.getBairro());
-							t.setCep(util.trataCep(pessoaTomador.getCep()));
-							t.setComplemento(pessoaTomador.getComplemento());
-							t.setEmail(util.trataEmail(nfOrigem.getEmailTomador()));
-							t.setEndereco(pessoaTomador.getEndereco());
+							t.setInscricaoTomador(nf.getInscricaoTomador());						
 							t.setInscricaoEstadual(nfOrigem.getInscricaoEstadualTomador());
 							t.setInscricaoMunicipal(nfOrigem.getInscricaoMunicipalTomador());
-							t.setMunicipio(pessoaTomador.getMunicipio());
 							t.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefoneTomador().trim()));
-							try {
-								t.setMunicipioIbge(Long.valueOf(municipiosIbgeDao
-										.getCodigoIbge(pessoaTomador.getMunicipio(), pessoaTomador.getUf())));
-							} catch (Exception e) {
-
-							}
-
+							t.setEmail(util.trataEmail(nfOrigem.getEmailTomador()));
+							
+							// Conferir se informações não existem mesmo
+							t.setBairro(null);
+							t.setCep(null);
+							t.setComplemento(null);
+							t.setEndereco(null);
+							t.setMunicipio(null);
+							t.setMunicipioIbge(null);
+							
 							trataNumerosTelefones(t);
 							anulaCamposVazios(t);
 
@@ -459,7 +454,7 @@ public class ExtractorService {
 				Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
 				Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
 				ServicosOrigem servico = mapServicos.get(cnae.getIdServico());
-
+				if (true){};
 				try {
 					PrestadoresAtividades pa = new PrestadoresAtividades();
 					pa.setAliquota(BigDecimal.valueOf(util.corrigeDouble(cnae.getAliquota())));
@@ -652,11 +647,7 @@ public class ExtractorService {
 		}
 		if (util.isEmptyOrNull(pessoa.getNomeFantasia())){
 			pessoa.setNomeFantasia(null);
-		}
-		if (util.isEmptyOrNull(pessoa.getInscricaoMunicipal())){
-			pessoa.setInscricaoMunicipal(null);
-		}
-		
+		}		
 
 		return pessoa;
 	}
