@@ -173,7 +173,9 @@ public class ExtractorService {
 				nf.setInscricaoTomador(util.getCpfCnpj(nfOrigem.getCnpjCpfTomador()));
 				nf.setNaturezaOperacao(nfOrigem.getNaturezaDaOperacao());
 				nf.setNomePrestador(nfOrigem.getRazaoSocialPrestador());
-				nf.setNomeTomador(nfOrigem.getRazaoSocialTomador());
+				if (!util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())){
+					nf.setNomeTomador(nfOrigem.getRazaoSocialTomador());
+				}
 				nf.setNumeroNota(Long.valueOf(escrituracoes.getNumeroNotaFiscal()));
 				nf.setOptanteSimples("N"); // // TODO resolver
 				nf.setPrestadores(pr);
@@ -196,7 +198,7 @@ public class ExtractorService {
 						BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 				nf.setValorTotalDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
 				nf.setServicoPrestadoForaPais("N");
-				nf.setDataHoraRps(nf.getDataHoraEmissao());
+				//nf.setDataHoraRps(nf.getDataHoraEmissao());
 				List<BigDecimal> lista = Arrays.asList(nf.getValorCofins(), nf.getValorCsll(), nf.getValorInss(),
 						nf.getValorIr());
 				BigDecimal descontos = util.getSumOfBigDecimal(lista);
@@ -350,7 +352,10 @@ public class ExtractorService {
 				p.setCelular(util.getLimpaTelefone(c.getTelefoneCelular()));
 				p.setCep(util.trataCep(c.getCep().trim()));
 				p.setComplemento(c.getComplemento());
-				p.setEmail(c.getEmail());
+				
+				if (Util.validarEmail(c.getEmail())){
+					p.setEmail(c.getEmail());
+				}
 				if (c.getLogradouro().trim().length() > 50) {
 					p.setEndereco(util.trataEndereco(c.getLogradouro()));
 				} else {
@@ -400,7 +405,9 @@ public class ExtractorService {
 					Prestadores pr = new Prestadores();
 					pr.setAutorizado("N");pr.setMotivo("Solicitar cadastro");
 					pr.setCelular(p.getCelular());
-					pr.setEmail(p.getEmail());
+					if (Util.validarEmail(p.getEmail())){
+						pr.setEmail(p.getEmail());
+					}
 					pr.setInscricaoMunicipal(p.getInscricaoMunicipal());
 					pr.setInscricaoPrestador(p.getCnpjCpf());
 					pr.setTelefone(p.getTelefone());
