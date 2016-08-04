@@ -556,7 +556,7 @@ public class ExtractorService {
 				guias.setValorImposto(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValor())));
 
 				guias.setIdGuiaRecolhimento(guiaOrigem.getId());
-				guias.setIdNotasFiscais(guiaOrigem.getIdNotasFiscais());
+				//guias.setIdNotasFiscais(guiaOrigem.getIdNotasFiscais());
 				guiasDao.save(guias);
 
 				// pagamentos
