@@ -103,7 +103,7 @@ public class NotasThreadService implements Runnable {
 					}
 				}
 
-				nfs.setItemListaServico(sbItem.toString());
+				nfs.setItemListaServico(util.completarZerosEsquerda(sbItem.toString(), 4));
 				if (nfs.getItemListaServico() == null || nfs.getItemListaServico().equals("null") || nfs.getItemListaServico().isEmpty()) {
 					nfs.setItemListaServico("1401");
 				}
@@ -183,7 +183,7 @@ public class NotasThreadService implements Runnable {
 				nfp.setOptanteSimples("N"); // TODO resolver
 				nfp.setTipoPessoa(util.getTipoPessoa(nfOrigem.getCpfCnpjPrestador()));
 				notasFiscaisPrestadoresDao.save(nfp);
-
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

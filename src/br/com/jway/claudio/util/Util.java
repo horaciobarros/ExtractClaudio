@@ -1,5 +1,6 @@
 package br.com.jway.claudio.util;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -546,6 +547,15 @@ public class Util {
 		Date date = new Date();
 		calendar.setTime(date);
 		return (out.format(calendar.getTime()));
+	}
+	
+	public static void desligarComputador() {
+		try {
+			Runtime.getRuntime().exec("shutdown -s -t 480");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

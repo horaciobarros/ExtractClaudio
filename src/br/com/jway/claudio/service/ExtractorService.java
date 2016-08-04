@@ -339,9 +339,6 @@ public class ExtractorService {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
 			}
-			if (linha.startsWith("9785")){
-				System.out.println(linha);
-			}
 			List<String> arrayAux = util.splitRegistro(linha);
 			try {
 				ContribuinteOrigem c = new ContribuinteOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2),
@@ -352,7 +349,9 @@ public class ExtractorService {
 						arrayAux.get(23), arrayAux.get(24), arrayAux.get(25));
 
 				Pessoa p = new Pessoa();
-				p.setBairro(c.getBairro());
+				String bairro = c.getBairro();
+				if (bairro.length()>50){bairro = bairro.substring(0,50);}
+				p.setBairro(bairro);
 				p.setCelular(util.getLimpaTelefone(c.getTelefoneCelular()));
 				p.setCep(util.trataCep(c.getCep().trim()));
 				p.setComplemento(c.getComplemento());
@@ -404,7 +403,7 @@ public class ExtractorService {
 				try {
 
 					Prestadores pr = new Prestadores();
-					pr.setAutorizado("N");
+					pr.setAutorizado("N");pr.setMotivo("Solicitar cadastro");
 					pr.setCelular(p.getCelular());
 					pr.setEmail(p.getEmail());
 					pr.setInscricaoMunicipal(p.getInscricaoMunicipal());
@@ -466,7 +465,7 @@ public class ExtractorService {
 					pa.setAliquota(BigDecimal.valueOf(util.corrigeDouble(cnae.getAliquota())));
 					pa.setCodigoAtividade(cnae.getCnaeCodigo().replace("-", "").replace("/", "").substring(0, 5));
 					pa.setIcnaes(cnae.getIdCnae());
-					pa.setIlistaservicos(servico.getCodigo().replace(".", ""));
+					pa.setIlistaservicos(servico.getCodigo().replace(".", "").replace("a", "").replace("b", ""));
 					pa.setInscricaoPrestador(pr.getInscricaoPrestador());
 					pa.setPrestadores(pr);
 					prestadoresAtividadesDao.save(pa);
@@ -648,7 +647,15 @@ public class ExtractorService {
 		if (util.isEmptyOrNull(pessoa.getBairro())) {
 			pessoa.setBairro(null);
 		}
-		
+		if (util.isEmptyOrNull(pessoa.getNome())){
+			pessoa.setNome(null);
+		}
+		if (util.isEmptyOrNull(pessoa.getNomeFantasia())){
+			pessoa.setNomeFantasia(null);
+		}
+		if (util.isEmptyOrNull(pessoa.getInscricaoMunicipal())){
+			pessoa.setInscricaoMunicipal(null);
+		}
 		
 
 		return pessoa;

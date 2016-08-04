@@ -123,6 +123,7 @@ public class Controller {
 				e.printStackTrace();
 			}
 		}
+		//Util.desligarComputador();
 
 	}
 
