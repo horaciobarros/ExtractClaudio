@@ -147,6 +147,10 @@ public class ExtractorService {
 						arrayAux.get(38), arrayAux.get(39), arrayAux.get(40), arrayAux.get(41), arrayAux.get(42),
 						arrayAux.get(43), arrayAux.get(44), arrayAux.get(45), arrayAux.get(46), arrayAux.get(47),
 						arrayAux.get(48), arrayAux.get(49));
+				
+				if (nfOrigem.getNotaFiscalAvulsa().equalsIgnoreCase("t")) { // não migrar
+					continue;
+				}
 
 				String inscricaoPrestador = util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador().trim());
 				Prestadores pr = prestadoresDao.findByInscricao(inscricaoPrestador);
@@ -498,6 +502,10 @@ public class ExtractorService {
 					arrayAux.get(4), arrayAux.get(5), arrayAux.get(6), arrayAux.get(7), arrayAux.get(8),
 					arrayAux.get(9), arrayAux.get(10), arrayAux.get(11), arrayAux.get(12), arrayAux.get(13),
 					arrayAux.get(14), arrayAux.get(15), arrayAux.get(16), arrayAux.get(17));
+			
+			if (guiaOrigem.getNotaFiscalAvulsa().equalsIgnoreCase("t")) {
+				continue;
+			}
 
 			String descricao = util.getNomeMes(guiaOrigem.getCompetencia().substring(5, 7)) + "/"
 					+ guiaOrigem.getCompetencia().substring(0, 4);
