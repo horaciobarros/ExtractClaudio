@@ -53,14 +53,10 @@ public class ExtractorService {
 	private NotasFiscaisDao notasFiscaisDao = new NotasFiscaisDao();
 	private PagamentosDao pagamentosDao = new PagamentosDao();
 	private PrestadoresAtividadesDao prestadoresAtividadesDao = new PrestadoresAtividadesDao();
-	private PrestadoresOptanteSimplesDao prestadoresOptanteSimplesDao = new PrestadoresOptanteSimplesDao();
-	private Map<String, Tomadores> mapTomadores = new Hashtable<String, Tomadores>();
-	private Map<String, Prestadores> mapPrestadores = new Hashtable<String, Prestadores>();
 	private MunicipiosIbgeDao municipiosIbgeDao = new MunicipiosIbgeDao();
 	private PessoaDao pessoaDao = new PessoaDao();
 	private GuiasNotasFiscaisDao guiasNotasFiscaisDao = new GuiasNotasFiscaisDao();
 	private Map<String, ServicosOrigem> mapServicos = new Hashtable<String, ServicosOrigem>();
-	private BufferedWriter bw;
 	private Map<String, EscrituracoesOrigem> mapEscrituracoes = new Hashtable<String, EscrituracoesOrigem>();
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem = new Hashtable<String, List<ServicosNotasFiscaisOrigem>>();
 
