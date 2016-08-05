@@ -77,7 +77,7 @@ public class ExtractorService {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
 				"NotasFiscaisEmails", "NotasFiscaisObras", "NotasFiscaisPrestadores", "NotasFiscaisServicos",
 				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais", "Pagamentos",
-				"PrestadoresAtividades", "PrestadoresOptanteSimples", "Guias", "Competencias");
+				"PrestadoresAtividades", "PrestadoresOptanteSimples", "Guias", "Competencias", "Prestadores");
 
 	}
 
@@ -170,12 +170,33 @@ public class ExtractorService {
 				nf.setIdOrigem(Long.parseLong(nfOrigem.getId()));
 				nf.setDataHoraEmissao(util.getStringToDateHoursMinutes(nfOrigem.getDataDeCriacao()));
 				nf.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
-				nf.setInscricaoTomador(util.getCpfCnpj(nfOrigem.getCnpjCpfTomador()));
+				
+				if ("F".equals(util.getTipoPessoa(nfOrigem.getCnpjCpfTomador()))) {
+					if (Util.validarCpf(nfOrigem.getCnpjCpfTomador())) {
+						nf.setInscricaoTomador(nfOrigem.getCnpjCpfTomador());
+						if (!util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())){
+							nf.setNomeTomador(nfOrigem.getRazaoSocialTomador());
+						}
+						else{
+							nf.setNomeTomador("Não informado");
+						}
+					}
+				} else if ("J".equals(util.getTipoPessoa(nfOrigem.getCnpjCpfTomador()))) {
+					if (Util.validarCnpj(nfOrigem.getCnpjCpfTomador())) {
+						nf.setInscricaoTomador(nfOrigem.getCnpjCpfTomador());
+						if (!util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())){
+							nf.setNomeTomador(nfOrigem.getRazaoSocialTomador());
+						}
+						else{
+							nf.setNomeTomador("Não informado");
+						}
+					}
+				}
+				
+
 				nf.setNaturezaOperacao(nfOrigem.getNaturezaDaOperacao());
 				nf.setNomePrestador(nfOrigem.getRazaoSocialPrestador());
-				if (!util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())){
-					nf.setNomeTomador(nfOrigem.getRazaoSocialTomador());
-				}
+
 				nf.setNumeroNota(Long.valueOf(escrituracoes.getNumeroNotaFiscal()));
 				nf.setOptanteSimples("N"); // // TODO resolver
 				nf.setPrestadores(pr);
@@ -226,7 +247,7 @@ public class ExtractorService {
 							t.setNomeFantasia(nfOrigem.getRazaoSocialTomador());
 							t.setPrestadores(nf.getPrestadores());
 							t.setTipoPessoa(util.getTipoPessoa(nf.getInscricaoTomador()));
-							t.setInscricaoTomador(nf.getInscricaoTomador());						
+							t.setInscricaoTomador(nf.getInscricaoTomador().replace(" ", ""));						
 							t.setInscricaoEstadual(nfOrigem.getInscricaoEstadualTomador());
 							t.setInscricaoMunicipal(nfOrigem.getInscricaoMunicipalTomador());
 							t.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefoneTomador().trim()));
@@ -353,8 +374,8 @@ public class ExtractorService {
 				p.setCep(util.trataCep(c.getCep().trim()));
 				p.setComplemento(c.getComplemento());
 				
-				if (Util.validarEmail(c.getEmail())){
-					p.setEmail(c.getEmail());
+				if (Util.validarEmail(util.trataEmail(c.getEmail()))){
+					p.setEmail(util.trataEmail(c.getEmail()));
 				}
 				if (c.getLogradouro().trim().length() > 50) {
 					p.setEndereco(util.trataEndereco(c.getLogradouro()));
@@ -405,8 +426,8 @@ public class ExtractorService {
 					Prestadores pr = new Prestadores();
 					pr.setAutorizado("N");pr.setMotivo("Solicitar cadastro");
 					pr.setCelular(p.getCelular());
-					if (Util.validarEmail(p.getEmail())){
-						pr.setEmail(p.getEmail());
+					if (Util.validarEmail(util.trataEmail(p.getEmail()))){
+						pr.setEmail(util.trataEmail(p.getEmail()).replace(".@", "@"));
 					}
 					pr.setInscricaoMunicipal(p.getInscricaoMunicipal());
 					pr.setInscricaoPrestador(p.getCnpjCpf());
@@ -461,13 +482,13 @@ public class ExtractorService {
 				Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
 				Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
 				ServicosOrigem servico = mapServicos.get(cnae.getIdServico());
-				if (true){};
+				
 				try {
 					PrestadoresAtividades pa = new PrestadoresAtividades();
 					pa.setAliquota(BigDecimal.valueOf(util.corrigeDouble(cnae.getAliquota())));
 					pa.setCodigoAtividade(cnae.getCnaeCodigo().replace("-", "").replace("/", "").substring(0, 5));
-					pa.setIcnaes(cnae.getIdCnae());
-					pa.setIlistaservicos(servico.getCodigo().replace(".", "").replace("a", "").replace("b", ""));
+					pa.setIcnaes(cnae.getCnaeCodigo().replace("-", "").replace("/", ""));
+					pa.setIlistaservicos(util.completarZerosEsquerda(servico.getCodigo().replace(".", "").replace("a", "").replace("b", ""), 4));
 					pa.setInscricaoPrestador(pr.getInscricaoPrestador());
 					pa.setPrestadores(pr);
 					prestadoresAtividadesDao.save(pa);

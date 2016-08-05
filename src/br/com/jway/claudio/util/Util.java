@@ -230,8 +230,8 @@ public class Util {
 	}
 
 	public String getLimpaTelefone(String telefone) {
-		if (telefone == null) {
-			return telefone;
+		if (telefone == null || telefone.isEmpty()) {
+			return null;
 		}
 		telefone = telefone.trim();
 		telefone = telefone.replaceAll(" ", "");

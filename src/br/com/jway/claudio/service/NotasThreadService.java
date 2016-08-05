@@ -152,10 +152,10 @@ public class NotasThreadService implements Runnable {
 			}
 		}
 
-		if (tipoNotaFilha.equals("E") && pr.getEmail() != null && !pr.getEmail().isEmpty()) { // email
+		if (tipoNotaFilha.equals("E") && pr.getEmail() != null && !pr.getEmail().isEmpty() && Util.validarEmail(util.trataEmail(pr.getEmail()))) { // email
 			try {
 				NotasFiscaisEmails nfe = new NotasFiscaisEmails();
-				nfe.setEmail(pr.getEmail());
+				nfe.setEmail(util.trataEmail(pr.getEmail()));
 				nfe.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
 				nfe.setNotasFiscais(nf);
 				nfe.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
@@ -169,10 +169,10 @@ public class NotasThreadService implements Runnable {
 			try {
 				NotasFiscaisPrestadores nfp = new NotasFiscaisPrestadores();
 				nfp.setBairro(pessoa.getBairro());
-				nfp.setCelular(util.getLimpaTelefone(nfOrigem.getTelefonePrestador()));
+				nfp.setCelular(util.getLimpaTelefone(pessoa.getCelular()));
 				nfp.setCep(pessoa.getCep());
 				nfp.setComplemento(pessoa.getComplemento());
-				nfp.setEmail(pr.getEmail());
+				nfp.setEmail(util.trataEmail(pr.getEmail()));
 				nfp.setEndereco(pessoa.getEndereco());
 				nfp.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
 				nfp.setNome(nfOrigem.getRazaoSocialPrestador());
@@ -182,6 +182,7 @@ public class NotasThreadService implements Runnable {
 				nfp.setNumeroNota(nf.getNumeroNota());
 				nfp.setOptanteSimples("N"); // TODO resolver
 				nfp.setTipoPessoa(util.getTipoPessoa(nfOrigem.getCpfCnpjPrestador()));
+				nfp.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefonePrestador()));
 				notasFiscaisPrestadoresDao.save(nfp);
 				
 			} catch (Exception e) {

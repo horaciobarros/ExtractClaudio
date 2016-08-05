@@ -6,8 +6,8 @@ public class CnaeServicosContribuinte {
 	private String principal;
 	private String idContribuinte;
 	private String idServico;
-	private String servicoCodigo;
-	private String servico;
+	private String servicoIdCodigo;
+	private String servicoId;
 	private String idCnae;
 	private String cnaeCodigo;
 	private String cnae;
@@ -40,16 +40,16 @@ public class CnaeServicosContribuinte {
 		this.idServico = idServico;
 	}
 	public String getServicoCodigo() {
-		return servicoCodigo;
+		return servicoIdCodigo;
 	}
-	public void setServicoCodigo(String servicoCodigo) {
-		this.servicoCodigo = servicoCodigo;
+	public void setServicoCodigo(String servicoIdCodigo) {
+		this.servicoIdCodigo = servicoIdCodigo;
 	}
 	public String getServico() {
-		return servico;
+		return servicoId;
 	}
-	public void setServico(String servico) {
-		this.servico = servico;
+	public void setServico(String servicoId) {
+		this.servicoId = servicoId;
 	}
 	public String getIdCnae() {
 		return idCnae;
@@ -94,15 +94,15 @@ public class CnaeServicosContribuinte {
 		this.dataDeCriacao = dataDeCriacao;
 	}
 	public CnaeServicosContribuinte(String id, String principal, String idContribuinte, String idServico,
-			String servicoCodigo, String servico, String idCnae, String cnaeCodigo, String cnae, String aliquota,
+			String servicoIdCodigo, String servicoId, String idCnae, String cnaeCodigo, String cnae, String aliquota,
 			String tipoDaAliquota, String textoDaLegislacao, String dataDeCriacao) {
 		super();
 		this.id = id;
 		this.principal = principal;
 		this.idContribuinte = idContribuinte;
 		this.idServico = idServico;
-		this.servicoCodigo = servicoCodigo;
-		this.servico = servico;
+		this.servicoIdCodigo = servicoIdCodigo;
+		this.servicoId = servicoId;
 		this.idCnae = idCnae;
 		this.cnaeCodigo = cnaeCodigo;
 		this.cnae = cnae;
