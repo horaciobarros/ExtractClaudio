@@ -73,7 +73,7 @@ public class ExtractorService {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
 				"NotasFiscaisEmails", "NotasFiscaisObras", "NotasFiscaisPrestadores", "NotasFiscaisServicos",
 				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais", "Pagamentos",
-				"PrestadoresAtividades", "PrestadoresOptanteSimples", "Guias", "Competencias", "Prestadores");
+				"PrestadoresAtividades", "PrestadoresOptanteSimples", "Guias", "Competencias");
 
 	}
 
@@ -477,7 +477,7 @@ public class ExtractorService {
 
 				Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
 				Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
-				ServicosOrigem servico = mapServicos.get(cnae.getIdServico());
+				ServicosOrigem servico = mapServicos.get(cnae.getServicoCodigo());
 				
 				try {
 					PrestadoresAtividades pa = new PrestadoresAtividades();
@@ -761,7 +761,7 @@ public class ExtractorService {
 					arrayAux.get(3), arrayAux.get(4), arrayAux.get(5));
 
 			try {
-				mapServicos.put(servicos.getId(), servicos);
+				mapServicos.put(servicos.getCodigo(), servicos);
 
 			} catch (Exception e) {
 				log.fillError(linha, "serviços", e);
