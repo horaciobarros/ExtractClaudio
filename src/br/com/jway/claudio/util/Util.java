@@ -164,6 +164,7 @@ public class Util {
 	}
 
 	public String getTipoPessoa(String inscricao) {
+		if (inscricao == null ){return "";}
 		return (inscricao.trim().length() == 11 ? "F" : "J");
 	}
 
@@ -377,11 +378,15 @@ public class Util {
 	}
 
 	public String getCpfCnpj(String cpfCnpj) {
+		if (cpfCnpj == null || cpfCnpj.trim().isEmpty()){
+			return null;
+		}
 		if (cpfCnpj.length()==15 && cpfCnpj.endsWith("0")){cpfCnpj = cpfCnpj.substring(0,14);}
 		if (cpfCnpj.equals("093819000000109")){cpfCnpj = "09381900000109";}
 		cpfCnpj = cpfCnpj.replaceAll("\\.","");
 		cpfCnpj = cpfCnpj.replaceAll("-","");
 		cpfCnpj = cpfCnpj.replaceAll("/","");
+		cpfCnpj = cpfCnpj.replaceAll(" ","");
 		return cpfCnpj.trim();
 	}
 
