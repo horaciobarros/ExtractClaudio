@@ -146,6 +146,40 @@ public class NotasFiscais implements Serializable {
 	@Column(name = "situacao_original")
 	private String situacaoOriginal;
 	
+	@Column(name = "id_nota_fiscal_substituida")
+	private String idNotaFiscalSubstituida;
+	
+	@Column(name = "escrituracao_tipo_da_nota_fiscal")
+	private String escrituracaoTipoDaNotafiscal;
+	
+	@Column(name = "escrituracao_situacao")
+	private String escrituracaoSituacao;
+	
+	
+	public String getIdNotaFiscalSubstituida() {
+		return idNotaFiscalSubstituida;
+	}
+
+	public void setIdNotaFiscalSubstituida(String idNotaFiscalSubstituida) {
+		this.idNotaFiscalSubstituida = idNotaFiscalSubstituida;
+	}
+
+	public String getEscrituracaoTipoDaNotafiscal() {
+		return escrituracaoTipoDaNotafiscal;
+	}
+
+	public void setEscrituracaoTipoDaNotafiscal(String escrituracaoTipoDaNotafiscal) {
+		this.escrituracaoTipoDaNotafiscal = escrituracaoTipoDaNotafiscal;
+	}
+
+	public String getEscrituracaoSituacao() {
+		return escrituracaoSituacao;
+	}
+
+	public void setEscrituracaoSituacao(String escrituracaoSituacao) {
+		this.escrituracaoSituacao = escrituracaoSituacao;
+	}
+
 	@Column(name = "id_origem")
 	private Long idOrigem;
 

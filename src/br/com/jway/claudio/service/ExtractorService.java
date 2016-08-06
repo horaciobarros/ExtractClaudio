@@ -227,7 +227,10 @@ public class ExtractorService {
 				}
 
 				nf.setSituacaoOriginal("N");
-
+				
+				nf.setEscrituracaoSituacao(escrituracoes.getSituacao());
+				nf.setEscrituracaoTipoDaNotafiscal(escrituracoes.getTipoDaNotaFiscal());
+				nf.setIdNotaFiscalSubstituida(nf.getIdNotaFiscalSubstituida());
 				nf = notasFiscaisDao.save(nf);
 
 				// tomadores
