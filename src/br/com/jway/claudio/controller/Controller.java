@@ -40,12 +40,12 @@ public class Controller {
 				e.printStackTrace();
 			}
 		}
-		/*
+		
 		// Tratando os arquivos 
 		System.out.println("Tratando arquivos...");
 		TrataTxts tratamento = new TrataTxts();
 		tratamento.processa();
-		*/
+		
 
 		// Inï¿½cio
 		System.out.println("Importação de dados de arquivos txt - Início: " + Util.getDataHoraAtual());

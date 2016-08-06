@@ -147,14 +147,15 @@ public class ExtractorService {
 				if (nfOrigem.getNotaFiscalAvulsa().equalsIgnoreCase("t")) { // n„o migrar
 					continue;
 				}
-
-				String inscricaoPrestador = util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador().trim());
+				
+				String inscricaoPrestador = util.getCpfCnpj(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
 				Prestadores pr = prestadoresDao.findByInscricao(inscricaoPrestador);
 				Pessoa pessoa = pessoaDao.findByCnpjCpf(inscricaoPrestador);
 				try {
 					if (pr == null || pr.getId() == 0
 							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
 						System.out.println("Prestador n√£o encontrado:" + inscricaoPrestador);
+						log.fillError(linha, "Prestador n√£o encontrado: "+inscricaoPrestador );
 						throw new Exception();
 					}
 				} catch (Exception e) {
@@ -166,10 +167,10 @@ public class ExtractorService {
 				nf.setIdOrigem(Long.parseLong(nfOrigem.getId()));
 				nf.setDataHoraEmissao(util.getStringToDateHoursMinutes(nfOrigem.getDataDeCriacao()));
 				nf.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
-				
-				if ("F".equals(util.getTipoPessoa(nfOrigem.getCnpjCpfTomador()))) {
-					if (Util.validarCpf(nfOrigem.getCnpjCpfTomador())) {
-						nf.setInscricaoTomador(nfOrigem.getCnpjCpfTomador());
+				String inscricaoTomador = util.getCpfCnpj(nfOrigem.getCnpjCpfTomador());
+				if ("F".equals(util.getTipoPessoa(inscricaoTomador))) {
+					if (Util.validarCpf(inscricaoTomador)) {
+						nf.setInscricaoTomador(inscricaoTomador);
 						if (!util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())){
 							nf.setNomeTomador(nfOrigem.getRazaoSocialTomador());
 						}
@@ -177,9 +178,9 @@ public class ExtractorService {
 							nf.setNomeTomador("N„o informado");
 						}
 					}
-				} else if ("J".equals(util.getTipoPessoa(nfOrigem.getCnpjCpfTomador()))) {
-					if (Util.validarCnpj(nfOrigem.getCnpjCpfTomador())) {
-						nf.setInscricaoTomador(nfOrigem.getCnpjCpfTomador());
+				} else if ("J".equals(util.getTipoPessoa(inscricaoTomador))) {
+					if (Util.validarCnpj(inscricaoTomador)) {
+						nf.setInscricaoTomador(inscricaoTomador);
 						if (!util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())){
 							nf.setNomeTomador(nfOrigem.getRazaoSocialTomador());
 						}
@@ -245,8 +246,8 @@ public class ExtractorService {
 							t.setNome(nfOrigem.getRazaoSocialTomador());
 							t.setNomeFantasia(nfOrigem.getRazaoSocialTomador());
 							t.setPrestadores(nf.getPrestadores());
-							t.setTipoPessoa(util.getTipoPessoa(nf.getInscricaoTomador()));
-							t.setInscricaoTomador(nf.getInscricaoTomador().replace(" ", ""));						
+							t.setInscricaoTomador(nf.getInscricaoTomador());
+							t.setTipoPessoa(util.getTipoPessoa(t.getInscricaoTomador()));
 							t.setInscricaoEstadual(nfOrigem.getInscricaoEstadualTomador());
 							t.setInscricaoMunicipal(nfOrigem.getInscricaoMunicipalTomador());
 							t.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefoneTomador().trim()));
