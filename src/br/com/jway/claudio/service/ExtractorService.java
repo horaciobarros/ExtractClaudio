@@ -290,7 +290,7 @@ public class ExtractorService {
 			String linha, Tomadores t, Pessoa pessoa) {
 		// -- serviços
 		NotasThreadService nfServico = new NotasThreadService(p, nf, nfOrigem, log, linha, "S", null, t, pessoa,
-				mapServicosNotasFiscaisOrigem, mapServicosPorId, mapServicosPorCodigo);
+				mapServicosNotasFiscaisOrigem, mapServicosPorCodigo, mapServicosPorId);
 		Thread s = new Thread(nfServico);
 		s.start();
 
@@ -773,7 +773,7 @@ public class ExtractorService {
 			}
 			try {
 				mapServicosPorCodigo.put(servicos.getCodigo(), servicos);
-				mapServicosPorCodigo.put(servicos.getId(), servicos);
+				mapServicosPorId.put(servicos.getId().trim(), servicos);
 
 			} catch (Exception e) {
 				log.fillError(linha, "serviços", e);

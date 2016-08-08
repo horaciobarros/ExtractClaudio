@@ -96,23 +96,23 @@ public class NotasThreadService implements Runnable {
 				nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
 
 				StringBuilder sbItem = new StringBuilder();
-				if (!listaItens.isEmpty()) {
+				if (listaItens != null && !listaItens.isEmpty()) {
 					ServicosOrigem servico = mapServicosPorId.get(listaItens.get(0).getIdServico().trim());
 
 					if (servico != null) {
 						String codigoServico = servico.getCodigo();
 						codigoServico = codigoServico.replaceAll("\\.", "");
 						sbItem.append(codigoServico);
+					} else {
+						log.fillError(linha,
+								"Nota Fiscal Servico - Serviço não encontrado:" + listaItens.get(0).getIdServico()
+										+ " da nota " + nfOrigem.getId() + " de " + nfOrigem.getRazaoSocialPrestador());
+						//System.out.println("Serviço não encontrado: " + listaItens.get(0).getIdServico().trim());
 					}
+
 				}
 
 				nfs.setItemListaServico(util.completarZerosEsquerda(sbItem.toString(), 4));
-				if (nfs.getItemListaServico() == null || nfs.getItemListaServico().equals("null") || nfs.getItemListaServico().isEmpty()) {
-					nfs.setItemListaServico("1401");
-				}
-				if (nfs.getItemListaServico().equals("1601a")) {
-					nfs.setItemListaServico("1601");
-				}
 
 				nfs.setDescricao(nfOrigem.getDescricaoDoServico());
 
@@ -157,7 +157,8 @@ public class NotasThreadService implements Runnable {
 			}
 		}
 
-		if (tipoNotaFilha.equals("E") && pr.getEmail() != null && !pr.getEmail().isEmpty() && Util.validarEmail(util.trataEmail(pr.getEmail()))) { // email
+		if (tipoNotaFilha.equals("E") && pr.getEmail() != null && !pr.getEmail().isEmpty()
+				&& Util.validarEmail(util.trataEmail(pr.getEmail()))) { // email
 			try {
 				NotasFiscaisEmails nfe = new NotasFiscaisEmails();
 				nfe.setEmail(util.trataEmail(pr.getEmail()));
@@ -190,7 +191,7 @@ public class NotasThreadService implements Runnable {
 				nfp.setTipoPessoa(util.getTipoPessoa(nfOrigem.getCpfCnpjPrestador()));
 				nfp.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefonePrestador()));
 				notasFiscaisPrestadoresDao.save(nfp);
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.fillError(linha, "Nota Fiscal Prestadores", e);
