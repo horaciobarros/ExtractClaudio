@@ -49,8 +49,8 @@ public class TrataTxts {
 					break;
 				case "notas_fiscais.csv":
 					lerArquivo(arqOrigem, 50);
-					lerArquivoCorrigeAspas(arqOrigem, 50);
-					lerArquivo(arqOrigem, 50);
+					//lerArquivoCorrigeAspas(arqOrigem, 50);
+					//lerArquivo(arqOrigem, 50);
 					break;
 				case "servicos.csv":
 					lerArquivo(arqOrigem, 6);

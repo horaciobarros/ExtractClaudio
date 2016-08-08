@@ -479,7 +479,10 @@ public class ExtractorService {
 						arrayAux.get(2), arrayAux.get(3), arrayAux.get(4), arrayAux.get(5), arrayAux.get(6),
 						arrayAux.get(7), arrayAux.get(8), arrayAux.get(9), arrayAux.get(10), arrayAux.get(11),
 						arrayAux.get(12));
-
+				if (cnae.getServicoCodigo().equals("7.17")){cnae.setServicoCodigo("7.19");}
+				if (cnae != null && cnae.getServicoCodigo()!=null){
+					cnae.setServicoCodigo(cnae.getServicoCodigo().replace("a", "").replace("b", ""));
+				}
 				Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
 				Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
 				ServicosOrigem servico = mapServicosPorCodigo.get(cnae.getServicoCodigo());
@@ -494,6 +497,7 @@ public class ExtractorService {
 					pa.setPrestadores(pr);
 					prestadoresAtividadesDao.save(pa);
 				} catch (Exception e) {
+					System.out.println(linha);
 					log.fillError(linha, "Prestadores atividades " , e);
 					e.printStackTrace();
 				}
@@ -764,7 +768,9 @@ public class ExtractorService {
 
 			ServicosOrigem servicos = new ServicosOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2),
 					arrayAux.get(3), arrayAux.get(4), arrayAux.get(5));
-
+			if (servicos!=null && servicos.getCodigo()!=null){
+				servicos.setCodigo(servicos.getCodigo().replace("a", "").replace("b", ""));
+			}
 			try {
 				mapServicosPorCodigo.put(servicos.getCodigo(), servicos);
 				mapServicosPorCodigo.put(servicos.getId(), servicos);

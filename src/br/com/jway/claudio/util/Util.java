@@ -489,7 +489,7 @@ public class Util {
 	
 	public List<String> splitRegistro(String linha){
 		//return Arrays.asList(linha.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
-		StringBuilder builder = new StringBuilder(linha.replace("\";", ""));
+		StringBuilder builder = new StringBuilder(linha);
 		boolean inQuotes = false;
 		for (int currentIndex = 0; currentIndex < builder.length(); currentIndex++) {
 		    char currentChar = builder.charAt(currentIndex);

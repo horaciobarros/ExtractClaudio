@@ -133,6 +133,7 @@ public class NotasThreadService implements Runnable {
 			} catch (Exception e) {
 				System.out.println(nfs.getItemListaServico());
 				e.printStackTrace();
+				log.fillError(linha, "Nota Fiscal Servico", e);
 			}
 		}
 
@@ -152,6 +153,7 @@ public class NotasThreadService implements Runnable {
 
 			} catch (Exception e) {
 				e.printStackTrace();
+				log.fillError(linha, "Nota Fiscal Cancelada", e);
 			}
 		}
 
@@ -165,6 +167,7 @@ public class NotasThreadService implements Runnable {
 				notasFiscaisEmailsDao.save(nfe);
 			} catch (Exception e) {
 				e.printStackTrace();
+				log.fillError(linha, "Nota Fiscal Email", e);
 			}
 		}
 
@@ -190,6 +193,7 @@ public class NotasThreadService implements Runnable {
 				
 			} catch (Exception e) {
 				e.printStackTrace();
+				log.fillError(linha, "Nota Fiscal Prestadores", e);
 			}
 		}
 
@@ -223,6 +227,7 @@ public class NotasThreadService implements Runnable {
 				notasFiscaisTomadoresDao.save(nft);
 			} catch (Exception e) {
 				e.printStackTrace();
+				log.fillError(linha, "Nota Fiscal Tomadores", e);
 			}
 
 		}
