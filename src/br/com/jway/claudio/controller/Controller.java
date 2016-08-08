@@ -17,13 +17,13 @@ public class Controller {
 
 	public void importaNfe() {
 
-		int nivelProcessamento = 1;
+		int nivelProcessamento = 3;
 
 		// limpando o banco
 		System.out.println("Limpando o banco...");
 
 		List<String> entidades = null;
-		if (nivelProcessamento == 2) {
+		if (nivelProcessamento == 3) {
 			entidades = extractorService.excluiParaProcessarNivel2();
 		} else if (nivelProcessamento == 3) {
 			entidades = extractorService.excluiParaProcessarNivel3();

@@ -96,16 +96,17 @@ public class NotasThreadService implements Runnable {
 				nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
 
 				StringBuilder sbItem = new StringBuilder();
-				if (!listaItens.isEmpty()) {
-					ServicosOrigem servico = mapServicosPorId.get(listaItens.get(0).getIdServico().trim());
-
+				for (ServicosNotasFiscaisOrigem s : listaItens){
+					ServicosOrigem servico = mapServicosPorId.get(s.getIdServico().trim());
 					if (servico != null) {
 						String codigoServico = servico.getCodigo();
 						codigoServico = codigoServico.replaceAll("\\.", "");
-						sbItem.append(codigoServico);
+						if (!codigoServico.trim().isEmpty()){
+							sbItem.append(codigoServico);
+							break;
+						}
 					}
 				}
-
 				nfs.setItemListaServico(util.completarZerosEsquerda(sbItem.toString(), 4));
 				if (nfs.getItemListaServico() == null || nfs.getItemListaServico().equals("null") || nfs.getItemListaServico().isEmpty()) {
 					nfs.setItemListaServico("1401");
