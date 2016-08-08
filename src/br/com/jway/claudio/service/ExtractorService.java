@@ -587,8 +587,8 @@ public class ExtractorService {
 						Pagamentos pg = new Pagamentos();
 						pg.setDataPagamento(util.getStringToDate(guiaOrigem.getDataDePagamento(), "yyyy-MM-dd"));
 						pg.setGuias(guias);
-						pg.setNumeroGuia(guias.getId());
-						pg.setNumeroPagamento(guias.getId());
+						pg.setNumeroGuia(guias.getNumeroGuia());
+						pg.setNumeroPagamento(guias.getNumeroGuia());
 						pg.setTipoPagamento("N");
 						pg.setValorCorrecao(BigDecimal.ZERO);
 						pg.setValorJuro(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getJuros())));
