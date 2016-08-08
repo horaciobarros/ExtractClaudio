@@ -773,7 +773,7 @@ public class ExtractorService {
 			}
 			try {
 				mapServicosPorCodigo.put(servicos.getCodigo(), servicos);
-				mapServicosPorId.put(servicos.getId(), servicos);
+				mapServicosPorId.put(servicos.getId().trim(), servicos);
 
 			} catch (Exception e) {
 				log.fillError(linha, "serviços", e);
