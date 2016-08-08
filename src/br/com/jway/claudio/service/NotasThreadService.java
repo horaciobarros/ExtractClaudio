@@ -49,7 +49,8 @@ public class NotasThreadService implements Runnable {
 	private PrestadoresAtividadesDao prestadoresAtividadesDao = new PrestadoresAtividadesDao();
 	private Pessoa pessoa;
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem;
-	private Map<String, ServicosOrigem> mapServicos;
+	private Map<String, ServicosOrigem> mapServicosPorCodigo;
+	private Map<String, ServicosOrigem> mapServicosPorId;
 
 	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
 			String tipoNotaFilha, Guias guia, Tomadores tomadores, Pessoa pessoa) {
@@ -68,7 +69,7 @@ public class NotasThreadService implements Runnable {
 	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
 			String tipoNotaFilha, Guias g, Tomadores t, Pessoa pessoa,
 			Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem,
-			Map<String, ServicosOrigem> mapServicos) {
+			Map<String, ServicosOrigem> mapServicosPorCodigo, Map<String, ServicosOrigem> mapServicosPorId) {
 		this.pessoa = pessoa;
 		this.pr = pr;
 		this.nf = nf;
@@ -77,7 +78,8 @@ public class NotasThreadService implements Runnable {
 		this.linha = linha;
 		this.tipoNotaFilha = tipoNotaFilha;
 		this.mapServicosNotasFiscaisOrigem = mapServicosNotasFiscaisOrigem;
-		this.mapServicos = mapServicos;
+		this.mapServicosPorCodigo = mapServicosPorCodigo;
+		this.mapServicosPorId = mapServicosPorId;
 
 	}
 
@@ -95,7 +97,8 @@ public class NotasThreadService implements Runnable {
 
 				StringBuilder sbItem = new StringBuilder();
 				if (!listaItens.isEmpty()) {
-					ServicosOrigem servico = mapServicos.get(listaItens.get(0).getIdServico().trim());
+					ServicosOrigem servico = mapServicosPorId.get(listaItens.get(0).getIdServico().trim());
+
 					if (servico != null) {
 						String codigoServico = servico.getCodigo();
 						codigoServico = codigoServico.replaceAll("\\.", "");

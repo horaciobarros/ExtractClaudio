@@ -56,7 +56,8 @@ public class ExtractorService {
 	private MunicipiosIbgeDao municipiosIbgeDao = new MunicipiosIbgeDao();
 	private PessoaDao pessoaDao = new PessoaDao();
 	private GuiasNotasFiscaisDao guiasNotasFiscaisDao = new GuiasNotasFiscaisDao();
-	private Map<String, ServicosOrigem> mapServicos = new Hashtable<String, ServicosOrigem>();
+	private Map<String, ServicosOrigem> mapServicosPorCodigo = new Hashtable<String, ServicosOrigem>();
+	private Map<String, ServicosOrigem> mapServicosPorId = new Hashtable<String, ServicosOrigem>();
 	private Map<String, EscrituracoesOrigem> mapEscrituracoes = new Hashtable<String, EscrituracoesOrigem>();
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem = new Hashtable<String, List<ServicosNotasFiscaisOrigem>>();
 
@@ -286,7 +287,7 @@ public class ExtractorService {
 			String linha, Tomadores t, Pessoa pessoa) {
 		// -- serviços
 		NotasThreadService nfServico = new NotasThreadService(p, nf, nfOrigem, log, linha, "S", null, t, pessoa,
-				mapServicosNotasFiscaisOrigem, mapServicos);
+				mapServicosNotasFiscaisOrigem, mapServicosPorId, mapServicosPorCodigo);
 		Thread s = new Thread(nfServico);
 		s.start();
 
@@ -452,7 +453,7 @@ public class ExtractorService {
 
 	public void processaDadosAtividadeEconomicaContribuinte(List<String> dadosList) {
 
-		if (mapServicos == null || mapServicos.isEmpty()) {
+		if (mapServicosPorCodigo == null || mapServicosPorCodigo.isEmpty()) {
 			try {
 				throw new Exception("Tabela de Serviços não encontrada.");
 			} catch (Exception e) {
@@ -478,7 +479,7 @@ public class ExtractorService {
 
 				Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
 				Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
-				ServicosOrigem servico = mapServicos.get(cnae.getServicoCodigo());
+				ServicosOrigem servico = mapServicosPorCodigo.get(cnae.getServicoCodigo());
 				
 				try {
 					PrestadoresAtividades pa = new PrestadoresAtividades();
@@ -762,7 +763,8 @@ public class ExtractorService {
 					arrayAux.get(3), arrayAux.get(4), arrayAux.get(5));
 
 			try {
-				mapServicos.put(servicos.getCodigo(), servicos);
+				mapServicosPorCodigo.put(servicos.getCodigo(), servicos);
+				mapServicosPorCodigo.put(servicos.getId(), servicos);
 
 			} catch (Exception e) {
 				log.fillError(linha, "serviços", e);
