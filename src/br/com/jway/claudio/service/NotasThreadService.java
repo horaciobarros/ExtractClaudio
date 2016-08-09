@@ -96,8 +96,10 @@ public class NotasThreadService implements Runnable {
 				nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
 
 				StringBuilder sbItem = new StringBuilder();
+
 				for (ServicosNotasFiscaisOrigem s : listaItens){
 					ServicosOrigem servico = mapServicosPorId.get(s.getIdServico().trim());
+				
 					if (servico != null) {
 						String codigoServico = servico.getCodigo();
 						codigoServico = codigoServico.replaceAll("\\.", "");
@@ -105,14 +107,15 @@ public class NotasThreadService implements Runnable {
 							sbItem.append(codigoServico);
 							break;
 						}
-					} else {
-						log.fillError(linha,
-								"Nota Fiscal Servico - Serviço não encontrado:" + listaItens.get(0).getIdServico()
-										+ " da nota " + nfOrigem.getId() + " de " + nfOrigem.getRazaoSocialPrestador());
-						//System.out.println("Serviço não encontrado: " + listaItens.get(0).getIdServico().trim());
-					}
-
+					} 
 				}
+				if (sbItem.toString().isEmpty()){
+					log.fillError(linha,
+							"Nota Fiscal Servico - Serviço não encontrado:" + listaItens.get(0).getIdServico()
+									+ " da nota " + nfOrigem.getId() + " de " + nfOrigem.getRazaoSocialPrestador());
+				}
+
+				
 				nfs.setItemListaServico(util.completarZerosEsquerda(sbItem.toString(), 4));
 
 				nfs.setDescricao(nfOrigem.getDescricaoDoServico());
