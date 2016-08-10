@@ -17,13 +17,13 @@ public class Controller {
 
 	public void importaNfe() {
 
-		int nivelProcessamento = 3;
+		int nivelProcessamento = 2;
 
 		// limpando o banco
 		System.out.println("Limpando o banco...");
 
 		List<String> entidades = null;
-		if (nivelProcessamento == 3) {
+		if (nivelProcessamento == 2) {
 			entidades = extractorService.excluiParaProcessarNivel2();
 		} else if (nivelProcessamento == 3) {
 			entidades = extractorService.excluiParaProcessarNivel3();
@@ -37,6 +37,7 @@ public class Controller {
 			try {
 				extractorService.excluiDados(nomeEntidade);
 			} catch (Exception e) {
+				System.out.println("Entidade sendo excluida:" + nomeEntidade);
 				e.printStackTrace();
 			}
 		}
@@ -67,6 +68,10 @@ public class Controller {
 		}
 
 		if (nivelProcessamento <= 2) {
+			
+			System.out.println("Gravando competencias");
+			extractorService.incluiCompetencias();
+			System.out.println("--- Fim de competencias ---");
 
 			System.out.println("Lendo atividade de contribuintes");
 			dadosList = extractorService.lerArquivosClaudio("cnae_servicos_contribuintes");
@@ -77,7 +82,7 @@ public class Controller {
 			
 			System.out.println("Lendo guias "); // a ordem é essa mesma
 			dadosList = extractorService.lerArquivosClaudio("Guias");
-			System.out.println("Gravando competencias e guias");
+			System.out.println("Gravando guias e ajustando competencias");
 			extractorService.processaDadosGuias(dadosList);
 			System.out.println("--- Fim de guias paga ---");
 
