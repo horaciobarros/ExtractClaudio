@@ -196,7 +196,6 @@ public class ExtractorService {
 				nf.setNomePrestador(nfOrigem.getRazaoSocialPrestador());
 
 				nf.setNumeroNota(Long.valueOf(escrituracoes.getNumeroNotaFiscal()));
-				nf.setOptanteSimples("N"); // // TODO resolver
 				nf.setPrestadores(pr);
 				if (util.getTipoPessoa(pr.getInscricaoPrestador()).equals("J")) {
 					nf.setValorCofins(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getCofins())));
@@ -217,7 +216,9 @@ public class ExtractorService {
 						BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 				nf.setValorTotalDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
 				nf.setServicoPrestadoForaPais("N");
-				//nf.setDataHoraRps(nf.getDataHoraEmissao());
+				nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
+				nf.setNumeroRps(nf.getNumeroNota());
+				nf.setSerieRps("C");
 				List<BigDecimal> lista = Arrays.asList(nf.getValorCofins(), nf.getValorCsll(), nf.getValorInss(),
 						nf.getValorIr());
 				BigDecimal descontos = util.getSumOfBigDecimal(lista);

@@ -566,4 +566,20 @@ public class Util {
 		}
 	}
 
+	public Date converteDataHoraRpsClaudio(String competencia) {
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Date date = (Date) formatter.parse(competencia);
+			GregorianCalendar gc = new GregorianCalendar();
+		    gc.setTime(date);
+		    gc.add(Calendar.HOUR,12);
+		    return gc.getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+
+	}
+
 }

@@ -23,7 +23,7 @@ public class Controller {
 		System.out.println("Limpando o banco...");
 
 		List<String> entidades = null;
-		if (nivelProcessamento == 2) {
+		if (nivelProcessamento == 3) {
 			entidades = extractorService.excluiParaProcessarNivel2();
 		} else if (nivelProcessamento == 3) {
 			entidades = extractorService.excluiParaProcessarNivel3();
