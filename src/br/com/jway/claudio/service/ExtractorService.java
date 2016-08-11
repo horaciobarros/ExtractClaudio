@@ -33,6 +33,7 @@ import br.com.jway.claudio.model.Competencias;
 import br.com.jway.claudio.model.Guias;
 import br.com.jway.claudio.model.GuiasNotasFiscais;
 import br.com.jway.claudio.model.NotasFiscais;
+import br.com.jway.claudio.model.NotasFiscaisCanceladas;
 import br.com.jway.claudio.model.Pagamentos;
 import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.model.Prestadores;
@@ -41,6 +42,7 @@ import br.com.jway.claudio.model.Tomadores;
 import br.com.jway.claudio.util.FileLog;
 import br.com.jway.claudio.util.Util;
 import br.com.jway.claudio.dao.MunicipiosIbgeDao;
+import br.com.jway.claudio.dao.NotasFiscaisCanceladasDao;
 
 public class ExtractorService {
 
@@ -60,6 +62,7 @@ public class ExtractorService {
 	private Map<String, ServicosOrigem> mapServicosPorId = new Hashtable<String, ServicosOrigem>();
 	private Map<String, EscrituracoesOrigem> mapEscrituracoes = new Hashtable<String, EscrituracoesOrigem>();
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem = new Hashtable<String, List<ServicosNotasFiscaisOrigem>>();
+	private NotasFiscaisCanceladasDao notasFiscaisCanceladasDao = new NotasFiscaisCanceladasDao();
 
 	public List<String> excluiParaProcessarNivel1() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
@@ -85,7 +88,7 @@ public class ExtractorService {
 	}
 
 	public List<String> excluiParaProcessarNivel4() {
-		return Arrays.asList("GuiasNotasFiscais");
+		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas");
 	}
 
 	public void excluiDados(String nomeEntidade) {
@@ -213,7 +216,7 @@ public class ExtractorService {
 				nf.setValorTotalBaseCalculo(
 						BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 				nf.setValorTotalDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
-				nf.setServicoPrestadoForaPais("N"); 
+				nf.setServicoPrestadoForaPais("N");
 				try {
 					nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
 				} catch (Exception e) {
@@ -235,7 +238,9 @@ public class ExtractorService {
 
 				nf.setEscrituracaoSituacao(escrituracoes.getSituacao());
 				nf.setEscrituracaoTipoDaNotafiscal(escrituracoes.getTipoDaNotaFiscal());
-				nf.setIdNotaFiscalSubstituida(nf.getIdNotaFiscalSubstituida());
+				if (!util.isEmptyOrNull(escrituracoes.getIdEscrituracaoSubstituida())) {
+					nf.setIdNotaFiscalSubstituida(escrituracoes.getIdEscrituracaoSubstituida());
+				}
 				nf = notasFiscaisDao.save(nf);
 
 				// tomadores
@@ -299,11 +304,12 @@ public class ExtractorService {
 		s.start();
 
 		// -- canceladas
-		if (nf.getSituacaoOriginal().substring(0, 1).equals("C")) {
-			NotasThreadService nfCanceladas = new NotasThreadService(p, nf, nfOrigem, log, linha, "C", null, t, pessoa);
-			Thread c = new Thread(nfCanceladas);
-			c.start();
-		}
+		// if (nf.getSituacaoOriginal().substring(0, 1).equals("C")) {
+		// NotasThreadService nfCanceladas = new NotasThreadService(p, nf,
+		// nfOrigem, log, linha, "C", null, t, pessoa);
+		// Thread c = new Thread(nfCanceladas);
+		// c.start();
+		// }
 
 		// email
 		if (nfOrigem.getEmailPrestador() != null && !nfOrigem.getEmailPrestador().isEmpty()) {
@@ -424,6 +430,10 @@ public class ExtractorService {
 				}
 				p.setTelefone(util.getLimpaTelefone(c.getTelefone()));
 				p.setUf(c.getEstado());
+				if (c.getTipoContribuinte() != null && 
+						c.getTipoContribuinte().equalsIgnoreCase("simple")) {
+					p.setOptanteSimples("S");
+				}
 				p = trataNumerosTelefones(p);
 				p = anulaCamposVazios(p);
 
@@ -440,7 +450,7 @@ public class ExtractorService {
 					pr.setInscricaoMunicipal(p.getInscricaoMunicipal());
 					pr.setInscricaoPrestador(p.getCnpjCpf());
 					pr.setTelefone(p.getTelefone());
-					pr.setEnquadramento("N");
+					pr.setEnquadramento(p.getOptanteSimples());
 					pr = trataNumerosTelefones(pr);
 					pr = anulaCamposVazios(pr);
 					prestadoresDao.save(pr);
@@ -875,22 +885,19 @@ public class ExtractorService {
 	}
 
 	public void incluiCompetencias() {
-		
+
 		for (int ano = 2010; ano < 2017; ano++) {
-			
+
 			for (int mes = 1; mes <= 12; mes++) {
-				String descricao = util.getNomeMes(Integer.toString(mes)) + "/"
-				+ ano;
+				String descricao = util.getNomeMes(Integer.toString(mes)) + "/" + ano;
 				Competencias cp = competenciasDao.findByDescricao(descricao);
 
 				try {
 					if (cp == null || cp.getId() == 0) { // acertar datas
 						cp = new Competencias();
 						cp.setDescricao(descricao.trim());
-						cp.setDataInicio(util.getFirstDayOfMonth(Integer.toString(ano),
-								Integer.toString(mes)));
-						cp.setDataFim(util.getLastDayOfMonth(Integer.toString(ano),
-								Integer.toString(mes)));
+						cp.setDataInicio(util.getFirstDayOfMonth(Integer.toString(ano), Integer.toString(mes)));
+						cp.setDataFim(util.getLastDayOfMonth(Integer.toString(ano), Integer.toString(mes)));
 						cp.setDataVencimento(util.getDecimoDiaMesPosterior(cp.getDataFim()));
 
 						competenciasDao.save(cp);
@@ -900,7 +907,38 @@ public class ExtractorService {
 				}
 			}
 		}
-		
+
+	}
+
+	public void processaDadosNotasFiscaisCanceladas() {
+
+		FileLog log = new FileLog("notas_fiscais_canceladas");
+
+		for (NotasFiscais nf : notasFiscaisDao.findCanceladas()) {
+
+			// buscando a nota que foi cancelada
+			NotasFiscais nfCancelada = notasFiscaisDao.findByIdOrigem(Long.parseLong(nf.getIdNotaFiscalSubstituida()));
+			if (nfCancelada != null) {
+				try {
+					NotasFiscaisCanceladas nfc = new NotasFiscaisCanceladas();
+					nfc.setDatahoracancelamento(nfCancelada.getDataHoraEmissao());
+					nfc.setInscricaoPrestador(nfCancelada.getInscricaoPrestador());
+					nfc.setNumeroNota(Long.valueOf(nfCancelada.getNumeroNota()));
+					nfc.setMotivo("Dados incorretos");
+					nfc.setNotasFiscais(nf);
+					notasFiscaisCanceladasDao.save(nfc);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.fillError(nfCancelada.getNumeroNota().toString() + nfCancelada.getNomePrestador(),
+							"Nota Fiscal Cancelada", e);
+				}
+			} else {
+				log.fillError("Nota Fiscal cancelada não encontrada:", nf.getIdNotaFiscalSubstituida());
+			}
+
+		}
+
 	}
 
 }

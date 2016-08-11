@@ -92,5 +92,39 @@ public class NotasFiscaisDao {
 		}
 		return null;
 	}
+	
+	public NotasFiscais findByIdOrigem(Long id) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from NotasFiscais nf where idOrigem = " + id);
+		List<NotasFiscais> lista = query.list();
+		tx.commit();
+		session.close();
+		if (lista.size() > 0) {
+			return lista.get(0);
+		}
+		return null;
+	}
 
+	public List<NotasFiscais> findAll() {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from NotasFiscais nf ");
+		List<NotasFiscais> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
+	}
+	
+	public List<NotasFiscais> findCanceladas() {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from NotasFiscais nf where nf.idNotaFiscalSubstituida is not null");
+		List<NotasFiscais> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
+	}
 }

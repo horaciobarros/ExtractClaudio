@@ -17,7 +17,7 @@ public class Controller {
 
 	public void importaNfe() {
 
-		int nivelProcessamento = 1;
+		int nivelProcessamento = 3;
 
 		// limpando o banco
 		System.out.println("Limpando o banco...");
@@ -110,12 +110,22 @@ public class Controller {
 				e.printStackTrace();
 			}
 			System.out.println("--- Fim de Notas Fiscais ---");
+			
 		}
 		
 		if (nivelProcessamento <= 4) {
+			System.out.println("Gravando Notas Fiscais canceladas");
+			try {
+				extractorService.processaDadosNotasFiscaisCanceladas();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			System.out.println("--- Fim de Notas Fiscais canceladas ---");
+			
 			System.out.println("Lendo guias notas fiscais");
 			extractorService.processaDadosGuiasNotasFiscais();
 			System.out.println("--- Fim de guias notas fiscais ---");
+			
 		}
 		
 

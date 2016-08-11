@@ -40,7 +40,6 @@ public class NotasThreadService implements Runnable {
 	private Guias guia;
 	private Util util = new Util();
 	private NotasFiscaisServicosDao notasFiscaisServicosDao = new NotasFiscaisServicosDao();
-	private NotasFiscaisCanceladasDao notasFiscaisCanceladasDao = new NotasFiscaisCanceladasDao();
 	private NotasFiscaisEmailsDao notasFiscaisEmailsDao = new NotasFiscaisEmailsDao();
 	private NotasFiscaisPrestadoresDao notasFiscaisPrestadoresDao = new NotasFiscaisPrestadoresDao();
 	private GuiasNotasFiscaisDao guiasNotasFiscaisDao = new GuiasNotasFiscaisDao();
@@ -138,26 +137,6 @@ public class NotasThreadService implements Runnable {
 				System.out.println(nfs.getItemListaServico());
 				e.printStackTrace();
 				log.fillError(linha, "Nota Fiscal Servico", e);
-			}
-		}
-
-		if (tipoNotaFilha.equals("C")) { // canceladas
-			try {
-				NotasFiscaisCanceladas nfc = new NotasFiscaisCanceladas();
-				if (nfc.getDatahoracancelamento().getTime() < nf.getDataHoraEmissao().getTime()) {
-					nfc.setDatahoracancelamento(util.getStringToDateHoursMinutes(nfOrigem.getDataEmissaoRps()));
-				}
-				nfc.setInscricaoPrestador(nfOrigem.getCpfCnpjPrestador());
-				nfc.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
-				if (util.isEmptyOrNull(nfc.getMotivo())) {
-					nfc.setMotivo("Dados incorretos");
-				}
-				nfc.setNotasFiscais(nf);
-				notasFiscaisCanceladasDao.save(nfc);
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.fillError(linha, "Nota Fiscal Cancelada", e);
 			}
 		}
 
