@@ -117,7 +117,7 @@ public class NotasFiscaisDao {
 		return lista;
 	}
 	
-	public List<NotasFiscais> findCanceladas() {
+	public List<NotasFiscais> findSubstitutas() {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		Query query = session.createQuery("from NotasFiscais nf where nf.idNotaFiscalSubstituida is not null");
@@ -127,4 +127,5 @@ public class NotasFiscaisDao {
 
 		return lista;
 	}
+
 }

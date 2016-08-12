@@ -50,6 +50,7 @@ public class NotasThreadService implements Runnable {
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem;
 	private Map<String, ServicosOrigem> mapServicosPorCodigo;
 	private Map<String, ServicosOrigem> mapServicosPorId;
+	private NotasFiscaisCanceladasDao notasFiscaisCanceladasDao = new NotasFiscaisCanceladasDao();
 
 	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
 			String tipoNotaFilha, Guias guia, Tomadores tomadores, Pessoa pessoa) {
@@ -96,28 +97,37 @@ public class NotasThreadService implements Runnable {
 
 				StringBuilder sbItem = new StringBuilder();
 
-				for (ServicosNotasFiscaisOrigem s : listaItens){
+				for (ServicosNotasFiscaisOrigem s : listaItens) {
 					ServicosOrigem servico = mapServicosPorId.get(s.getIdServico().trim());
-				
+
 					if (servico != null) {
 						String codigoServico = servico.getCodigo();
 						codigoServico = codigoServico.replaceAll("\\.", "");
-						if (!codigoServico.trim().isEmpty()){
+						if (!codigoServico.trim().isEmpty()) {
 							sbItem.append(codigoServico);
 							break;
 						}
-					} 
+					}
 				}
-				if (sbItem.toString().isEmpty()){
+				if (sbItem.toString().isEmpty()) {
 					log.fillError(linha,
 							"Nota Fiscal Servico - Serviço não encontrado:" + listaItens.get(0).getIdServico()
 									+ " da nota " + nfOrigem.getId() + " de " + nfOrigem.getRazaoSocialPrestador());
 				}
 
-				
 				nfs.setItemListaServico(util.completarZerosEsquerda(sbItem.toString(), 4));
 
-				nfs.setDescricao(nfOrigem.getDescricaoDoServico());
+				try {
+					if (nfOrigem.getDescricaoDoServico().length() > 2000) {
+						nfs.setDescricao(nfOrigem.getDescricaoDoServico().substring(0, 2000));
+					} else {
+						nfs.setDescricao(nfOrigem.getDescricaoDoServico());
+					}
+				} catch (Exception e) {
+					System.out.println(nfs.getItemListaServico());
+					e.printStackTrace();
+					log.fillError(linha, "Nota Fiscal Servico", e);
+				}
 
 				nfs.setAliquota(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getAliquota())));
 				nfs.setValorServico(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
@@ -137,6 +147,23 @@ public class NotasThreadService implements Runnable {
 				System.out.println(nfs.getItemListaServico());
 				e.printStackTrace();
 				log.fillError(linha, "Nota Fiscal Servico", e);
+			}
+		}
+		if (tipoNotaFilha.equals("C")) { // canceladas
+			try {
+				NotasFiscaisCanceladas nfc = new NotasFiscaisCanceladas();
+				nfc.setDatahoracancelamento(nf.getDataHoraEmissao());
+				nfc.setInscricaoPrestador(nf.getInscricaoPrestador());
+				nfc.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
+				if (util.isEmptyOrNull(nfc.getMotivo())) {
+					nfc.setMotivo("Dados incorretos");
+				}
+				nfc.setNotasFiscais(nf);
+				notasFiscaisCanceladasDao.save(nfc);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.fillError(linha, "Nota Fiscal Cancelada", e);
 			}
 		}
 

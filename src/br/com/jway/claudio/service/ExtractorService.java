@@ -16,6 +16,7 @@ import br.com.jway.claudio.dao.Dao;
 import br.com.jway.claudio.dao.GuiasDao;
 import br.com.jway.claudio.dao.GuiasNotasFiscaisDao;
 import br.com.jway.claudio.dao.NotasFiscaisDao;
+import br.com.jway.claudio.dao.NotasFiscaisSubstDao;
 import br.com.jway.claudio.dao.PagamentosDao;
 import br.com.jway.claudio.dao.PessoaDao;
 import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
@@ -33,7 +34,7 @@ import br.com.jway.claudio.model.Competencias;
 import br.com.jway.claudio.model.Guias;
 import br.com.jway.claudio.model.GuiasNotasFiscais;
 import br.com.jway.claudio.model.NotasFiscais;
-import br.com.jway.claudio.model.NotasFiscaisCanceladas;
+import br.com.jway.claudio.model.NotasFiscaisSubst;
 import br.com.jway.claudio.model.Pagamentos;
 import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.model.Prestadores;
@@ -63,6 +64,7 @@ public class ExtractorService {
 	private Map<String, EscrituracoesOrigem> mapEscrituracoes = new Hashtable<String, EscrituracoesOrigem>();
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem = new Hashtable<String, List<ServicosNotasFiscaisOrigem>>();
 	private NotasFiscaisCanceladasDao notasFiscaisCanceladasDao = new NotasFiscaisCanceladasDao();
+	private NotasFiscaisSubstDao notasFiscaisSubstDao;
 
 	public List<String> excluiParaProcessarNivel1() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
@@ -234,12 +236,24 @@ public class ExtractorService {
 					nf.setValorLiquido(nf.getValorLiquido().multiply(BigDecimal.valueOf(-1)));
 				}
 
-				nf.setSituacaoOriginal("N");
+				if (escrituracoes.getStatus() != null && escrituracoes.getStatus().contains("canceled")) {
+					nf.setSituacaoOriginal("C");
+
+				} else {
+					nf.setSituacaoOriginal("N");
+				}
 
 				nf.setEscrituracaoSituacao(escrituracoes.getSituacao());
 				nf.setEscrituracaoTipoDaNotafiscal(escrituracoes.getTipoDaNotaFiscal());
 				if (!util.isEmptyOrNull(escrituracoes.getIdEscrituracaoSubstituida())) {
-					nf.setIdNotaFiscalSubstituida(escrituracoes.getIdEscrituracaoSubstituida());
+					EscrituracoesOrigem escrituracaoSubstituida = mapEscrituracoes
+							.get(escrituracoes.getIdEscrituracaoSubstituida());
+					if (escrituracaoSubstituida == null) {
+						log.fillError(linha, "Erro Escrituracao substituida não encontrada: "
+								+ escrituracoes.getIdEscrituracaoSubstituida());
+					} else {
+						nf.setIdNotaFiscalSubstituida(escrituracaoSubstituida.getIdNotaFiscal());
+					}
 				}
 				nf = notasFiscaisDao.save(nf);
 
@@ -263,13 +277,25 @@ public class ExtractorService {
 							t.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefoneTomador().trim()));
 							t.setEmail(util.trataEmail(nfOrigem.getEmailTomador()));
 
-							// Conferir se informações não existem mesmo
-							t.setBairro(null);
-							t.setCep(null);
-							t.setComplemento(null);
-							t.setEndereco(null);
-							t.setMunicipio(null);
-							t.setMunicipioIbge(null);
+							// Complementando o endereço Tomador pode estar no cadastro de pessoa
+							Pessoa pessoaTomador = pessoaDao.findByCnpjCpf(t.getInscricaoTomador());
+							if (pessoaTomador != null) {
+								t.setBairro(pessoaTomador.getBairro());
+								t.setCep(pessoaTomador.getCep());
+								t.setComplemento(pessoaTomador.getComplemento());
+								t.setEndereco(pessoaTomador.getEndereco());
+								t.setNumero(pessoaTomador.getNumero());
+								t.setMunicipio(pessoaTomador.getMunicipio());
+								t.setMunicipioIbge(pessoaTomador.getMunicipioIbge());
+							} else {
+								t.setBairro(null);
+								t.setCep(null);
+								t.setComplemento(null);
+								t.setEndereco(null);
+								t.setMunicipio(null);
+								t.setMunicipioIbge(null);
+								
+							}
 
 							trataNumerosTelefones(t);
 							anulaCamposVazios(t);
@@ -304,12 +330,11 @@ public class ExtractorService {
 		s.start();
 
 		// -- canceladas
-		// if (nf.getSituacaoOriginal().substring(0, 1).equals("C")) {
-		// NotasThreadService nfCanceladas = new NotasThreadService(p, nf,
-		// nfOrigem, log, linha, "C", null, t, pessoa);
-		// Thread c = new Thread(nfCanceladas);
-		// c.start();
-		// }
+		if (nf.getSituacaoOriginal().substring(0, 1).equals("C")) {
+			NotasThreadService nfCanceladas = new NotasThreadService(p, nf, nfOrigem, log, linha, "C", null, t, pessoa);
+			Thread c = new Thread(nfCanceladas);
+			c.start();
+		}
 
 		// email
 		if (nfOrigem.getEmailPrestador() != null && !nfOrigem.getEmailPrestador().isEmpty()) {
@@ -430,8 +455,7 @@ public class ExtractorService {
 				}
 				p.setTelefone(util.getLimpaTelefone(c.getTelefone()));
 				p.setUf(c.getEstado());
-				if (c.getTipoContribuinte() != null && 
-						c.getTipoContribuinte().equalsIgnoreCase("simple")) {
+				if (c.getTipoContribuinte() != null && c.getTipoContribuinte().equalsIgnoreCase("simple")) {
 					p.setOptanteSimples("S");
 				}
 				p = trataNumerosTelefones(p);
@@ -450,7 +474,7 @@ public class ExtractorService {
 					pr.setInscricaoMunicipal(p.getInscricaoMunicipal());
 					pr.setInscricaoPrestador(p.getCnpjCpf());
 					pr.setTelefone(p.getTelefone());
-					pr.setEnquadramento(p.getOptanteSimples());
+					pr.setEnquadramento("N");
 					pr = trataNumerosTelefones(pr);
 					pr = anulaCamposVazios(pr);
 					prestadoresDao.save(pr);
@@ -509,7 +533,10 @@ public class ExtractorService {
 
 				try {
 					PrestadoresAtividades pa = new PrestadoresAtividades();
-					pa.setAliquota(BigDecimal.valueOf(util.corrigeDouble(cnae.getAliquota())));
+					pa.setAliquota(BigDecimal.valueOf(util.corrigeDouble(servico.getAliquota())));
+					if (pa.getAliquota().compareTo(BigDecimal.ZERO) == 0) {
+						pa.setAliquota(BigDecimal.ONE);
+					}
 					pa.setCodigoAtividade(cnae.getCnaeCodigo().replace("-", "").replace("/", "").substring(0, 5));
 					pa.setIcnaes(cnae.getCnaeCodigo().replace("-", "").replace("/", ""));
 					pa.setIlistaservicos(util.completarZerosEsquerda(
@@ -910,31 +937,33 @@ public class ExtractorService {
 
 	}
 
-	public void processaDadosNotasFiscaisCanceladas() {
+	public void processaDadosNotasFiscaisSubstituidas() {
 
-		FileLog log = new FileLog("notas_fiscais_canceladas");
+		FileLog log = new FileLog("notas_fiscais_substitutas");
 
-		for (NotasFiscais nf : notasFiscaisDao.findCanceladas()) {
+		for (NotasFiscais nf : notasFiscaisDao.findSubstitutas()) {
 
-			// buscando a nota que foi cancelada
-			NotasFiscais nfCancelada = notasFiscaisDao.findByIdOrigem(Long.parseLong(nf.getIdNotaFiscalSubstituida()));
-			if (nfCancelada != null) {
+			// buscando a nota que foi substituida
+			NotasFiscais nfSubstituida = notasFiscaisDao
+					.findByIdOrigem(Long.parseLong(nf.getIdNotaFiscalSubstituida()));
+			if (nfSubstituida != null) {
 				try {
-					NotasFiscaisCanceladas nfc = new NotasFiscaisCanceladas();
-					nfc.setDatahoracancelamento(nfCancelada.getDataHoraEmissao());
-					nfc.setInscricaoPrestador(nfCancelada.getInscricaoPrestador());
-					nfc.setNumeroNota(Long.valueOf(nfCancelada.getNumeroNota()));
-					nfc.setMotivo("Dados incorretos");
-					nfc.setNotasFiscais(nf);
-					notasFiscaisCanceladasDao.save(nfc);
+					NotasFiscaisSubst nfsub = new NotasFiscaisSubst();
+					nfsub.setDatahorasubstituicao(nfSubstituida.getDataHoraEmissao());
+					nfsub.setInscricaoPrestador(nfSubstituida.getInscricaoPrestador());
+					nfsub.setNumeroNota(Long.valueOf(nfSubstituida.getNumeroNota()));
+					nfsub.setNumeroNotaSubstituta(nf.getNumeroNota());
+					nfsub.setMotivo("Dados incorretos");
+					nfsub.setNotasFiscais(nf);
+					notasFiscaisSubstDao.save(nfsub);
 
 				} catch (Exception e) {
 					e.printStackTrace();
-					log.fillError(nfCancelada.getNumeroNota().toString() + nfCancelada.getNomePrestador(),
-							"Nota Fiscal Cancelada", e);
+					log.fillError(nfSubstituida.getNumeroNota().toString() + nfSubstituida.getNomePrestador(),
+							"Nota Fiscal Substituida", e);
 				}
 			} else {
-				log.fillError("Nota Fiscal cancelada não encontrada:", nf.getIdNotaFiscalSubstituida());
+				log.fillError("Nota Fiscal substituida não encontrada:", nf.getIdNotaFiscalSubstituida());
 			}
 
 		}
