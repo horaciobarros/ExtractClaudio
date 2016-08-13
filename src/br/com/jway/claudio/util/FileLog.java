@@ -58,12 +58,12 @@ public class FileLog {
 	public void fillError(String linha, String msg, Exception e) {
 		String linhaAux = linha.replaceAll("#", "|");
 		try {
-			bw.write("erro --> " + msg + " Motivo: "+ e.getLocalizedMessage()+" - "+e.getCause().getMessage()+" - conteudo da linha: " + linhaAux + "\n\n" );
+			bw.write("erro --> " + msg + " Motivo: "+ e.getLocalizedMessage()+" - "+e.getCause().getMessage()+" - conteudo da linha: " + linhaAux);
 			bw.write("\n-----------------------------------------------------------------------------------------------------------------------------------\n");
 		} catch (Exception e1) {
 			//e1.printStackTrace();
 			try {
-				bw.write("erro --> " + msg + " Motivo: "+ e.getMessage()+" - conteudo da linha: " + linhaAux + "\n\n" );
+				bw.write("erro --> " + msg + " Motivo: "+ e.getMessage()+" - conteudo da linha: " + linhaAux);
 				bw.write("\n-----------------------------------------------------------------------------------------------------------------------------------\n");
 			} catch (Exception e2) {
 				e2.printStackTrace();
@@ -75,7 +75,7 @@ public class FileLog {
 	public void fillError(String linha, String msg) {
 		String linhaAux = linha.replaceAll("#", "|");
 		try {
-			bw.write("erro --> " + msg + " - conteudo da linha: " + linhaAux + "\n\n" );
+			bw.write("erro --> " + msg + " - conteudo da linha: " + linhaAux);
 			bw.write("\n-----------------------------------------------------------------------------------------------------------------------------------\n");
 		} catch (Exception e1) {
 			e1.printStackTrace();

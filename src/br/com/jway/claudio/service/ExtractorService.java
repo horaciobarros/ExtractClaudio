@@ -190,7 +190,7 @@ public class ExtractorService {
 
 				escrituracoes = mapEscrituracoesOrigem.get(nfOrigem.getId()); // pesquisa pela id nota
 				try {
-					if (escrituracoes == null) {
+					if (escrituracoes == null || escrituracoes.getId() == null) {
 						System.out.println(
 								"Escrituração não encontrada:" + pessoa.getNome() + " nota:" + nf.getNumeroNota());
 						log.fillError(linha,
