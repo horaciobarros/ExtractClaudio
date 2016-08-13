@@ -21,38 +21,46 @@ public class NotasFiscaisPrestadoresDao {
 
 	public void save(NotasFiscaisPrestadores nfp) {
 		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		session.save(nfp);
-		session.beginTransaction().commit();
-		session.close();
+		try {
+			session.beginTransaction();
+			session.save(nfp);
+			session.beginTransaction().commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			session.close();
+		}
 	}
-	
+
 	public List<NotasFiscaisPrestadores> findNaoEnviados() {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-		Query query = session
-				.createQuery("from NotasFiscaisPrestadores c where hash is null").setFirstResult(0).setMaxResults(1000);
+		Query query = session.createQuery("from NotasFiscaisPrestadores c where hash is null").setFirstResult(0)
+				.setMaxResults(1000);
 		List<NotasFiscaisPrestadores> lista = query.list();
-		tx.commit();session.close();
+		tx.commit();
+		session.close();
 
 		return lista;
 	}
 
-	public void saveHash(List<NotasFiscaisPrestadores> listaAtualizados, String hash){
+	public void saveHash(List<NotasFiscaisPrestadores> listaAtualizados, String hash) {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		StringBuilder builder = new StringBuilder();
-		builder.append("update NotasFiscaisPrestadores set hash = '"+hash+"' where ");
-		
-		for (NotasFiscaisPrestadores c : listaAtualizados){
-			builder.append("id = "+c.getId()+" or ");
+		builder.append("update NotasFiscaisPrestadores set hash = '" + hash + "' where ");
+
+		for (NotasFiscaisPrestadores c : listaAtualizados) {
+			builder.append("id = " + c.getId() + " or ");
 		}
-		
+
 		String sql = builder.toString();
-		sql = sql.toString().substring(0,sql.length()-4);
+		sql = sql.toString().substring(0, sql.length() - 4);
 		Query query = session.createQuery(sql);
 		query.executeUpdate();
-		tx.commit();session.close();
+		tx.commit();
+		session.close();
 	}
-	
+
 }

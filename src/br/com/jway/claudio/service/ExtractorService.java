@@ -13,6 +13,7 @@ import java.util.Map;
 
 import br.com.jway.claudio.dao.CompetenciasDao;
 import br.com.jway.claudio.dao.Dao;
+import br.com.jway.claudio.dao.EscrituracoesOrigemDao;
 import br.com.jway.claudio.dao.GuiasDao;
 import br.com.jway.claudio.dao.GuiasNotasFiscaisDao;
 import br.com.jway.claudio.dao.NotasFiscaisDao;
@@ -22,6 +23,7 @@ import br.com.jway.claudio.dao.PessoaDao;
 import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
 import br.com.jway.claudio.dao.PrestadoresDao;
 import br.com.jway.claudio.dao.PrestadoresOptanteSimplesDao;
+import br.com.jway.claudio.dao.ServicosOrigemDao;
 import br.com.jway.claudio.dao.TomadoresDao;
 import br.com.jway.claudio.entidadesOrigem.CnaeServicosContribuinte;
 import br.com.jway.claudio.entidadesOrigem.ContribuinteOrigem;
@@ -43,7 +45,6 @@ import br.com.jway.claudio.model.Tomadores;
 import br.com.jway.claudio.util.FileLog;
 import br.com.jway.claudio.util.Util;
 import br.com.jway.claudio.dao.MunicipiosIbgeDao;
-import br.com.jway.claudio.dao.NotasFiscaisCanceladasDao;
 
 public class ExtractorService {
 
@@ -59,12 +60,10 @@ public class ExtractorService {
 	private MunicipiosIbgeDao municipiosIbgeDao = new MunicipiosIbgeDao();
 	private PessoaDao pessoaDao = new PessoaDao();
 	private GuiasNotasFiscaisDao guiasNotasFiscaisDao = new GuiasNotasFiscaisDao();
-	private Map<String, ServicosOrigem> mapServicosPorCodigo = new Hashtable<String, ServicosOrigem>();
-	private Map<String, ServicosOrigem> mapServicosPorId = new Hashtable<String, ServicosOrigem>();
-	private Map<String, EscrituracoesOrigem> mapEscrituracoes = new Hashtable<String, EscrituracoesOrigem>();
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem = new Hashtable<String, List<ServicosNotasFiscaisOrigem>>();
-	private NotasFiscaisCanceladasDao notasFiscaisCanceladasDao = new NotasFiscaisCanceladasDao();
 	private NotasFiscaisSubstDao notasFiscaisSubstDao;
+	private EscrituracoesOrigemDao escrituracoesOrigemDao = new EscrituracoesOrigemDao(); 
+	private ServicosOrigemDao servicosOrigemDao = new ServicosOrigemDao();
 
 	public List<String> excluiParaProcessarNivel1() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
@@ -90,7 +89,7 @@ public class ExtractorService {
 	}
 
 	public List<String> excluiParaProcessarNivel4() {
-		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas");
+		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisSubst");
 	}
 
 	public void excluiDados(String nomeEntidade) {
@@ -121,24 +120,36 @@ public class ExtractorService {
 
 		FileLog log = new FileLog("notas_fiscais");
 
-		if (mapEscrituracoes == null || mapEscrituracoes.isEmpty()) {
-			throw new Exception("Tabela de Escrituracoes vazia.");
-		}
-
-		if (mapServicosNotasFiscaisOrigem == null || mapServicosNotasFiscaisOrigem.isEmpty()) {
-			throw new Exception("Tabela de Servicos/Notas Fiscais vazia.");
-		}
-
+		int fator = 0;
+		int totalLines = 0;
+		double percent = 0;
+		NotasFiscais nf;
+		Prestadores pr;
+		Pessoa pessoa;
+		EscrituracoesOrigem escrituracoes;
+		String inscricaoTomador;
+		NotasFiscaisOrigem nfOrigem;
+		Tomadores t;
+		EscrituracoesOrigem escrituracaoSubstituida;
+		
 		for (String linha : dadosList) {
-			if (linha == null || linha.trim().isEmpty()) {
-				break;
+			
+			fator++;
+			totalLines++;
+			if (fator == 1000) {
+				fator = 0;
+				percent = (totalLines / dadosList.size() * 100);
+				System.out.println("Linhas processadas: " + totalLines + " ou " + percent + " % de " 
+						+ dadosList.size() + " - "+ Util.getDataHoraAtual());
 			}
 
 			List<String> arrayAux = util.splitRegistro(linha);
+			
+			nf = new NotasFiscais();
 
 			try {
 
-				NotasFiscaisOrigem nfOrigem = new NotasFiscaisOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2),
+				nfOrigem = new NotasFiscaisOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2),
 						arrayAux.get(3), arrayAux.get(4), arrayAux.get(5), arrayAux.get(6), arrayAux.get(7),
 						arrayAux.get(8), arrayAux.get(9), arrayAux.get(10), arrayAux.get(11), arrayAux.get(12),
 						arrayAux.get(13), arrayAux.get(14), arrayAux.get(15), arrayAux.get(16), arrayAux.get(17),
@@ -156,8 +167,8 @@ public class ExtractorService {
 				}
 
 				String inscricaoPrestador = util.getCpfCnpj(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
-				Prestadores pr = prestadoresDao.findByInscricao(inscricaoPrestador);
-				Pessoa pessoa = pessoaDao.findByCnpjCpf(inscricaoPrestador);
+				pr = prestadoresDao.findByInscricao(inscricaoPrestador);
+				pessoa = pessoaDao.findByCnpjCpf(inscricaoPrestador);
 				try {
 					if (pr == null || pr.getId() == 0
 							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
@@ -169,12 +180,29 @@ public class ExtractorService {
 					e.printStackTrace();
 				}
 
-				NotasFiscais nf = new NotasFiscais();
-				EscrituracoesOrigem escrituracoes = mapEscrituracoes.get(nfOrigem.getId());
+				escrituracoes = escrituracoesOrigemDao.findByIdNotaFiscal(nfOrigem.getId());
+				try {
+					if (escrituracoes == null) {
+						System.out.println(
+								"Escrituração não encontrada:" + pessoa.getNome() + " nota:" + nf.getNumeroNota());
+						log.fillError(linha,
+								"Escrituração não encontrada: " + pessoa.getNome() + " nota:" + nf.getNumeroNota());
+						throw new Exception();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
 				nf.setIdOrigem(Long.parseLong(nfOrigem.getId()));
-				nf.setDataHoraEmissao(util.getStringToDateHoursMinutes(nfOrigem.getDataDeCriacao()));
+				
+				if (util.isEmptyOrNull(nfOrigem.getCompetencia())) {
+				nf.setDataHoraEmissao(util.getStringToDateHoursMinutes(nfOrigem.getCompetencia()));
+				} else {
+					nf.setDataHoraEmissao(util.getStringToDateHoursMinutes(nfOrigem.getDataDeCriacao()));
+				}
+				
 				nf.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
-				String inscricaoTomador = util.getCpfCnpj(nfOrigem.getCnpjCpfTomador());
+				inscricaoTomador = util.getCpfCnpj(nfOrigem.getCnpjCpfTomador());
 				if ("F".equals(util.getTipoPessoa(inscricaoTomador))) {
 					if (Util.validarCpf(inscricaoTomador)) {
 						nf.setInscricaoTomador(inscricaoTomador);
@@ -219,11 +247,7 @@ public class ExtractorService {
 						BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 				nf.setValorTotalDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
 				nf.setServicoPrestadoForaPais("N");
-				try {
-					nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
-				} catch (Exception e) {
-					nf.setDataHoraRps(nf.getDataHoraEmissao());
-				}
+				nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
 				nf.setNumeroRps(nf.getNumeroNota());
 				nf.setSerieRps("C");
 				List<BigDecimal> lista = Arrays.asList(nf.getValorCofins(), nf.getValorCsll(), nf.getValorInss(),
@@ -246,10 +270,11 @@ public class ExtractorService {
 				nf.setEscrituracaoSituacao(escrituracoes.getSituacao());
 				nf.setEscrituracaoTipoDaNotafiscal(escrituracoes.getTipoDaNotaFiscal());
 				if (!util.isEmptyOrNull(escrituracoes.getIdEscrituracaoSubstituida())) {
-					EscrituracoesOrigem escrituracaoSubstituida = mapEscrituracoes
-							.get(escrituracoes.getIdEscrituracaoSubstituida());
+					escrituracaoSubstituida = escrituracoesOrigemDao.findById(escrituracoes.getIdEscrituracaoSubstituida());
 					if (escrituracaoSubstituida == null) {
 						log.fillError(linha, "Erro Escrituracao substituida não encontrada: "
+								+ escrituracoes.getIdEscrituracaoSubstituida());
+						System.out.println("Erro Escrituracao substituida não encontrada: "
 								+ escrituracoes.getIdEscrituracaoSubstituida());
 					} else {
 						nf.setIdNotaFiscalSubstituida(escrituracaoSubstituida.getIdNotaFiscal());
@@ -258,7 +283,7 @@ public class ExtractorService {
 				nf = notasFiscaisDao.save(nf);
 
 				// tomadores
-				Tomadores t = null;
+				t = null;
 
 				if (!util.isEmptyOrNull(nf.getInscricaoTomador())
 						&& !util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())) {
@@ -277,7 +302,8 @@ public class ExtractorService {
 							t.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefoneTomador().trim()));
 							t.setEmail(util.trataEmail(nfOrigem.getEmailTomador()));
 
-							// Complementando o endereço Tomador pode estar no cadastro de pessoa
+							// Complementando o endereço Tomador pode estar no
+							// cadastro de pessoa
 							Pessoa pessoaTomador = pessoaDao.findByCnpjCpf(t.getInscricaoTomador());
 							if (pessoaTomador != null) {
 								t.setBairro(pessoaTomador.getBairro());
@@ -294,7 +320,7 @@ public class ExtractorService {
 								t.setEndereco(null);
 								t.setMunicipio(null);
 								t.setMunicipioIbge(null);
-								
+
 							}
 
 							trataNumerosTelefones(t);
@@ -316,16 +342,22 @@ public class ExtractorService {
 				log.fillError(linha, "Erro NotasFiscais ", e2);
 				e2.printStackTrace();
 			}
+			pr = null;
+			nf = null;
+			nfOrigem = null;
+			linha = null;
+			t = null;
+			pessoa = null;
 
 		}
+		log.close();
 
 	}
 
 	private void processaDemaisTiposNotas(Prestadores p, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log,
 			String linha, Tomadores t, Pessoa pessoa) {
 		// -- serviços
-		NotasThreadService nfServico = new NotasThreadService(p, nf, nfOrigem, log, linha, "S", null, t, pessoa,
-				mapServicosNotasFiscaisOrigem, mapServicosPorCodigo, mapServicosPorId);
+		NotasThreadService nfServico = new NotasThreadService(p, nf, nfOrigem, log, linha, "S", null, t, pessoa, mapServicosNotasFiscaisOrigem);
 		Thread s = new Thread(nfServico);
 		s.start();
 
@@ -498,14 +530,6 @@ public class ExtractorService {
 
 	public void processaDadosAtividadeEconomicaContribuinte(List<String> dadosList) {
 
-		if (mapServicosPorCodigo == null || mapServicosPorCodigo.isEmpty()) {
-			try {
-				throw new Exception("Tabela de Serviços não encontrada.");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
 		FileLog log = new FileLog("cnae_servicos_contribuintes");
 		for (String linha : dadosList) {
 
@@ -529,7 +553,7 @@ public class ExtractorService {
 				}
 				Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
 				Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
-				ServicosOrigem servico = mapServicosPorCodigo.get(cnae.getServicoCodigo());
+				ServicosOrigem servico = servicosOrigemDao.findByIdCodigo((cnae.getServicoCodigo()));
 
 				try {
 					PrestadoresAtividades pa = new PrestadoresAtividades();
@@ -805,58 +829,6 @@ public class ExtractorService {
 		return t;
 	}
 
-	public void processaDadosServicos(List<String> dadosList) {
-		FileLog log = new FileLog("servicos");
-		for (String linha : dadosList) {
-			if (linha == null || linha.trim().isEmpty()) {
-				break;
-			}
-
-			List<String> arrayAux = util.splitRegistro(linha);
-
-			ServicosOrigem servicos = new ServicosOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2),
-					arrayAux.get(3), arrayAux.get(4), arrayAux.get(5));
-			if (servicos != null && servicos.getCodigo() != null) {
-				servicos.setCodigo(servicos.getCodigo().replace("a", "").replace("b", ""));
-			}
-			try {
-				mapServicosPorCodigo.put(servicos.getCodigo(), servicos);
-				mapServicosPorId.put(servicos.getId().trim(), servicos);
-
-			} catch (Exception e) {
-				log.fillError(linha, "serviços", e);
-
-			}
-		}
-
-	}
-
-	public void processaDadosEscrituracoes(List<String> dadosList) {
-		FileLog log = new FileLog("escrituracoes");
-		for (String linha : dadosList) {
-			if (linha == null || linha.trim().isEmpty()) {
-				break;
-			}
-
-			List<String> arrayAux = util.splitRegistro(linha);
-
-			EscrituracoesOrigem escrituracoes = new EscrituracoesOrigem(arrayAux.get(0), arrayAux.get(1),
-					arrayAux.get(2), arrayAux.get(3), arrayAux.get(4), arrayAux.get(5), arrayAux.get(6),
-					arrayAux.get(7), arrayAux.get(8), arrayAux.get(9), arrayAux.get(10), arrayAux.get(11),
-					arrayAux.get(12), arrayAux.get(13), arrayAux.get(14), arrayAux.get(15), arrayAux.get(16),
-					arrayAux.get(17), arrayAux.get(18), arrayAux.get(19), arrayAux.get(20));
-
-			try {
-				mapEscrituracoes.put(escrituracoes.getIdNotaFiscal(), escrituracoes);
-
-			} catch (Exception e) {
-				log.fillError(linha, "", e);
-
-			}
-		}
-
-	}
-
 	public void processaDadosServicosNotasFiscais(List<String> dadosList) {
 		FileLog log = new FileLog("servicos_notas_fiscais");
 		for (String linha : dadosList) {
@@ -941,14 +913,19 @@ public class ExtractorService {
 
 		FileLog log = new FileLog("notas_fiscais_substitutas");
 
+		NotasFiscais nfSubstituida;
+		notasFiscaisDao = new NotasFiscaisDao();
+		NotasFiscaisSubst nfsub;
+		notasFiscaisSubstDao = new NotasFiscaisSubstDao();
+		
 		for (NotasFiscais nf : notasFiscaisDao.findSubstitutas()) {
 
 			// buscando a nota que foi substituida
-			NotasFiscais nfSubstituida = notasFiscaisDao
+			nfSubstituida = notasFiscaisDao
 					.findByIdOrigem(Long.parseLong(nf.getIdNotaFiscalSubstituida()));
 			if (nfSubstituida != null) {
 				try {
-					NotasFiscaisSubst nfsub = new NotasFiscaisSubst();
+					nfsub = new NotasFiscaisSubst();
 					nfsub.setDatahorasubstituicao(nfSubstituida.getDataHoraEmissao());
 					nfsub.setInscricaoPrestador(nfSubstituida.getInscricaoPrestador());
 					nfsub.setNumeroNota(Long.valueOf(nfSubstituida.getNumeroNota()));
@@ -956,12 +933,13 @@ public class ExtractorService {
 					nfsub.setMotivo("Dados incorretos");
 					nfsub.setNotasFiscais(nf);
 					notasFiscaisSubstDao.save(nfsub);
-
+					nfsub = null;
 				} catch (Exception e) {
 					e.printStackTrace();
 					log.fillError(nfSubstituida.getNumeroNota().toString() + nfSubstituida.getNomePrestador(),
 							"Nota Fiscal Substituida", e);
 				}
+				nfSubstituida = null;	
 			} else {
 				log.fillError("Nota Fiscal substituida não encontrada:", nf.getIdNotaFiscalSubstituida());
 			}

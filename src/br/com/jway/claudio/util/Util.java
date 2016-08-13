@@ -574,7 +574,7 @@ public class Util {
 		    gc.setTime(date);
 		    gc.add(Calendar.HOUR,12);
 		    return gc.getTime();
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

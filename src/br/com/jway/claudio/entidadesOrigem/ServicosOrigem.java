@@ -1,17 +1,26 @@
 package br.com.jway.claudio.entidadesOrigem;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "servicos_origem")
 public class ServicosOrigem {
 	
-	private String id;
+	@Id
+	@Column(name = "id")
+	private long id;
 	private String codigo;
 	private String nome;
 	private String aliquota;
 	private String cnaes;
 	private String dataDeCriacao;
-	public String getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getCodigo() {
@@ -46,7 +55,7 @@ public class ServicosOrigem {
 	}
 	public ServicosOrigem(String id, String codigo, String nome, String aliquota, String cnaes, String dataDeCriacao) {
 		super();
-		this.id = id;
+		this.id = Long.parseLong(id);
 		this.codigo = codigo;
 		this.nome = nome;
 		this.aliquota = aliquota;
@@ -54,7 +63,9 @@ public class ServicosOrigem {
 		this.dataDeCriacao = dataDeCriacao;
 	}		
 	
-	
+	public ServicosOrigem() {
+		
+	}
 
 
 }

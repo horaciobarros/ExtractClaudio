@@ -261,4 +261,8 @@ public class EscrituracoesOrigem implements Serializable {
 		this.servicoPrestadoPorEmpresaDoExterior = servicoPrestadoPorEmpresaDoExterior;
 	}
    
+   public EscrituracoesOrigem() {
+	   
+   }
+   
 }

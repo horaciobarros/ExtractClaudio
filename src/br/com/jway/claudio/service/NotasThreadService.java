@@ -4,19 +4,16 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import br.com.jway.claudio.dao.GuiasNotasFiscaisDao;
 import br.com.jway.claudio.dao.NotasFiscaisCanceladasDao;
 import br.com.jway.claudio.dao.NotasFiscaisEmailsDao;
 import br.com.jway.claudio.dao.NotasFiscaisPrestadoresDao;
 import br.com.jway.claudio.dao.NotasFiscaisServicosDao;
 import br.com.jway.claudio.dao.NotasFiscaisTomadoresDao;
-import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
+import br.com.jway.claudio.dao.ServicosOrigemDao;
 import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosNotasFiscaisOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosOrigem;
-import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
 import br.com.jway.claudio.model.Guias;
-import br.com.jway.claudio.model.GuiasNotasFiscais;
 import br.com.jway.claudio.model.NotasFiscais;
 import br.com.jway.claudio.model.NotasFiscaisCanceladas;
 import br.com.jway.claudio.model.NotasFiscaisEmails;
@@ -25,7 +22,6 @@ import br.com.jway.claudio.model.NotasFiscaisServicos;
 import br.com.jway.claudio.model.NotasFiscaisTomadores;
 import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.model.Prestadores;
-import br.com.jway.claudio.model.PrestadoresAtividades;
 import br.com.jway.claudio.model.Tomadores;
 import br.com.jway.claudio.util.FileLog;
 import br.com.jway.claudio.util.Util;
@@ -37,21 +33,31 @@ public class NotasThreadService implements Runnable {
 	private FileLog log;
 	private String linha;
 	private String tipoNotaFilha;
-	private Guias guia;
 	private Util util = new Util();
 	private NotasFiscaisServicosDao notasFiscaisServicosDao = new NotasFiscaisServicosDao();
 	private NotasFiscaisEmailsDao notasFiscaisEmailsDao = new NotasFiscaisEmailsDao();
 	private NotasFiscaisPrestadoresDao notasFiscaisPrestadoresDao = new NotasFiscaisPrestadoresDao();
-	private GuiasNotasFiscaisDao guiasNotasFiscaisDao = new GuiasNotasFiscaisDao();
 	private Tomadores tomadores;
 	private NotasFiscaisTomadoresDao notasFiscaisTomadoresDao = new NotasFiscaisTomadoresDao();
-	private PrestadoresAtividadesDao prestadoresAtividadesDao = new PrestadoresAtividadesDao();
 	private Pessoa pessoa;
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem;
-	private Map<String, ServicosOrigem> mapServicosPorCodigo;
-	private Map<String, ServicosOrigem> mapServicosPorId;
 	private NotasFiscaisCanceladasDao notasFiscaisCanceladasDao = new NotasFiscaisCanceladasDao();
+	private ServicosOrigemDao servicosOrigemDao = new ServicosOrigemDao();
 
+	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
+			String tipoNotaFilha, Guias guia, Tomadores tomadores, Pessoa pessoa, Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem2) {
+		this.pessoa = pessoa;
+		this.pr = pr;
+		this.nf = nf;
+		this.nfOrigem = nfOrigem;
+		this.log = log;
+		this.linha = linha;
+		this.tipoNotaFilha = tipoNotaFilha;
+		this.tomadores = tomadores;
+		this.mapServicosNotasFiscaisOrigem = mapServicosNotasFiscaisOrigem2;
+
+	}
+	
 	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
 			String tipoNotaFilha, Guias guia, Tomadores tomadores, Pessoa pessoa) {
 		this.pessoa = pessoa;
@@ -61,27 +67,11 @@ public class NotasThreadService implements Runnable {
 		this.log = log;
 		this.linha = linha;
 		this.tipoNotaFilha = tipoNotaFilha;
-		this.guia = guia;
 		this.tomadores = tomadores;
 
 	}
 
-	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
-			String tipoNotaFilha, Guias g, Tomadores t, Pessoa pessoa,
-			Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem,
-			Map<String, ServicosOrigem> mapServicosPorCodigo, Map<String, ServicosOrigem> mapServicosPorId) {
-		this.pessoa = pessoa;
-		this.pr = pr;
-		this.nf = nf;
-		this.nfOrigem = nfOrigem;
-		this.log = log;
-		this.linha = linha;
-		this.tipoNotaFilha = tipoNotaFilha;
-		this.mapServicosNotasFiscaisOrigem = mapServicosNotasFiscaisOrigem;
-		this.mapServicosPorCodigo = mapServicosPorCodigo;
-		this.mapServicosPorId = mapServicosPorId;
-
-	}
+	
 
 	@Override
 	public void run() {
@@ -98,12 +88,13 @@ public class NotasThreadService implements Runnable {
 				StringBuilder sbItem = new StringBuilder();
 
 				for (ServicosNotasFiscaisOrigem s : listaItens) {
-					ServicosOrigem servico = mapServicosPorId.get(s.getIdServico().trim());
-
+					ServicosOrigem servico = servicosOrigemDao.findById(Long.parseLong(s.getIdServico().trim()));
+					
 					if (servico != null) {
 						String codigoServico = servico.getCodigo();
-						codigoServico = codigoServico.replaceAll("\\.", "");
-						if (!codigoServico.trim().isEmpty()) {
+						
+						if (codigoServico!=null && !codigoServico.trim().isEmpty()) {
+							codigoServico = codigoServico.replaceAll("\\.", "").replace("a", "").replace("b", "");
 							sbItem.append(codigoServico);
 							break;
 						}
@@ -142,6 +133,7 @@ public class NotasThreadService implements Runnable {
 					nfs.setAliquota(BigDecimal.valueOf(1));
 				}
 				notasFiscaisServicosDao.save(nfs);
+				nfs = null;
 
 			} catch (Exception e) {
 				System.out.println(nfs.getItemListaServico());
@@ -160,6 +152,7 @@ public class NotasThreadService implements Runnable {
 				}
 				nfc.setNotasFiscais(nf);
 				notasFiscaisCanceladasDao.save(nfc);
+				nfc = null;
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -176,6 +169,7 @@ public class NotasThreadService implements Runnable {
 				nfe.setNotasFiscais(nf);
 				nfe.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
 				notasFiscaisEmailsDao.save(nfe);
+				nfe = null;
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.fillError(linha, "Nota Fiscal Email", e);
@@ -201,6 +195,7 @@ public class NotasThreadService implements Runnable {
 				nfp.setTipoPessoa(util.getTipoPessoa(nfOrigem.getCpfCnpjPrestador()));
 				nfp.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefonePrestador()));
 				notasFiscaisPrestadoresDao.save(nfp);
+				nfp = null;
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -236,6 +231,7 @@ public class NotasThreadService implements Runnable {
 				nft.setOptanteSimples(tomadores.getOptanteSimples());
 				nft.setTipoPessoa(tomadores.getTipoPessoa());
 				notasFiscaisTomadoresDao.save(nft);
+				nft = null;
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.fillError(linha, "Nota Fiscal Tomadores", e);

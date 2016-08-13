@@ -87,6 +87,11 @@ public class HibernateUtil {
 				configuration
 				.addAnnotatedClass(br.com.jway.claudio.model.Logradouros.class);
 				
+				configuration
+				.addAnnotatedClass(br.com.jway.claudio.entidadesOrigem.ServicosOrigem.class);
+				
+				configuration
+				.addAnnotatedClass(br.com.jway.claudio.entidadesOrigem.EscrituracoesOrigem.class);
 				
 				SessionFactory sessionFactory = configuration.configure(file)
 						.buildSessionFactory();
