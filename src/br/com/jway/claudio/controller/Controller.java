@@ -88,7 +88,7 @@ public class Controller {
 			extractorService.processaDadosServicosNotasFiscais(dadosList);
 			System.out.println("--- Fim de Serviços Notas fiscais ---");
 
-			System.out.println("Lendo Notas Fiscais");
+			System.out.println("Lendo Notas Fiscais  " + Util.getDataHoraAtual());
 			dadosList = extractorService.lerArquivosClaudio("notas_fiscais");
 			System.out.println("Gravando Notas Fiscais");
 			try {

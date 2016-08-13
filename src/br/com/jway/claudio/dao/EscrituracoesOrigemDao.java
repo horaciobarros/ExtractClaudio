@@ -1,11 +1,14 @@
 package br.com.jway.claudio.dao;
 
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 import br.com.jway.claudio.entidadesOrigem.EscrituracoesOrigem;
+import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.util.HibernateUtil;
 
 public class EscrituracoesOrigemDao {
@@ -66,6 +69,30 @@ public class EscrituracoesOrigemDao {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public List<EscrituracoesOrigem> findAll() {
+		Query query = sessionFactory.openSession()
+				.createQuery("from EscrituracoesOrigem e ");
+
+		try {
+			List<EscrituracoesOrigem> escrituracoes = query.list();
+
+			return escrituracoes;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public Map<String, EscrituracoesOrigem> findAllMapReturn() {
+		List<EscrituracoesOrigem> lista = findAll();
+		Map<String, EscrituracoesOrigem> mapEscrituracoesOrigem = new Hashtable<String, EscrituracoesOrigem>();
+		for (EscrituracoesOrigem e : lista) {
+			mapEscrituracoesOrigem.put(e.getIdNotaFiscal(), e);
+		}
+		
+		return mapEscrituracoesOrigem;
 	}
 
 }

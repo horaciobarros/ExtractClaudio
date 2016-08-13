@@ -1,6 +1,8 @@
 package br.com.jway.claudio.dao;
 
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -99,6 +101,17 @@ public class PrestadoresDao {
 		Query query = session.createQuery(sql);
 		query.executeUpdate();
 		tx.commit();session.close();
+	}
+
+	public Map<String, Prestadores> findAllMapReturn() {
+		
+		List<Prestadores> lista = findAll();
+		Map<String, Prestadores> mapPrestadores = new Hashtable<String, Prestadores>();
+		for (Prestadores pr : lista) {
+			mapPrestadores.put(pr.getInscricaoPrestador(), pr);
+		}
+		
+		return mapPrestadores;
 	}
 
 }

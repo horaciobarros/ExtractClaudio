@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -123,6 +124,7 @@ public class ExtractorService {
 		int fator = 0;
 		int totalLines = 0;
 		double percent = 0;
+		double divisor = 0;
 		NotasFiscais nf;
 		Prestadores pr;
 		Pessoa pessoa;
@@ -131,6 +133,11 @@ public class ExtractorService {
 		NotasFiscaisOrigem nfOrigem;
 		Tomadores t;
 		EscrituracoesOrigem escrituracaoSubstituida;
+		DecimalFormat decimal = new DecimalFormat( "0.00" );
+		
+		Map<String, Prestadores> mapPrestadores = prestadoresDao.findAllMapReturn();
+		Map<String, Pessoa> mapPessoa = pessoaDao.findAllMapReturn();
+		Map<String, EscrituracoesOrigem> mapEscrituracoesOrigem = escrituracoesOrigemDao.findAllMapReturn();
 		
 		for (String linha : dadosList) {
 			
@@ -138,8 +145,9 @@ public class ExtractorService {
 			totalLines++;
 			if (fator == 1000) {
 				fator = 0;
-				percent = (totalLines / dadosList.size() * 100);
-				System.out.println("Linhas processadas: " + totalLines + " ou " + percent + " % de " 
+				divisor = dadosList.size();
+				percent = (totalLines / divisor * 100);
+				System.out.println("Linhas processadas: " + totalLines + " ou " + decimal.format(percent) + " % de " 
 						+ dadosList.size() + " - "+ Util.getDataHoraAtual());
 			}
 
@@ -167,8 +175,8 @@ public class ExtractorService {
 				}
 
 				String inscricaoPrestador = util.getCpfCnpj(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
-				pr = prestadoresDao.findByInscricao(inscricaoPrestador);
-				pessoa = pessoaDao.findByCnpjCpf(inscricaoPrestador);
+				pr = mapPrestadores.get(inscricaoPrestador);
+				pessoa = mapPessoa.get(inscricaoPrestador);
 				try {
 					if (pr == null || pr.getId() == 0
 							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
@@ -180,7 +188,7 @@ public class ExtractorService {
 					e.printStackTrace();
 				}
 
-				escrituracoes = escrituracoesOrigemDao.findByIdNotaFiscal(nfOrigem.getId());
+				escrituracoes = mapEscrituracoesOrigem.get(nfOrigem.getId()); // pesquisa pela id nota
 				try {
 					if (escrituracoes == null) {
 						System.out.println(
@@ -270,11 +278,9 @@ public class ExtractorService {
 				nf.setEscrituracaoSituacao(escrituracoes.getSituacao());
 				nf.setEscrituracaoTipoDaNotafiscal(escrituracoes.getTipoDaNotaFiscal());
 				if (!util.isEmptyOrNull(escrituracoes.getIdEscrituracaoSubstituida())) {
-					escrituracaoSubstituida = escrituracoesOrigemDao.findById(escrituracoes.getIdEscrituracaoSubstituida());
+					escrituracaoSubstituida = mapEscrituracoesOrigem.get(escrituracoes.getIdEscrituracaoSubstituida());
 					if (escrituracaoSubstituida == null) {
 						log.fillError(linha, "Erro Escrituracao substituida não encontrada: "
-								+ escrituracoes.getIdEscrituracaoSubstituida());
-						System.out.println("Erro Escrituracao substituida não encontrada: "
 								+ escrituracoes.getIdEscrituracaoSubstituida());
 					} else {
 						nf.setIdNotaFiscalSubstituida(escrituracaoSubstituida.getIdNotaFiscal());

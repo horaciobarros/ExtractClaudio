@@ -1,6 +1,8 @@
 package br.com.jway.claudio.dao;
 
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -8,6 +10,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import br.com.jway.claudio.model.Pessoa;
+import br.com.jway.claudio.model.Prestadores;
 import br.com.jway.claudio.util.HibernateUtil;
 
 public class PessoaDao {
@@ -119,5 +122,16 @@ public class PessoaDao {
 		}
 		return null;
 	}
+
+	public Map<String, Pessoa> findAllMapReturn() {
+			
+			List<Pessoa> lista = findAll();
+			Map<String, Pessoa> mapPessoa = new Hashtable<String, Pessoa>();
+			for (Pessoa p : lista) {
+				mapPessoa.put(p.getCnpjCpf(), p);
+			}
+			
+			return mapPessoa;
+		}
 
 }
