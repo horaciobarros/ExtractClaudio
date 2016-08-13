@@ -125,14 +125,6 @@ public class ExtractorService {
 		int totalLines = 0;
 		double percent = 0;
 		double divisor = 0;
-		NotasFiscais nf;
-		Prestadores pr;
-		Pessoa pessoa;
-		EscrituracoesOrigem escrituracoes;
-		String inscricaoTomador;
-		NotasFiscaisOrigem nfOrigem;
-		Tomadores t;
-		EscrituracoesOrigem escrituracaoSubstituida;
 		DecimalFormat decimal = new DecimalFormat( "0.00" );
 		
 		Map<String, Prestadores> mapPrestadores = prestadoresDao.findAllMapReturn();
@@ -172,11 +164,19 @@ public class ExtractorService {
 			if (totalLines >=10000 && totalLines%10000 == 0){
 				Util.pausar(1000 * 10);
 			}
-			NotaMaeThreadService notaMaeThread = new NotaMaeThreadService(linha, log, mapPrestadores, mapPessoa, mapEscrituracoesOrigem, mapServicosNotasFiscaisOrigem, util);
+			NotaMaeThreadService notaMaeThread = new NotaMaeThreadService(linha, log, mapPrestadores, mapPessoa, mapEscrituracoesOrigem,
+					mapServicosNotasFiscaisOrigem, util);
 			Thread thread = new Thread(notaMaeThread);
 			thread.start();
 
 		}
+		
+		if(ExtractorService.threadsAtivas != 0){
+			while(ExtractorService.threadsAtivas>0){
+				Util.pausar(3000);
+			}
+		} 
+		
 		log.close();
 
 	}

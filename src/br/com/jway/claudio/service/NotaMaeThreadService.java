@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import br.com.jway.claudio.dao.EscrituracoesOrigemDao;
 import br.com.jway.claudio.dao.GuiasNotasFiscaisDao;
 import br.com.jway.claudio.dao.MunicipiosIbgeDao;
 import br.com.jway.claudio.dao.NotasFiscaisCanceladasDao;
@@ -56,6 +57,7 @@ public class NotaMaeThreadService implements Runnable {
 	private TomadoresDao tomadoresDao = new TomadoresDao();
 	private PessoaDao pessoaDao = new PessoaDao();
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem;
+	private EscrituracoesOrigemDao escrituracoesOrigemDao = new EscrituracoesOrigemDao();
 	
 	public NotaMaeThreadService(String linha, FileLog log, Map<String, Prestadores> mapPrestadores, 
 			Map<String, Pessoa> mapPessoa, Map<String, EscrituracoesOrigem> mapEscrituracoesOrigem, Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem, Util util) {
@@ -177,7 +179,18 @@ public class NotaMaeThreadService implements Runnable {
 							BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 					nf.setValorTotalDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
 					nf.setServicoPrestadoForaPais("N");
-					nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
+					if (nfOrigem.getCompetencia() != null) {
+						Long ano = Long.parseLong(nfOrigem.getCompetencia().substring(0, 4));
+						if (ano < 1000) {
+							nf.setDataHoraRps(nf.getDataHoraEmissao());
+						} else {
+							nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
+						}
+					}  else {
+						nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
+					}
+					
+					
 					nf.setNumeroRps(nf.getNumeroNota());
 					nf.setSerieRps("C");
 					List<BigDecimal> lista = Arrays.asList(nf.getValorCofins(), nf.getValorCsll(), nf.getValorInss(),
@@ -193,6 +206,8 @@ public class NotaMaeThreadService implements Runnable {
 					if (escrituracoes.getStatus() != null && escrituracoes.getStatus().contains("canceled")) {
 						nf.setSituacaoOriginal("C");
 
+					} else if (escrituracoes.getStatus() != null && escrituracoes.getStatus().contains("replaced")) {
+						nf.setSituacaoOriginal("S");
 					} else {
 						nf.setSituacaoOriginal("N");
 					}
@@ -200,7 +215,7 @@ public class NotaMaeThreadService implements Runnable {
 					nf.setEscrituracaoSituacao(escrituracoes.getSituacao());
 					nf.setEscrituracaoTipoDaNotafiscal(escrituracoes.getTipoDaNotaFiscal());
 					if (!util.isEmptyOrNull(escrituracoes.getIdEscrituracaoSubstituida())) {
-						escrituracaoSubstituida = mapEscrituracoesOrigem.get(escrituracoes.getIdEscrituracaoSubstituida());
+						escrituracaoSubstituida = escrituracoesOrigemDao.findById(escrituracoes.getIdEscrituracaoSubstituida().trim());
 						if (escrituracaoSubstituida == null) {
 							log.fillError(linha, "Erro Escrituracao substituida não encontrada: "
 									+ escrituracoes.getIdEscrituracaoSubstituida());

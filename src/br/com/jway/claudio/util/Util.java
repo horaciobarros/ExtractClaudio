@@ -21,10 +21,9 @@ import br.com.jway.claudio.model.Prestadores;
 import br.com.jway.claudio.model.Tomadores;
 
 public class Util {
-	
-	private static final String EMAIL_PATTERN = 
-	        "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-	        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+	private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
 	private static final Pattern pattern = Pattern.compile(EMAIL_PATTERN, Pattern.CASE_INSENSITIVE);
 
@@ -114,7 +113,7 @@ public class Util {
 
 		return null;
 	}
-	
+
 	public Date getStringToDateHoursMinutes(String data) {
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 		try {
@@ -126,7 +125,7 @@ public class Util {
 
 		return null;
 	}
-	
+
 	public Date getStringToDateHoursMinutesWithBars(String data) {
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 		try {
@@ -150,7 +149,7 @@ public class Util {
 
 		return null;
 	}
-	
+
 	public Date getStringToDate(String data, String pattern) {
 		DateFormat formatter = new SimpleDateFormat(pattern);
 		try {
@@ -168,7 +167,9 @@ public class Util {
 	}
 
 	public String getTipoPessoa(String inscricao) {
-		if (inscricao == null ){return "";}
+		if (inscricao == null) {
+			return "";
+		}
 		return (inscricao.trim().length() == 11 ? "F" : "J");
 	}
 
@@ -177,7 +178,7 @@ public class Util {
 		Double valorAux = Double.valueOf(0);
 
 		for (BigDecimal valor : lista) {
-			if (valor != null) { 
+			if (valor != null) {
 				valorAux += valor.doubleValue();
 			}
 		}
@@ -205,7 +206,6 @@ public class Util {
 		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
 		return calendar.getTime();
 	}
-
 
 	public String trataSeTiverVazio(String value) {
 		if (value == null || value.trim().isEmpty()) {
@@ -244,8 +244,8 @@ public class Util {
 		telefone = telefone.replaceAll("_", "");
 		telefone = telefone.replaceAll("\\(", "");
 		telefone = telefone.replaceAll("\\)", "");
-		if (telefone.length()>=11) {
-			telefone = telefone.substring(0,11);
+		if (telefone.length() >= 11) {
+			telefone = telefone.substring(0, 11);
 		}
 		return telefone.trim();
 	}
@@ -271,13 +271,13 @@ public class Util {
 					if (email.contains(";br")) {
 						email = email.replace(";br", ".br");
 					} else if (email.contains(";")) {
-						 int posicaoPv = email.indexOf(";");
-						 email = email.substring(0, posicaoPv);
+						int posicaoPv = email.indexOf(";");
+						email = email.substring(0, posicaoPv);
 					}
 				} else {
 					email = null;
 				}
-				
+
 			}
 		}
 		return email;
@@ -289,17 +289,17 @@ public class Util {
 		}
 		return conteudo;
 	}
-	
+
 	public boolean isEmptyOrNull(String content) {
-		
+
 		if (content == null) {
 			return true;
-		} 
-		
+		}
+
 		if (content.trim().isEmpty()) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -322,15 +322,15 @@ public class Util {
 		}
 		return conteudo;
 	}
-	
+
 	public Date getStringToDateHoursMinutesAdd2hours(String data) {
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		try {
 			Date date = (Date) formatter.parse(data);
 			GregorianCalendar gc = new GregorianCalendar();
-		    gc.setTime(date);
-		    gc.add(Calendar.HOUR,2);
-		    return gc.getTime();
+			gc.setTime(date);
+			gc.add(Calendar.HOUR, 2);
+			return gc.getTime();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -338,21 +338,20 @@ public class Util {
 		return null;
 	}
 
-	
-	public static boolean validarEmail(String email){
-		if (email == null || email.trim().isEmpty()){
+	public static boolean validarEmail(String email) {
+		if (email == null || email.trim().isEmpty()) {
 			return false;
 		}
-	    Matcher matcher = pattern.matcher(email);
-	    return matcher.matches();
-	 }
-	
+		Matcher matcher = pattern.matcher(email);
+		return matcher.matches();
+	}
+
 	public BigDecimal getStringToBigDecimal(String valor) {
 		valor = valor.replace(",", ".");
 		Double value = Double.valueOf(valor);
 		return BigDecimal.valueOf(value);
 	}
-	
+
 	public String getSituacaoTributaria(String situacaoTributaria) {
 		try {
 			if (situacaoTributaria.substring(0, 1).equals("R")) {
@@ -365,32 +364,36 @@ public class Util {
 
 		}
 	}
-	
+
 	public Date getStringXmlToDateHoursMinutes(String data) {
-		if (data!=null){
+		if (data != null) {
 			int dia = 0, mes = 0, ano = 0, horas = 0, minutos = 0;
-			dia = Integer.parseInt(data.substring(0,2));
-			mes = Integer.parseInt(data.substring(3,5));
-			ano = Integer.parseInt(data.substring(6,10));
-			horas = Integer.parseInt(data.substring(11,13));
+			dia = Integer.parseInt(data.substring(0, 2));
+			mes = Integer.parseInt(data.substring(3, 5));
+			ano = Integer.parseInt(data.substring(6, 10));
+			horas = Integer.parseInt(data.substring(11, 13));
 			minutos = Integer.parseInt(data.substring(14));
 			Date date = new GregorianCalendar(ano, mes, dia, horas, minutos).getTime();
-			
+
 			return date;
 		}
 		return null;
 	}
 
 	public String getCpfCnpj(String cpfCnpj) {
-		if (cpfCnpj == null || cpfCnpj.trim().isEmpty()){
+		if (cpfCnpj == null || cpfCnpj.trim().isEmpty()) {
 			return null;
 		}
-		if (cpfCnpj.length()==15 && cpfCnpj.endsWith("0")){cpfCnpj = cpfCnpj.substring(0,14);}
-		if (cpfCnpj.equals("093819000000109")){cpfCnpj = "09381900000109";}
-		cpfCnpj = cpfCnpj.replaceAll("\\.","");
-		cpfCnpj = cpfCnpj.replaceAll("-","");
-		cpfCnpj = cpfCnpj.replaceAll("/","");
-		cpfCnpj = cpfCnpj.replaceAll(" ","");
+		if (cpfCnpj.length() == 15 && cpfCnpj.endsWith("0")) {
+			cpfCnpj = cpfCnpj.substring(0, 14);
+		}
+		if (cpfCnpj.equals("093819000000109")) {
+			cpfCnpj = "09381900000109";
+		}
+		cpfCnpj = cpfCnpj.replaceAll("\\.", "");
+		cpfCnpj = cpfCnpj.replaceAll("-", "");
+		cpfCnpj = cpfCnpj.replaceAll("/", "");
+		cpfCnpj = cpfCnpj.replaceAll(" ", "");
 		return cpfCnpj.trim();
 	}
 
@@ -398,9 +401,10 @@ public class Util {
 		if ((cpf == null) || (cpf.length() != 11))
 			return false;
 		// considera-se erro cpf's formados por uma sequencia de numeros iguais
-		if (cpf.equals("00000000000") || cpf.equals("11111111111") || cpf.equals("22222222222") || cpf.equals("33333333333") || cpf.equals("44444444444")
-				|| cpf.equals("55555555555") || cpf.equals("66666666666") || cpf.equals("77777777777") || cpf.equals("88888888888") || cpf.equals("99999999999")
-				|| (cpf.length() != 11))
+		if (cpf.equals("00000000000") || cpf.equals("11111111111") || cpf.equals("22222222222")
+				|| cpf.equals("33333333333") || cpf.equals("44444444444") || cpf.equals("55555555555")
+				|| cpf.equals("66666666666") || cpf.equals("77777777777") || cpf.equals("88888888888")
+				|| cpf.equals("99999999999") || (cpf.length() != 11))
 			return (false);
 
 		char dig10, dig11;
@@ -490,69 +494,71 @@ public class Util {
 
 		return cnpj.equals(cnpj_calc);
 	}
-	
-	public List<String> splitRegistro(String linha){
-		//return Arrays.asList(linha.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+
+	public List<String> splitRegistro(String linha) {
+		// return
+		// Arrays.asList(linha.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
 		StringBuilder builder = new StringBuilder(linha);
 		boolean inQuotes = false;
 		for (int currentIndex = 0; currentIndex < builder.length(); currentIndex++) {
-		    char currentChar = builder.charAt(currentIndex);
-		    if (currentChar == '\"') inQuotes = !inQuotes;
-		    if (currentChar == ',' && inQuotes) {
-		        builder.setCharAt(currentIndex, ';');
-		    }
+			char currentChar = builder.charAt(currentIndex);
+			if (currentChar == '\"')
+				inQuotes = !inQuotes;
+			if (currentChar == ',' && inQuotes) {
+				builder.setCharAt(currentIndex, ';');
+			}
 		}
 		List<String> result = Arrays.asList(builder.toString().split(","));
 		Collections.replaceAll(result, "\"", "");
 		return result;
 	}
-	
-	public double corrigeDouble(Object obj){
+
+	public double corrigeDouble(Object obj) {
 		double valor = 0;
-		try{
-			if (obj!=null){
+		try {
+			if (obj != null) {
 				valor = Double.valueOf((double) obj);
 			}
+		} catch (Exception e) {
 		}
-		catch(Exception e){}
-		try{
-			if (obj!=null){
+		try {
+			if (obj != null) {
 				valor = (double) obj;
 			}
+		} catch (Exception e) {
 		}
-		catch(Exception e){}
-		try{
-			if (obj!=null){
+		try {
+			if (obj != null) {
 				valor = Double.valueOf((String) obj);
 			}
+		} catch (Exception e) {
 		}
-		catch(Exception e){}
-		try{
-			if (obj!=null){
-			 	valor = Double.valueOf((Integer) obj);
+		try {
+			if (obj != null) {
+				valor = Double.valueOf((Integer) obj);
 			}
+		} catch (Exception e) {
 		}
-		catch(Exception e){}
-		
+
 		return valor;
 	}
 
 	public String trataEndereco(String logradouro) {
-		
-		String logradouroAux = logradouro.replaceAll("\\.","");
-		logradouroAux = logradouroAux.replaceAll(",","");
-		logradouroAux = logradouroAux.replaceAll("-","");
-		logradouroAux = logradouroAux.replaceAll("Rua","R.");
-		logradouroAux = logradouroAux.replaceAll("\"","");
+
+		String logradouroAux = logradouro.replaceAll("\\.", "");
+		logradouroAux = logradouroAux.replaceAll(",", "");
+		logradouroAux = logradouroAux.replaceAll("-", "");
+		logradouroAux = logradouroAux.replaceAll("Rua", "R.");
+		logradouroAux = logradouroAux.replaceAll("\"", "");
 		if (!logradouroAux.isEmpty()) {
 			if (logradouroAux.length() > 50) {
-				logradouroAux = logradouroAux.substring(0,50);
+				logradouroAux = logradouroAux.substring(0, 50);
 			}
 			logradouro = logradouroAux;
- 		}
+		}
 		return logradouro;
 	}
-	
+
 	public static String getDataHoraAtual() {
 		Calendar calendar = new GregorianCalendar();
 		SimpleDateFormat out = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
@@ -560,7 +566,7 @@ public class Util {
 		calendar.setTime(date);
 		return (out.format(calendar.getTime()));
 	}
-	
+
 	public static void desligarComputador() {
 		try {
 			Runtime.getRuntime().exec("shutdown -s -t 480");
@@ -575,9 +581,9 @@ public class Util {
 		try {
 			Date date = (Date) formatter.parse(competencia);
 			GregorianCalendar gc = new GregorianCalendar();
-		    gc.setTime(date);
-		    gc.add(Calendar.HOUR,12);
-		    return gc.getTime();
+			gc.setTime(date);
+			gc.add(Calendar.HOUR, 12);
+			return gc.getTime();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -585,7 +591,7 @@ public class Util {
 		return null;
 
 	}
-	
+
 	public Pessoa trataNumerosTelefones(Pessoa pessoa) {
 
 		if (pessoa.getCelular() != null) {
@@ -707,7 +713,7 @@ public class Util {
 
 		return pessoa;
 	}
-	
+
 	public Prestadores trataNumerosTelefones(Prestadores p) {
 
 		if (p.getCelular() != null) {
@@ -724,15 +730,13 @@ public class Util {
 		return p;
 	}
 
-
-
 	public static void pausar(int milesimos) {
 		try {
 			Thread.sleep(milesimos);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}
 	}
 
 }
