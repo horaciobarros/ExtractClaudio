@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import br.com.jway.claudio.model.Pessoa;
+import br.com.jway.claudio.model.Prestadores;
+import br.com.jway.claudio.model.Tomadores;
+
 public class Util {
 	
 	private static final String EMAIL_PATTERN = 
@@ -580,6 +584,155 @@ public class Util {
 
 		return null;
 
+	}
+	
+	public Pessoa trataNumerosTelefones(Pessoa pessoa) {
+
+		if (pessoa.getCelular() != null) {
+			pessoa.setCelular(pessoa.getCelular().replaceAll("\\(", ""));
+			pessoa.setCelular(pessoa.getCelular().replaceAll("\\)", ""));
+			pessoa.setCelular(pessoa.getCelular().replaceAll("-", ""));
+		}
+		if (pessoa.getTelefone() != null) {
+			pessoa.setTelefone(pessoa.getTelefone().replaceAll("\\(", ""));
+			pessoa.setTelefone(pessoa.getTelefone().replaceAll("\\)", ""));
+			pessoa.setTelefone(pessoa.getTelefone().replaceAll("\\-", ""));
+		}
+
+		if (pessoa.getCelular() != null && !pessoa.getCelular().isEmpty()) {
+			if (pessoa.getCelular().substring(0, 1).equals("0")) {
+				pessoa.setCelular(pessoa.getCelular().substring(1));
+			}
+		}
+		if (pessoa.getTelefone() != null && !pessoa.getTelefone().isEmpty()) {
+			try {
+				if (pessoa.getTelefone().substring(0, 1).equals("0")) {
+					pessoa.setTelefone(pessoa.getCelular().substring(1));
+				}
+			} catch (Exception e) {
+
+			}
+		}
+
+		return pessoa;
+	}
+
+	public Tomadores anulaCamposVazios(Tomadores t) {
+
+		t.setEmail(trataEmail(t.getEmail()));
+
+		if (t.getTelefone() != null && t.getTelefone().trim().isEmpty()) {
+			t.setTelefone(null);
+		}
+		if (t.getCelular() != null && t.getCelular().trim().isEmpty()) {
+			t.setCelular(null);
+		}
+
+		if (isEmptyOrNull(t.getInscricaoEstadual())) {
+			t.setInscricaoEstadual(null);
+		}
+		if (isEmptyOrNull(t.getInscricaoMunicipal())) {
+			t.setInscricaoMunicipal(null);
+		}
+
+		if (isEmptyOrNull(t.getCep())) {
+			t.setCep(null);
+		}
+
+		return t;
+	}
+
+	public Tomadores trataNumerosTelefones(Tomadores t) {
+
+		if (t.getCelular() != null) {
+			t.setCelular(t.getCelular().replaceAll("\\(", ""));
+			t.setCelular(t.getCelular().replaceAll("\\)", ""));
+			t.setCelular(t.getCelular().replaceAll("-", ""));
+		}
+		if (t.getTelefone() != null) {
+			t.setTelefone(t.getTelefone().replaceAll("\\(", ""));
+			t.setTelefone(t.getTelefone().replaceAll("\\)", ""));
+			t.setTelefone(t.getTelefone().replaceAll("\\-", ""));
+		}
+
+		return t;
+	}
+
+	public Prestadores anulaCamposVazios(Prestadores p) {
+
+		p.setEmail(trataEmail(p.getEmail()));
+
+		if (p.getTelefone() != null && p.getTelefone().trim().isEmpty()) {
+			p.setTelefone(null);
+		}
+		if (p.getCelular() != null && p.getCelular().trim().isEmpty()) {
+			p.setCelular(null);
+		}
+
+		return p;
+	}
+
+	public Pessoa anulaCamposVazios(Pessoa pessoa) {
+		pessoa.setEmail(trataEmail(pessoa.getEmail()));
+		if (pessoa.getTelefone() != null && pessoa.getTelefone().trim().isEmpty()) {
+			pessoa.setTelefone(null);
+		}
+		if (pessoa.getCelular() != null && pessoa.getCelular().trim().isEmpty()) {
+			pessoa.setCelular(null);
+		}
+		if (pessoa.getInscricaoEstadual() != null && pessoa.getInscricaoEstadual().isEmpty()) {
+			pessoa.setInscricaoEstadual(null);
+		}
+		if (pessoa.getMunicipioIbge() != null && pessoa.getMunicipioIbge().toString().trim().isEmpty()) {
+			pessoa.setMunicipioIbge(null);
+		}
+		if (pessoa.getCep() != null && pessoa.getCep().trim().isEmpty()) {
+			pessoa.setCep(null);
+		}
+		if (pessoa.getComplemento() != null && pessoa.getComplemento().trim().isEmpty()) {
+			pessoa.setComplemento(null);
+		}
+		if (isEmptyOrNull(pessoa.getEndereco())) {
+			pessoa.setEndereco(null);
+		}
+		if (isEmptyOrNull(pessoa.getBairro())) {
+			pessoa.setBairro(null);
+		}
+		if (isEmptyOrNull(pessoa.getNome())) {
+			pessoa.setNome(null);
+		}
+		if (isEmptyOrNull(pessoa.getNomeFantasia())) {
+			pessoa.setNomeFantasia(null);
+		}
+
+		return pessoa;
+	}
+	
+	public Prestadores trataNumerosTelefones(Prestadores p) {
+
+		if (p.getCelular() != null) {
+			p.setCelular(p.getCelular().replaceAll("\\(", ""));
+			p.setCelular(p.getCelular().replaceAll("\\)", ""));
+			p.setCelular(p.getCelular().replaceAll("-", ""));
+		}
+		if (p.getTelefone() != null) {
+			p.setTelefone(p.getTelefone().replaceAll("\\(", ""));
+			p.setTelefone(p.getTelefone().replaceAll("\\)", ""));
+			p.setTelefone(p.getTelefone().replaceAll("\\-", ""));
+		}
+
+		return p;
+	}
+
+
+
+	public static void pausar(int milesimos) {
+		try {
+			Thread.sleep(milesimos);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
 
 }
