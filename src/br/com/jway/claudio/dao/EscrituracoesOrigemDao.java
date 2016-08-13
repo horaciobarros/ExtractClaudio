@@ -34,6 +34,23 @@ public class EscrituracoesOrigemDao {
 		return null;
 	}
 	
+	public EscrituracoesOrigem findByIdNotaFiscal(String idNotaFiscal) {
+		Query query = sessionFactory.openSession()
+				.createQuery("from EscrituracoesOrigem e where e.idNotaFiscal = :idNotaFiscal" 
+						).setParameter("idNotaFiscal", idNotaFiscal);
+
+		try {
+			List<EscrituracoesOrigem> escrituracoes = query.list();
+
+			if (escrituracoes.size() > 0) {
+				return escrituracoes.get(0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public EscrituracoesOrigem findByNotaContribuinte(String numeroNota, String cpfCnpjContribuinte) {
 		Query query = sessionFactory.openSession()
 				.createQuery("from EscrituracoesOrigem e where e.numeroNota = :numeroNota and e.cpfCnpjContribuinte = :cpfCnpjContribuinte" 
