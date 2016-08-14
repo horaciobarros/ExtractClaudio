@@ -173,12 +173,12 @@ public class ExtractorService {
 		
 		if(ExtractorService.threadsAtivas != 0){
 			while(ExtractorService.threadsAtivas>0){
-				Util.pausar(3000);
+				Util.pausar(2000);
 			}
 		} 
 		
+		Util.pausar(5000);
 		log.close();
-
 	}
 
 	public List<String> lerArquivoXml(String string) {
@@ -256,7 +256,7 @@ public class ExtractorService {
 				}
 				p.setTelefone(util.getLimpaTelefone(c.getTelefone()));
 				p.setUf(c.getEstado());
-				if (c.getTipoContribuinte() != null && c.getTipoContribuinte().equalsIgnoreCase("simple")) {
+				if (c.getTipoDaEmpresa() != null && c.getTipoDaEmpresa().equalsIgnoreCase("simple")) {
 					p.setOptanteSimples("S");
 				}
 				p = trataNumerosTelefones(p);
@@ -318,7 +318,7 @@ public class ExtractorService {
 					cnae.setServicoCodigo("7.19");
 				}
 				if (cnae != null && cnae.getServicoCodigo() != null) {
-					cnae.setServicoCodigo(cnae.getServicoCodigo().replace("a", "").replace("b", ""));
+					cnae.setServicoCodigo(cnae.getServicoCodigo().replace("a", "").replace("b", "").replace(".", ""));
 				}
 				Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
 				Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
