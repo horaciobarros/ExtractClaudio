@@ -143,9 +143,9 @@ public class ExtractorService {
 						+ dadosList.size() + " - "+ Util.getDataHoraAtual());
 			}
 
-			if(ExtractorService.threadsAtivas > 7){
+			if(ExtractorService.threadsAtivas > 13){
 				while(ExtractorService.threadsAtivas>0){
-					Util.pausar(500);
+					Util.pausar(400);
 				}
 				/*if(ExtractorService.threadsAtivas == 0){
 					Util.pausar(500);
@@ -154,10 +154,10 @@ public class ExtractorService {
 			//pausas serão efetuadas para que o MySql respire
 			/*if (totalLines >=100 && totalLines%100 == 0){
 				Util.pausar(1000 * 1);
-			}*/
-			if (totalLines >=300 && totalLines%300 == 0){
-				Util.pausar(1000 * 3);
 			}
+			if (totalLines >=300 && totalLines%300 == 0){
+				Util.pausar(1000 * 1);
+			}*/
 			if (totalLines >=2000 && totalLines%2000 == 0){
 				Util.pausar(1000 * 5);
 			}
