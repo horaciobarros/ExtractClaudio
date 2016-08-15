@@ -79,14 +79,14 @@ public class ExtractorService {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
 				"NotasFiscaisEmails", "NotasFiscaisObras", "NotasFiscaisPrestadores", "NotasFiscaisServicos",
 				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais", "Pagamentos",
-				"PrestadoresAtividades", "PrestadoresOptanteSimples", "Guias", "Competencias");
+				"PrestadoresAtividades", "PrestadoresOptanteSimples", "Guias", "Competencias", "Tomadores");
 
 	}
 
 	public List<String> excluiParaProcessarNivel3() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
 				"NotasFiscaisEmails", "NotasFiscaisObras", "NotasFiscaisPrestadores", "NotasFiscaisServicos",
-				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais");
+				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais", "Tomadores");
 	}
 
 	public List<String> excluiParaProcessarNivel4() {

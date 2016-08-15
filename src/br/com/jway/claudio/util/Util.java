@@ -644,6 +644,10 @@ public class Util {
 		if (isEmptyOrNull(t.getCep())) {
 			t.setCep(null);
 		}
+		
+		if (isEmptyOrNull(t.getNumero())) {
+			t.setNumero(null);
+		}
 
 		return t;
 	}
