@@ -56,10 +56,18 @@ public class PrestadoresDao {
 
 	public void save(Prestadores p) {
 		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		session.save(p);
-		session.beginTransaction().commit();
-		session.close();
+		try{
+			session.beginTransaction();
+			session.save(p);
+			session.getTransaction().commit();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+		finally{
+			session.close();
+		}
 	}
 
 	public List<Prestadores> findNaoEnviados() {

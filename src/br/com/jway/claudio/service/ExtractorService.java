@@ -146,20 +146,20 @@ public class ExtractorService {
 						+ dadosList.size() + " - "+ Util.getDataHoraAtual());
 			}
 
-			if(ExtractorService.threadsAtivas > 7){
+			if(ExtractorService.threadsAtivas > 5){
 				while(ExtractorService.threadsAtivas>0){
 					Util.pausar(400);
 				}
 				if(ExtractorService.threadsAtivas == 0){
-					Util.pausar(100);
+					Util.pausar(500);
 				}
 			} 
 			//pausas serão efetuadas para que o MySql respire
-			/*if (totalLines >=100 && totalLines%100 == 0){
+			if (totalLines >=100 && totalLines%100 == 0){
 				Util.pausar(1000 * 1);
-			}*/
+			}
 			if (totalLines >=300 && totalLines%300 == 0){
-				Util.pausar(1000 * 1);
+				Util.pausar(1000 * 3);
 			}
 			if (totalLines >=2000 && totalLines%2000 == 0){
 				Util.pausar(1000 * 5);
