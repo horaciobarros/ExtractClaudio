@@ -50,6 +50,7 @@ import br.com.jway.claudio.dao.MunicipiosIbgeDao;
 
 public class ExtractorService {
 	public static int threadsAtivas = 0;
+	public static int idNovasPessoas = 350000;
 	private Util util = new Util();
 	private CompetenciasDao competenciasDao = new CompetenciasDao();
 	private PrestadoresDao prestadoresDao = new PrestadoresDao();
@@ -149,9 +150,9 @@ public class ExtractorService {
 				while(ExtractorService.threadsAtivas>0){
 					Util.pausar(400);
 				}
-				/*if(ExtractorService.threadsAtivas == 0){
-					Util.pausar(500);
-				}*/
+				if(ExtractorService.threadsAtivas == 0){
+					Util.pausar(100);
+				}
 			} 
 			//pausas serão efetuadas para que o MySql respire
 			/*if (totalLines >=100 && totalLines%100 == 0){
