@@ -233,15 +233,14 @@ public class NotaMaeThreadService implements Runnable {
 				// tomadores
 				t = null;
 
-				if (!util.isEmptyOrNull(nf.getInscricaoTomador())
-						&& !util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())) {
+				if (!util.isEmptyOrNull(nf.getInscricaoTomador())) {
 					t = tomadoresDao.findByInscricao(nf.getInscricaoTomador(), nf.getInscricaoPrestador());
 					if (t == null || t.getId() == null) {
 						try {
 							t = new Tomadores();
 							t.setOptanteSimples(util.getOptantePeloSimplesNacional("N"));
-							t.setNome(nfOrigem.getRazaoSocialTomador());
-							t.setNomeFantasia(nfOrigem.getRazaoSocialTomador());
+							t.setNome(nf.getNomeTomador());
+							t.setNomeFantasia(nf.getNomeTomador());
 							t.setPrestadores(nf.getPrestadores());
 							t.setInscricaoTomador(nf.getInscricaoTomador());
 							t.setTipoPessoa(util.getTipoPessoa(t.getInscricaoTomador()));
