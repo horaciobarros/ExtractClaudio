@@ -179,8 +179,8 @@ public class ExtractorService {
 				Util.pausar(2000);
 			}
 		} 
-		
-		Util.pausar(5000);
+		// Pausa de 60 segundos para terminar de processar as threads filhas.
+		Util.pausar(1000 * 60);
 		log.close();
 	}
 
