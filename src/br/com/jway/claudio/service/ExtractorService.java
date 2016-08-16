@@ -42,6 +42,7 @@ import br.com.jway.claudio.model.Pagamentos;
 import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.model.Prestadores;
 import br.com.jway.claudio.model.PrestadoresAtividades;
+import br.com.jway.claudio.model.PrestadoresOptanteSimples;
 import br.com.jway.claudio.model.Tomadores;
 import br.com.jway.claudio.util.FileLog;
 import br.com.jway.claudio.util.Util;
@@ -65,6 +66,7 @@ public class ExtractorService {
 	private NotasFiscaisSubstDao notasFiscaisSubstDao;
 	private EscrituracoesOrigemDao escrituracoesOrigemDao = new EscrituracoesOrigemDao(); 
 	private ServicosOrigemDao servicosOrigemDao = new ServicosOrigemDao();
+	private PrestadoresOptanteSimplesDao prestadoresOptanteSimpesDao = new PrestadoresOptanteSimplesDao();
 
 	public List<String> excluiParaProcessarNivel1() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
@@ -279,6 +281,26 @@ public class ExtractorService {
 					pr = trataNumerosTelefones(pr);
 					pr = anulaCamposVazios(pr);
 					prestadoresDao.save(pr);
+					
+					if (!util.isEmptyOrNull(p.getOptanteSimples()) && p.getOptanteSimples().equals("S")) {
+						
+						PrestadoresOptanteSimples po = new PrestadoresOptanteSimples();
+						po.setDataEfeito(util.getStringToDateHoursMinutesSeconds(c.getDataDeCriacao()));
+						po.setDataInicio(util.getStringToDateHoursMinutesSeconds(c.getDataDeCriacao()));
+						po.setDescricao("Optante simples");
+						po.setInscricaoPrestador(p.getCnpjCpf());
+						po.setMotivo("Opção do Contribuinte");
+						if (c.getTipoDaEmpresa().equalsIgnoreCase("mei")) {
+							po.setMei("S");
+						} else {
+							po.setMei("N");
+						}
+						po.setOptante("S");
+						po.setOrgao("M");
+						po.setPrestadores(pr);
+						prestadoresOptanteSimpesDao.save(po);
+					}
+					
 
 				} catch (Exception e) {
 					log.fillError(linha, "Prestador não gravado", e);
