@@ -38,12 +38,19 @@ public class TomadoresDao {
 	}
 
 	public Tomadores save(Tomadores t) {
-
 		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		session.save(t);
-		session.beginTransaction().commit();
-		session.close();
+		try{
+			session.beginTransaction();
+			session.save(t);
+			session.getTransaction().commit();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+		finally{
+			session.close();
+		}
 		return t;
 	}
 

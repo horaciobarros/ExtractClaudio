@@ -50,6 +50,7 @@ import br.com.jway.claudio.dao.MunicipiosIbgeDao;
 
 public class ExtractorService {
 	public static int threadsAtivas = 0;
+	public static int idNovasPessoas = 350000;
 	private Util util = new Util();
 	private CompetenciasDao competenciasDao = new CompetenciasDao();
 	private PrestadoresDao prestadoresDao = new PrestadoresDao();
@@ -149,16 +150,16 @@ public class ExtractorService {
 				while(ExtractorService.threadsAtivas>0){
 					Util.pausar(400);
 				}
-				/*if(ExtractorService.threadsAtivas == 0){
+				if(ExtractorService.threadsAtivas == 0){
 					Util.pausar(500);
-				}*/
+				}
 			} 
 			//pausas serão efetuadas para que o MySql respire
-			/*if (totalLines >=100 && totalLines%100 == 0){
+			if (totalLines >=100 && totalLines%100 == 0){
 				Util.pausar(1000 * 1);
-			}*/
+			}
 			if (totalLines >=300 && totalLines%300 == 0){
-				Util.pausar(1000 * 1);
+				Util.pausar(1000 * 3);
 			}
 			if (totalLines >=2000 && totalLines%2000 == 0){
 				Util.pausar(1000 * 5);
@@ -178,8 +179,8 @@ public class ExtractorService {
 				Util.pausar(2000);
 			}
 		} 
-		
-		Util.pausar(5000);
+		// Pausa de 60 segundos para terminar de processar as threads filhas.
+		Util.pausar(1000 * 60);
 		log.close();
 	}
 
