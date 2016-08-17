@@ -105,7 +105,11 @@ public class NotaMaeThreadService implements Runnable {
 				pessoa = mapPessoa.get(inscricaoPrestador);
 				try {
 					if (pr == null || pr.getId() == 0
-							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {/*
+							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
+						System.out.println("Prestador nÃ£o encontrado:" + inscricaoPrestador);
+						log.fillError(linha, "Prestador nÃ£o encontrado: " + inscricaoPrestador);
+						throw new Exception();
+						/*
 						if (pr == null || pr.getId() == 0
 								|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
 							System.out.println("Prestador nÃ£o encontrado:" + inscricaoPrestador);
