@@ -146,7 +146,7 @@ public class ExtractorService {
 						+ dadosList.size() + " - "+ Util.getDataHoraAtual());
 			}
 
-			if(ExtractorService.threadsAtivas > 5){
+			if(ExtractorService.threadsAtivas > 7){
 				while(ExtractorService.threadsAtivas>0){
 					Util.pausar(400);
 				}

@@ -105,7 +105,11 @@ public class NotaMaeThreadService implements Runnable {
 				pessoa = mapPessoa.get(inscricaoPrestador);
 				try {
 					if (pr == null || pr.getId() == 0
-							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {/*
+							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
+						System.out.println("Prestador nÃ£o encontrado:" + inscricaoPrestador);
+						log.fillError(linha, "Prestador nÃ£o encontrado: " + inscricaoPrestador);
+						throw new Exception();						
+						/*
 						try{
 							if(pessoa == null || pessoa.getId() == 0){
 								Pessoa p = new Pessoa();
@@ -139,7 +143,7 @@ public class NotaMaeThreadService implements Runnable {
 						catch(Exception e){
 							e.printStackTrace();
 							log.fillError(linha, "Erro ao salvar Pessoas/Prestadores ", e);
-						}*/
+						}
 						pr = mapPrestadores.get(inscricaoPrestador);
 						pessoa = mapPessoa.get(inscricaoPrestador);
 						if (pr == null || pr.getId() == 0
@@ -147,7 +151,7 @@ public class NotaMaeThreadService implements Runnable {
 							System.out.println("Prestador nÃ£o encontrado:" + inscricaoPrestador);
 							log.fillError(linha, "Prestador nÃ£o encontrado: " + inscricaoPrestador);
 							throw new Exception();
-						}
+						}*/
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
