@@ -106,42 +106,6 @@ public class NotaMaeThreadService implements Runnable {
 				try {
 					if (pr == null || pr.getId() == 0
 							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {/*
-						try{
-							if(pessoa == null || pessoa.getId() == 0){
-								Pessoa p = new Pessoa();
-								ExtractorService.idNovasPessoas++;
-								p.setPessoaId(Long.valueOf(ExtractorService.idNovasPessoas));
-								p.setCnpjCpf(inscricaoPrestador);
-								p.setEmail(util.trataEmail(nfOrigem.getEmailPrestador()));
-								p.setUf(nfOrigem.getEstadoDePrestacaoDoServico());
-								p.setInscricaoEstadual(nfOrigem.getInscricaoEstadualPrestador());
-								p.setNome(nfOrigem.getRazaoSocialPrestador());
-								p.setNomeFantasia(nfOrigem.getRazaoSocialPrestador());
-								p.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefonePrestador()));
-								p.setInscricaoMunicipal(nfOrigem.getInscricaoMunicipalPrestador());
-								String tipoPessoa = util.getTipoPessoa(inscricaoPrestador);
-								p.setTipoPessoa(tipoPessoa);
-								pessoa = pessoaDao.save(p);
-
-							}
-							Prestadores prest = new Prestadores();
-							prest.setAutorizado("N");
-							prest.setEmail(pessoa.getEmail());
-							prest.setEnquadramento("N");
-							prest.setMotivo("Solicitar Cadastro");
-							prest.setInscricaoPrestador(pessoa.getCnpjCpf());
-							prest.setTelefone(pessoa.getTelefone());
-							prest.setInscricaoMunicipal(pessoa.getInscricaoMunicipal());
-							prestadoresDao.save(prest);
-							mapPrestadores = prestadoresDao.findAllMapReturn();
-							mapPessoa = pessoaDao.findAllMapReturn();
-						}
-						catch(Exception e){
-							e.printStackTrace();
-							log.fillError(linha, "Erro ao salvar Pessoas/Prestadores ", e);
-						}*/
-						pr = mapPrestadores.get(inscricaoPrestador);
-						pessoa = mapPessoa.get(inscricaoPrestador);
 						if (pr == null || pr.getId() == 0
 								|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
 							System.out.println("Prestador nÃ£o encontrado:" + inscricaoPrestador);
@@ -190,7 +154,6 @@ public class NotaMaeThreadService implements Runnable {
 							log.fillError(linha, "Prestador nÃ£o encontrado: " + inscricaoPrestador);
 							throw new Exception();
 						}*/
-						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
