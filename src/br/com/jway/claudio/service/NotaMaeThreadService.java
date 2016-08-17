@@ -55,6 +55,7 @@ public class NotaMaeThreadService implements Runnable {
 	private Util util;
 	private NotasFiscaisDao notasFiscaisDao = new NotasFiscaisDao();
 	private TomadoresDao tomadoresDao = new TomadoresDao();
+	private PrestadoresDao prestadoresDao = new PrestadoresDao();
 	private PessoaDao pessoaDao = new PessoaDao();
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem;
 	private EscrituracoesOrigemDao escrituracoesOrigemDao = new EscrituracoesOrigemDao();
@@ -104,13 +105,53 @@ public class NotaMaeThreadService implements Runnable {
 				pessoa = mapPessoa.get(inscricaoPrestador);
 				try {
 					if (pr == null || pr.getId() == 0
-							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
-						System.out.println("Prestador nÃ£o encontrado:" + inscricaoPrestador);
-						log.fillError(linha, "Prestador nÃ£o encontrado: " + inscricaoPrestador);
-						throw new Exception();
+							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {/*
+						try{
+							if(pessoa == null || pessoa.getId() == 0){
+								Pessoa p = new Pessoa();
+								ExtractorService.idNovasPessoas++;
+								p.setPessoaId(Long.valueOf(ExtractorService.idNovasPessoas));
+								p.setCnpjCpf(inscricaoPrestador);
+								p.setEmail(util.trataEmail(nfOrigem.getEmailPrestador()));
+								p.setUf(nfOrigem.getEstadoDePrestacaoDoServico());
+								p.setInscricaoEstadual(nfOrigem.getInscricaoEstadualPrestador());
+								p.setNome(nfOrigem.getRazaoSocialPrestador());
+								p.setNomeFantasia(nfOrigem.getRazaoSocialPrestador());
+								p.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefonePrestador()));
+								p.setInscricaoMunicipal(nfOrigem.getInscricaoMunicipalPrestador());
+								String tipoPessoa = util.getTipoPessoa(inscricaoPrestador);
+								p.setTipoPessoa(tipoPessoa);
+								pessoa = pessoaDao.save(p);
+
+							}
+							Prestadores prest = new Prestadores();
+							prest.setAutorizado("N");
+							prest.setEmail(pessoa.getEmail());
+							prest.setEnquadramento("N");
+							prest.setMotivo("Solicitar Cadastro");
+							prest.setInscricaoPrestador(pessoa.getCnpjCpf());
+							prest.setTelefone(pessoa.getTelefone());
+							prest.setInscricaoMunicipal(pessoa.getInscricaoMunicipal());
+							prestadoresDao.save(prest);
+							mapPrestadores = prestadoresDao.findAllMapReturn();
+							mapPessoa = pessoaDao.findAllMapReturn();
+						}
+						catch(Exception e){
+							e.printStackTrace();
+							log.fillError(linha, "Erro ao salvar Pessoas/Prestadores ", e);
+						}*/
+						pr = mapPrestadores.get(inscricaoPrestador);
+						pessoa = mapPessoa.get(inscricaoPrestador);
+						if (pr == null || pr.getId() == 0
+								|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
+							System.out.println("Prestador nÃ£o encontrado:" + inscricaoPrestador);
+							log.fillError(linha, "Prestador nÃ£o encontrado: " + inscricaoPrestador);
+							throw new Exception();
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
+					log.fillError(linha, "Erro ao salvar Prestador: "+inscricaoPrestador+" ", e);
 				}
 
 				escrituracoes = mapEscrituracoesOrigem.get(nfOrigem.getId()); // pesquisa
@@ -233,15 +274,14 @@ public class NotaMaeThreadService implements Runnable {
 				// tomadores
 				t = null;
 
-				if (!util.isEmptyOrNull(nf.getInscricaoTomador())
-						&& !util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())) {
+				if (!util.isEmptyOrNull(nf.getInscricaoTomador())) {
 					t = tomadoresDao.findByInscricao(nf.getInscricaoTomador(), nf.getInscricaoPrestador());
 					if (t == null || t.getId() == null) {
 						try {
 							t = new Tomadores();
 							t.setOptanteSimples(util.getOptantePeloSimplesNacional("N"));
-							t.setNome(nfOrigem.getRazaoSocialTomador());
-							t.setNomeFantasia(nfOrigem.getRazaoSocialTomador());
+							t.setNome(nf.getNomeTomador());
+							t.setNomeFantasia(nf.getNomeTomador());
 							t.setPrestadores(nf.getPrestadores());
 							t.setInscricaoTomador(nf.getInscricaoTomador());
 							t.setTipoPessoa(util.getTipoPessoa(t.getInscricaoTomador()));
