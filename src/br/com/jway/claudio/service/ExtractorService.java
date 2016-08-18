@@ -262,6 +262,9 @@ public class ExtractorService {
 				if (c.getTipoDaEmpresa() != null && c.getTipoDaEmpresa().equalsIgnoreCase("simple")) {
 					p.setOptanteSimples("S");
 				}
+				else{
+					p.setOptanteSimples("N");
+				}
 				p = trataNumerosTelefones(p);
 				p = anulaCamposVazios(p);
 
