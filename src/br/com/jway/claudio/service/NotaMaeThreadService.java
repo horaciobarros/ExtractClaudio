@@ -228,8 +228,14 @@ public class NotaMaeThreadService implements Runnable {
 				nf.setSituacao("N");
 				nf.setSituacaoTributaria("N");
 				nf.setNumeroVerificacao(util.completarZerosEsquerda(nfOrigem.getId().toString(), 9));
-				nf.setNaturezaOperacao("1"); // TODO resolver
-				nf.setOptanteSimples("N"); // TODO resolver
+				nf.setNaturezaOperacao("1");
+				
+				if (pessoa.getOptanteSimples()!=null && pessoa.getOptanteSimples().equals("S")){
+					nf.setOptanteSimples("S");
+				}
+				else{
+					nf.setOptanteSimples("N");
+				}
 				nf.setValorTotalBaseCalculo(
 						BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 				nf.setValorTotalDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));

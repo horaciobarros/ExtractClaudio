@@ -191,7 +191,7 @@ public class NotasThreadService implements Runnable {
 				nfp.setNotasFiscais(nf);
 				nfp.setNumero(pessoa.getNumero());
 				nfp.setNumeroNota(nf.getNumeroNota());
-				nfp.setOptanteSimples("N"); // TODO resolver
+				nfp.setOptanteSimples(nf.getOptanteSimples()); // TODO resolver
 				nfp.setTipoPessoa(util.getTipoPessoa(nfOrigem.getCpfCnpjPrestador()));
 				nfp.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefonePrestador()));
 				notasFiscaisPrestadoresDao.save(nfp);
