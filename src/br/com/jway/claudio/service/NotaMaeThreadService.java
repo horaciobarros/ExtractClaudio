@@ -182,11 +182,7 @@ public class NotaMaeThreadService implements Runnable {
 
 				nf.setIdOrigem(Long.parseLong(nfOrigem.getId()));
 
-				if (util.isEmptyOrNull(nfOrigem.getCompetencia())) {
-					nf.setDataHoraEmissao(util.getStringToDateHoursMinutes(nfOrigem.getCompetencia()));
-				} else {
-					nf.setDataHoraEmissao(util.getStringToDateHoursMinutes(nfOrigem.getDataDeCriacao()));
-				}
+				nf.setDataHoraEmissao(util.getStringToDateHoursMinutes(nfOrigem.getDataDeCriacao()));
 
 				nf.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
 				inscricaoTomador = util.getCpfCnpj(nfOrigem.getCnpjCpfTomador());

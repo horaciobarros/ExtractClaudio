@@ -1,6 +1,7 @@
 package br.com.jway.claudio.service;
 
 import java.math.BigDecimal;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -87,6 +88,7 @@ public class NotasThreadService implements Runnable {
 
 				StringBuilder sbItem = new StringBuilder();
 
+				Map<String, ServicosOrigem> mapServicosAux = new Hashtable<String, ServicosOrigem>();
 				for (ServicosNotasFiscaisOrigem s : listaItens) {
 					ServicosOrigem servico = servicosOrigemDao.findById(Long.parseLong(s.getIdServico().trim()));
 					
@@ -96,6 +98,7 @@ public class NotasThreadService implements Runnable {
 						if (codigoServico!=null && !codigoServico.trim().isEmpty()) {
 							codigoServico = codigoServico.replaceAll("\\.", "").replace("a", "").replace("b", "");
 							sbItem.append(codigoServico);
+							mapServicosAux.put(util.completarZerosEsquerda(codigoServico,4), servico);
 							break;
 						}
 					}
@@ -132,6 +135,12 @@ public class NotasThreadService implements Runnable {
 				if (nfs.getAliquota().compareTo(BigDecimal.ZERO) == 0) {
 					nfs.setAliquota(BigDecimal.valueOf(1));
 				}
+				if (mapServicosAux != null && mapServicosAux.size() > 0) {
+					ServicosOrigem serv = (ServicosOrigem) mapServicosAux.get(nfs.getItemListaServico());
+					nfs.setIcnaes(serv.getCnaes());
+					nfs.setDescricaoCnae(serv.getNome());
+				}
+				
 				notasFiscaisServicosDao.save(nfs);
 				nfs = null;
 
