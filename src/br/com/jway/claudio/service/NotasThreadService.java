@@ -138,14 +138,21 @@ public class NotasThreadService implements Runnable {
 				if (mapServicosAux != null && mapServicosAux.size() > 0) {
 					ServicosOrigem serv = (ServicosOrigem) mapServicosAux.get(nfs.getItemListaServico());
 					nfs.setIcnaes(serv.getCnaes());
-					nfs.setDescricaoCnae(serv.getNome());
+					
+					if (serv.getNome()!=null && serv.getNome().length()>200){
+						nfs.setDescricaoCnae(serv.getNome().substring(0,200));
+					}
+					else{
+						nfs.setDescricaoCnae(serv.getNome());
+					}
+					
 				}
 				
 				notasFiscaisServicosDao.save(nfs);
 				nfs = null;
 
 			} catch (Exception e) {
-				System.out.println(nfs.getItemListaServico());
+				System.out.println(linha);
 				e.printStackTrace();
 				log.fillError(linha, "Nota Fiscal Servico", e);
 			}
@@ -195,6 +202,7 @@ public class NotasThreadService implements Runnable {
 				nfp.setEmail(util.trataEmail(pr.getEmail()));
 				nfp.setEndereco(pessoa.getEndereco());
 				nfp.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
+				nfp.setInscricaoMunicipal(pessoa.getInscricaoMunicipal());
 				nfp.setNome(nfOrigem.getRazaoSocialPrestador());
 				nfp.setNomeFantasia(pessoa.getNomeFantasia());
 				nfp.setNotasFiscais(nf);
@@ -239,6 +247,8 @@ public class NotasThreadService implements Runnable {
 				nft.setNumeroNota(nf.getNumeroNota());
 				nft.setOptanteSimples(tomadores.getOptanteSimples());
 				nft.setTipoPessoa(tomadores.getTipoPessoa());
+				nft.setPorteEmpresa(tomadores.getPorteEmpresa());
+				nft.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefoneTomador()));
 				notasFiscaisTomadoresDao.save(nft);
 				nft = null;
 			} catch (Exception e) {

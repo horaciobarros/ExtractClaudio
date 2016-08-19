@@ -148,7 +148,7 @@ public class ExtractorService {
 
 			if(ExtractorService.threadsAtivas > 7){
 				while(ExtractorService.threadsAtivas>0){
-					Util.pausar(400);
+					Util.pausar(500);
 				}
 				if(ExtractorService.threadsAtivas == 0){
 					Util.pausar(500);
