@@ -591,6 +591,22 @@ public class Util {
 		return null;
 
 	}
+	
+	public Date converteDataEscrituracaoClaudio(String competencia) {
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Date date = (Date) formatter.parse(competencia);
+			GregorianCalendar gc = new GregorianCalendar();
+			gc.setTime(date);
+			gc.add(Calendar.HOUR, 12);
+			return gc.getTime();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+
+	}
 
 	public Pessoa trataNumerosTelefones(Pessoa pessoa) {
 
