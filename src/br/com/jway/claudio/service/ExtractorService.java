@@ -430,7 +430,8 @@ public class ExtractorService {
 
 				guias.setIntegrarGuia("N"); // TODO sanar dï¿½vida
 
-				String numeroGuia = guiaOrigem.getId();
+				String numeroGuia = guiaOrigem.getId(); // TODO CONFIRMAR COM O SANDRO(NÃO HÁ N. GUIA NO TXT)
+				guias.setNumeroGuiaOrigem(numeroGuia);
 				int proximoNumeroGuia = 60000000 + Integer.parseInt(numeroGuia);
 				guias.setNumeroGuia(Long.valueOf(proximoNumeroGuia));
 
@@ -449,7 +450,7 @@ public class ExtractorService {
 				guias.setValorImposto(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValor())));
 
 				guias.setIdGuiaRecolhimento(guiaOrigem.getId());
-				// guias.setIdNotasFiscais(guiaOrigem.getIdNotasFiscais());
+				guias.setIdNotasFiscais(guiaOrigem.getIdNotasFiscais().replaceAll("\"", ""));
 				guiasDao.save(guias);
 
 				// pagamentos
@@ -468,13 +469,13 @@ public class ExtractorService {
 						pg.setDataPagamento(util.getStringToDate(guiaOrigem.getDataDePagamento(), "yyyy-MM-dd"));
 						pagamentosDao.save(pg);
 					} catch (Exception e) {
-						System.out.println(guiaOrigem.getId());
+						log.fillError(linha, "Pagamentos", e);
 						e.printStackTrace();
 					}
 				}
 
 			} catch (Exception e) {
-				log.fillError(linha, "pagamentos", e);
+				log.fillError(linha, "Guias", e);
 				e.printStackTrace();
 			}
 
@@ -659,16 +660,21 @@ public class ExtractorService {
 		for (Guias guia : guiasDao.findAll()) {
 			try {
 				if (guia.getIdNotasFiscais() != null && !guia.getIdNotasFiscais().isEmpty()) {
-					String[] lista = guia.getIdNotasFiscais().split(",");
+					String ids = guia.getIdNotasFiscais().replaceAll("\"", "");
+					String[] lista = ids.split(",");
 					for (int i = 0; i < lista.length; i++) {
-						NotasFiscais nf = notasFiscaisDao.findById(Long.parseLong(lista[i]));
+						NotasFiscais nf = notasFiscaisDao.findByIdOrigem(Long.parseLong(lista[i]));
 						if (nf != null) {
 							GuiasNotasFiscais gnf = new GuiasNotasFiscais();
 							gnf.setGuias(guia);
 							gnf.setInscricaoPrestador(guia.getInscricaoPrestador()); //
 							gnf.setNumeroGuia(guia.getNumeroGuia());
 							gnf.setNumeroNota(nf.getNumeroNota());
+							gnf.setNumeroGuiaOrigem(guia.getNumeroGuiaOrigem());
 							guiasNotasFiscaisDao.save(gnf);
+						}
+						else{
+							log.fillError(guia.toString(), "Nota Fiscal não encontrada para relação com Guias. ID origem nota: "+Long.parseLong(lista[i]));
 						}
 					}
 				}

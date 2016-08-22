@@ -81,6 +81,9 @@ public class Guias implements Serializable {
 	@Column(name = "id_guia_recolhimento")
 	private String idGuiaRecolhimento;
 	
+	@Column(name = "numero_guia_origem")
+	private String numeroGuiaOrigem;
+	
 	public String getIdNotasFiscais() {
 		return idNotasFiscais;
 	}
@@ -219,4 +222,13 @@ public class Guias implements Serializable {
 	public void setHash(String hash) {
 		this.hash = hash;
 	}
+
+	public String getNumeroGuiaOrigem() {
+		return numeroGuiaOrigem;
+	}
+
+	public void setNumeroGuiaOrigem(String numeroGuiaOrigem) {
+		this.numeroGuiaOrigem = numeroGuiaOrigem;
+	}
+	
 }

@@ -1,4 +1,4 @@
-package br.com.jway.claudio.model; 
+package br.com.jway.claudio.model;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,83 +12,101 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-@Entity 
-@Table(name="guias_notas_fiscais")
+@Entity
+@Table(name = "guias_notas_fiscais")
 public class GuiasNotasFiscais implements Serializable {
 
-   private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-   @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   @Column(name="id")
-   private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Long id;
 
-   @ManyToOne
-   @JoinColumn(name = "guias_id")
-   private Guias guias;
+	@ManyToOne
+	@JoinColumn(name = "guias_id")
+	private Guias guias;
 
-   @Column(name="inscricao_prestador")
-   private String inscricaoPrestador;
+	@Column(name = "inscricao_prestador")
+	private String inscricaoPrestador;
 
-   @Column(name="numero_guia")
-   private Long numeroGuia;
+	@Column(name = "numero_guia")
+	private Long numeroGuia;
 
-   @Column(name="numero_nota")
-   private Long numeroNota;
+	@Column(name = "numero_nota")
+	private Long numeroNota;
 
-   @Column(name="dh_envio")
-   private Date dhEnvio;
+	@Column(name = "dh_envio")
+	private Date dhEnvio;
 
-   @Column(name="hash")
-   private String hash;
+	@Column(name = "hash")
+	private String hash;
 
-   public Long getId() { 
-      return id;
-   }
-   public void  setId(Long id) { 
-      this.id = id;
-   }
+	@Column(name = "numero_guia_origem")
+	private String numeroGuiaOrigem;
 
+	public Long getId() {
+		return id;
+	}
 
-   public  Guias  getGuias() { 
-      return guias;
-   }
-   public void  setGuias(Guias guias) { 
-      this.guias = guias;
-   }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-   public String getInscricaoPrestador() { 
-      return inscricaoPrestador;
-   }
-   public void  setInscricaoPrestador(String inscricaoPrestador) { 
-      this.inscricaoPrestador = inscricaoPrestador;
-   }
+	public Guias getGuias() {
+		return guias;
+	}
 
-   public Long getNumeroGuia() { 
-      return numeroGuia;
-   }
-   public void  setNumeroGuia(Long numeroGuia) { 
-      this.numeroGuia = numeroGuia;
-   }
+	public void setGuias(Guias guias) {
+		this.guias = guias;
+	}
 
-   public Long getNumeroNota() { 
-      return numeroNota;
-   }
-   public void  setNumeroNota(Long numeroNota) { 
-      this.numeroNota = numeroNota;
-   }
+	public String getInscricaoPrestador() {
+		return inscricaoPrestador;
+	}
 
-   public Date getDhEnvio() { 
-      return dhEnvio;
-   }
-   public void  setDhEnvio(Date dhEnvio) { 
-      this.dhEnvio = dhEnvio;
-   }
+	public void setInscricaoPrestador(String inscricaoPrestador) {
+		this.inscricaoPrestador = inscricaoPrestador;
+	}
 
-   public String getHash() { 
-      return hash;
-   }
-   public void  setHash(String hash) { 
-      this.hash = hash;
-   }
+	public Long getNumeroGuia() {
+		return numeroGuia;
+	}
+
+	public void setNumeroGuia(Long numeroGuia) {
+		this.numeroGuia = numeroGuia;
+	}
+
+	public Long getNumeroNota() {
+		return numeroNota;
+	}
+
+	public void setNumeroNota(Long numeroNota) {
+		this.numeroNota = numeroNota;
+	}
+
+	public Date getDhEnvio() {
+		return dhEnvio;
+	}
+
+	public void setDhEnvio(Date dhEnvio) {
+		this.dhEnvio = dhEnvio;
+	}
+
+	public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
+	}
+
+	public String getNumeroGuiaOrigem() {
+		return numeroGuiaOrigem;
+	}
+
+	public void setNumeroGuiaOrigem(String numeroGuiaOrigem) {
+		this.numeroGuiaOrigem = numeroGuiaOrigem;
+	}
+
 }
