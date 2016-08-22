@@ -106,7 +106,7 @@ public class NotasThreadService implements Runnable {
 				if (sbItem.toString().isEmpty()) {
 					log.fillError(linha,
 							"Nota Fiscal Servico - Serviço não encontrado:" + listaItens.get(0).getIdServico()
-									+ " da nota " + nfOrigem.getId() + " de " + nfOrigem.getRazaoSocialPrestador());
+									+ " da nota " + nf.getNumeroNota() + " de " + nfOrigem.getRazaoSocialPrestador());
 				}
 
 				nfs.setItemListaServico(util.completarZerosEsquerda(sbItem.toString(), 4));
