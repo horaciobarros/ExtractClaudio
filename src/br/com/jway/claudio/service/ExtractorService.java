@@ -15,17 +15,10 @@ import br.com.jway.claudio.dao.CompetenciasDao;
 import br.com.jway.claudio.dao.Dao;
 import br.com.jway.claudio.dao.EscrituracoesOrigemDao;
 import br.com.jway.claudio.dao.GuiasDao;
-import br.com.jway.claudio.dao.GuiasNotasFiscaisDao;
-import br.com.jway.claudio.dao.MunicipiosIbgeDao;
 import br.com.jway.claudio.dao.NotasFiscaisDao;
-import br.com.jway.claudio.dao.NotasFiscaisSubstDao;
-import br.com.jway.claudio.dao.PagamentosDao;
 import br.com.jway.claudio.dao.PessoaDao;
-import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
 import br.com.jway.claudio.dao.PrestadoresDao;
-import br.com.jway.claudio.dao.PrestadoresOptanteSimplesDao;
 import br.com.jway.claudio.dao.ServicosOrigemDao;
-import br.com.jway.claudio.dao.TomadoresDao;
 import br.com.jway.claudio.entidadesOrigem.EscrituracoesOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosNotasFiscaisOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosOrigem;
@@ -34,7 +27,6 @@ import br.com.jway.claudio.model.Guias;
 import br.com.jway.claudio.model.NotasFiscais;
 import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.model.Prestadores;
-import br.com.jway.claudio.model.Tomadores;
 import br.com.jway.claudio.util.FileLog;
 import br.com.jway.claudio.util.Util;
 
@@ -44,21 +36,13 @@ public class ExtractorService {
 	private Util util = new Util();
 	private CompetenciasDao competenciasDao = new CompetenciasDao();
 	private PrestadoresDao prestadoresDao = new PrestadoresDao();
-	private TomadoresDao tomadoresDao = new TomadoresDao();
 	private Dao dao = new Dao();
 	private GuiasDao guiasDao = new GuiasDao();
 	private NotasFiscaisDao notasFiscaisDao = new NotasFiscaisDao();
-	private PagamentosDao pagamentosDao = new PagamentosDao();
-	private PrestadoresAtividadesDao prestadoresAtividadesDao = new PrestadoresAtividadesDao();
-	private MunicipiosIbgeDao municipiosIbgeDao = new MunicipiosIbgeDao();
 	private PessoaDao pessoaDao = new PessoaDao();
-	private GuiasNotasFiscaisDao guiasNotasFiscaisDao = new GuiasNotasFiscaisDao();
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem = new Hashtable<String, List<ServicosNotasFiscaisOrigem>>();
-	private NotasFiscaisSubstDao notasFiscaisSubstDao;
 	private EscrituracoesOrigemDao escrituracoesOrigemDao = new EscrituracoesOrigemDao();
 	private ServicosOrigemDao servicosOrigemDao = new ServicosOrigemDao();
-	private PrestadoresOptanteSimplesDao prestadoresOptanteSimpesDao = new PrestadoresOptanteSimplesDao();
-	private EscrituracoesOrigemDao escrituracoesDao = new EscrituracoesOrigemDao();
 
 	public List<String> excluiParaProcessarNivel1() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos", "NotasFiscaisEmails", "NotasFiscaisObras",
@@ -221,36 +205,6 @@ public class ExtractorService {
 		return dao.count(nomeEntidade);
 	}
 
-	private Prestadores trataNumerosTelefones(Prestadores p) {
-
-		if (p.getCelular() != null) {
-			p.setCelular(p.getCelular().replaceAll("\\(", ""));
-			p.setCelular(p.getCelular().replaceAll("\\)", ""));
-			p.setCelular(p.getCelular().replaceAll("-", ""));
-		}
-		if (p.getTelefone() != null) {
-			p.setTelefone(p.getTelefone().replaceAll("\\(", ""));
-			p.setTelefone(p.getTelefone().replaceAll("\\)", ""));
-			p.setTelefone(p.getTelefone().replaceAll("\\-", ""));
-		}
-
-		return p;
-	}
-
-	private Prestadores anulaCamposVazios(Prestadores p) {
-
-		p.setEmail(util.trataEmail(p.getEmail()));
-
-		if (p.getTelefone() != null && p.getTelefone().trim().isEmpty()) {
-			p.setTelefone(null);
-		}
-		if (p.getCelular() != null && p.getCelular().trim().isEmpty()) {
-			p.setCelular(null);
-		}
-
-		return p;
-	}
-
 	public Pessoa anulaCamposVazios(Pessoa pessoa) {
 		pessoa.setEmail(util.trataEmail(pessoa.getEmail()));
 		if (pessoa.getTelefone() != null && pessoa.getTelefone().trim().isEmpty()) {
@@ -316,47 +270,6 @@ public class ExtractorService {
 		}
 
 		return pessoa;
-	}
-
-	private Tomadores anulaCamposVazios(Tomadores t) {
-
-		t.setEmail(util.trataEmail(t.getEmail()));
-
-		if (t.getTelefone() != null && t.getTelefone().trim().isEmpty()) {
-			t.setTelefone(null);
-		}
-		if (t.getCelular() != null && t.getCelular().trim().isEmpty()) {
-			t.setCelular(null);
-		}
-
-		if (util.isEmptyOrNull(t.getInscricaoEstadual())) {
-			t.setInscricaoEstadual(null);
-		}
-		if (util.isEmptyOrNull(t.getInscricaoMunicipal())) {
-			t.setInscricaoMunicipal(null);
-		}
-
-		if (util.isEmptyOrNull(t.getCep())) {
-			t.setCep(null);
-		}
-
-		return t;
-	}
-
-	private Tomadores trataNumerosTelefones(Tomadores t) {
-
-		if (t.getCelular() != null) {
-			t.setCelular(t.getCelular().replaceAll("\\(", ""));
-			t.setCelular(t.getCelular().replaceAll("\\)", ""));
-			t.setCelular(t.getCelular().replaceAll("-", ""));
-		}
-		if (t.getTelefone() != null) {
-			t.setTelefone(t.getTelefone().replaceAll("\\(", ""));
-			t.setTelefone(t.getTelefone().replaceAll("\\)", ""));
-			t.setTelefone(t.getTelefone().replaceAll("\\-", ""));
-		}
-
-		return t;
 	}
 
 	public void processaDadosServicosNotasFiscais(List<String> dadosList) {
