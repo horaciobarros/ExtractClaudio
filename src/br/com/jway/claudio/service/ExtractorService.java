@@ -31,8 +31,7 @@ import br.com.jway.claudio.util.FileLog;
 import br.com.jway.claudio.util.Util;
 
 public class ExtractorService {
-	public static int threadsAtivas = 0;
-	public static int idNovasPessoas = 350000;
+	
 	private Util util = new Util();
 	private CompetenciasDao competenciasDao = new CompetenciasDao();
 	private PrestadoresDao prestadoresDao = new PrestadoresDao();
@@ -305,7 +304,7 @@ public class ExtractorService {
 	public void processaDadosGuiasNotasFiscais() {
 		FileLog log = new FileLog("guias_notas_fiscais");
 		
-		ExecutorService executor = Executors.newFixedThreadPool(200);
+		ExecutorService executor = Executors.newFixedThreadPool(180);
 		for (Guias guia : guiasDao.findAll()) {
 			GuiasNotasThread thread = new GuiasNotasThread(guia, log);
 			executor.execute(thread);

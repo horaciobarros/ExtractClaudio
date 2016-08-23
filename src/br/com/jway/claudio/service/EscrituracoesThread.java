@@ -23,7 +23,6 @@ public class EscrituracoesThread implements Runnable{
 	@Override
 	public void run() {
 		try {
-			ExtractorService.threadsAtivas++;
 			List<String> arrayAux = util.splitRegistro(linha);
 	
 			EscrituracoesOrigem escrituracoes = new EscrituracoesOrigem(arrayAux.get(0), arrayAux.get(1),
@@ -40,10 +39,6 @@ public class EscrituracoesThread implements Runnable{
 			log.fillError(linha,"Escrituracoes", e);
 			e.printStackTrace();
 		}
-		finally{
-			ExtractorService.threadsAtivas--;
-		}
-
 	}
 
 }
