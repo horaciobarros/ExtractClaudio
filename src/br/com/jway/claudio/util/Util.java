@@ -505,11 +505,12 @@ public class Util {
 			if (currentChar == '\"')
 				inQuotes = !inQuotes;
 			if (currentChar == ',' && inQuotes) {
-				builder.setCharAt(currentIndex, ';');
+				builder.setCharAt(currentIndex, '|');
 			}
 		}
 		List<String> result = Arrays.asList(builder.toString().split(","));
 		Collections.replaceAll(result, "\"", "");
+		Collections.replaceAll(result, "\\|", ",");
 		return result;
 	}
 

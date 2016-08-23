@@ -1,7 +1,10 @@
 package br.com.jway.claudio.entidadesOrigem;
 
+import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -10,13 +13,18 @@ import javax.persistence.Table;
 public class ServicosOrigem {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private long id;
 	private String codigo;
 	private String nome;
 	private String aliquota;
 	private String cnaes;
+	@Column(name = "data_de_criacao")
 	private String dataDeCriacao;
+	@Column(name = "id_origem")
+	private String idOrigem;
+	
 	public long getId() {
 		return id;
 	}
@@ -55,11 +63,11 @@ public class ServicosOrigem {
 	}
 	public ServicosOrigem(String id, String codigo, String nome, String aliquota, String cnaes, String dataDeCriacao) {
 		super();
-		this.id = Long.parseLong(id);
+		this.idOrigem = id;
 		this.codigo = codigo;
 		this.nome = nome;
 		this.aliquota = aliquota;
-		this.cnaes = cnaes;
+		this.cnaes = cnaes.replace("-", "").replace("/", "");
 		this.dataDeCriacao = dataDeCriacao;
 	}		
 	

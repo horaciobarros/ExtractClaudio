@@ -87,10 +87,11 @@ public class NotasThreadService implements Runnable {
 				nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
 
 				StringBuilder sbItem = new StringBuilder();
-
+				
 				Map<String, ServicosOrigem> mapServicosAux = new Hashtable<String, ServicosOrigem>();
 				for (ServicosNotasFiscaisOrigem s : listaItens) {
-					ServicosOrigem servico = servicosOrigemDao.findById(Long.parseLong(s.getIdServico().trim()));
+					
+					ServicosOrigem servico = servicosOrigemDao.findByIdOrigem(Long.parseLong(s.getIdServico().trim()));
 					
 					if (servico != null) {
 						String codigoServico = servico.getCodigo();
