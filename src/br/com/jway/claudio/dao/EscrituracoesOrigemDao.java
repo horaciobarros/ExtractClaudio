@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import br.com.jway.claudio.entidadesOrigem.EscrituracoesOrigem;
+import br.com.jway.claudio.model.NotasFiscais;
 import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.util.HibernateUtil;
 
@@ -93,6 +95,23 @@ public class EscrituracoesOrigemDao {
 		}
 		
 		return mapEscrituracoesOrigem;
+	}
+	
+	public EscrituracoesOrigem save(EscrituracoesOrigem e) {
+		Session session = sessionFactory.openSession();
+		try{
+			session.beginTransaction();
+			session.save(e);
+			session.getTransaction().commit();
+		}
+		catch(Exception e2){
+			e2.printStackTrace();
+			throw e2;
+		}
+		finally{
+			session.close();
+		}
+		return e;
 	}
 
 }

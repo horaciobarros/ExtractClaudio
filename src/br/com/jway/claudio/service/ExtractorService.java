@@ -65,15 +65,17 @@ public class ExtractorService {
 	private GuiasNotasFiscaisDao guiasNotasFiscaisDao = new GuiasNotasFiscaisDao();
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem = new Hashtable<String, List<ServicosNotasFiscaisOrigem>>();
 	private NotasFiscaisSubstDao notasFiscaisSubstDao;
-	private EscrituracoesOrigemDao escrituracoesOrigemDao = new EscrituracoesOrigemDao(); 
+	private EscrituracoesOrigemDao escrituracoesOrigemDao = new EscrituracoesOrigemDao();
 	private ServicosOrigemDao servicosOrigemDao = new ServicosOrigemDao();
 	private PrestadoresOptanteSimplesDao prestadoresOptanteSimpesDao = new PrestadoresOptanteSimplesDao();
+	private EscrituracoesOrigemDao escrituracoesDao = new EscrituracoesOrigemDao();
+	
 
 	public List<String> excluiParaProcessarNivel1() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
 				"NotasFiscaisEmails", "NotasFiscaisObras", "NotasFiscaisPrestadores", "NotasFiscaisServicos",
 				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "Pagamentos", "PrestadoresAtividades",
-				"" + "PrestadoresOptanteSimples", "Guias", "Competencias", "NotasFiscais", "Tomadores", "Prestadores",
+				"" + "PrestadoresOptanteSimples", "Guias", "Competencias", "NotasFiscais", "EscrituracoesOrigem", "ServicosOrigem", "Tomadores", "Prestadores",
 				"Pessoa");
 
 	}
@@ -81,7 +83,7 @@ public class ExtractorService {
 	public List<String> excluiParaProcessarNivel2() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
 				"NotasFiscaisEmails", "NotasFiscaisObras", "NotasFiscaisPrestadores", "NotasFiscaisServicos",
-				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais", "Pagamentos",
+				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais", "EscrituracoesOrigem", "ServicosOrigem", "Pagamentos",
 				"PrestadoresAtividades", "PrestadoresOptanteSimples", "Guias", "Competencias", "Tomadores");
 
 	}
@@ -89,7 +91,7 @@ public class ExtractorService {
 	public List<String> excluiParaProcessarNivel3() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos",
 				"NotasFiscaisEmails", "NotasFiscaisObras", "NotasFiscaisPrestadores", "NotasFiscaisServicos",
-				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais", "Tomadores");
+				"NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais", "EscrituracoesOrigem", "ServicosOrigem", "Tomadores");
 	}
 
 	public List<String> excluiParaProcessarNivel4() {
@@ -348,7 +350,7 @@ public class ExtractorService {
 				}
 				Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
 				Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
-				ServicosOrigem servico = servicosOrigemDao.findByIdCodigo((cnae.getServicoCodigo()));
+				ServicosOrigem servico = servicosOrigemDao.findByCodigoServicoCodigoCnae(cnae.getServicoCodigo(), cnae.getCnae());
 
 				try {
 					PrestadoresAtividades pa = new PrestadoresAtividades();
@@ -748,5 +750,75 @@ public class ExtractorService {
 		}
 
 	}
+	
+	public void processaDadosServicos(List<String> dadosList) {
+		FileLog log = new FileLog("servicos");
+		for (String linha : dadosList) {
+			if (linha == null || linha.trim().isEmpty()) {
+				break;
+			}			
+			
+			List<String> arrayAux = util.splitRegistro(linha);
+			String aux = arrayAux.get(4);
+			String[] cnaes = aux.split(";");
+			
+			for (String cnae : cnaes){
+				ServicosOrigem servicos = new ServicosOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2).replace("\"", ""),
+						arrayAux.get(3), cnae.trim().substring(0,cnae.trim().indexOf(" ")).trim().replace("\"", ""), arrayAux.get(5));
+				if (servicos!=null && servicos.getCodigo()!=null){
+					servicos.setCodigo(util.completarZerosEsquerda(servicos.getCodigo().replace("a", "").replace("b", "").replace(".", ""), 4));
+				}
+				try {
+					servicosOrigemDao.save(servicos);
+
+				} catch (Exception e) {
+					log.fillError(linha, "serviços", e);
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+	
+	public void processaDadosEscrituracoes(List<String> dadosList) {
+		FileLog log = new FileLog("escrituracoes");
+		
+		int totalLines = 0;
+		double perc = 0;
+		double divisor = 0;
+		int fator = 0;
+		DecimalFormat decimal = new DecimalFormat( "0.00" );
+		EscrituracoesThread escritService;
+		for (String linha : dadosList) {
+			if (linha == null || linha.trim().isEmpty()) {
+				break;
+			}
+			
+			fator++;
+			totalLines++;
+			
+			if (fator == 500){
+				Util.pausar(500);
+			}
+			
+			if (fator == 1000) {
+				fator = 0;
+				divisor = dadosList.size();
+				perc = (totalLines / divisor * 100);
+				System.out.println("Linhas processadas: " + totalLines + " ou " + decimal.format(perc) + " % de " 
+						+ dadosList.size() + " - "+ Util.getDataHoraAtual());
+				Util.pausar(5000);
+			}
+			if (ExtractorService.threadsAtivas > 40){
+				Util.pausar(500);
+			}
+			escritService = new EscrituracoesThread(util, linha, log);
+			new Thread(escritService).start();
+		}
+
+	}
+
+	
+	
 
 }

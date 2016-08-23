@@ -81,7 +81,16 @@ public class Controller {
 		}
 
 		if (nivelProcessamento <= 3) {
-
+			System.out.println("Lendo Serviços");
+			dadosList = extractorService.lerArquivosClaudio("Servicos");
+			extractorService.processaDadosServicos(dadosList);
+			System.out.println("--- Fim de Serviços ---");
+			
+			System.out.println("Lendo escrituracoes");
+			dadosList = extractorService.lerArquivosClaudio("Escrituracoes");
+			extractorService.processaDadosEscrituracoes(dadosList);
+			System.out.println("--- Fim de Escrituracoes ---");
+			
 			System.out.println("Lendo Serviços Notas Fiscais");
 			dadosList = extractorService.lerArquivosClaudio("servicos_notas_fiscais");
 			System.out.println("Guardando Serviços Notas Fiscais em Map");

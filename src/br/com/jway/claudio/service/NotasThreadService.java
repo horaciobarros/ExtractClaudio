@@ -87,10 +87,11 @@ public class NotasThreadService implements Runnable {
 				nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
 
 				StringBuilder sbItem = new StringBuilder();
-
+				
 				Map<String, ServicosOrigem> mapServicosAux = new Hashtable<String, ServicosOrigem>();
 				for (ServicosNotasFiscaisOrigem s : listaItens) {
-					ServicosOrigem servico = servicosOrigemDao.findById(Long.parseLong(s.getIdServico().trim()));
+					
+					ServicosOrigem servico = servicosOrigemDao.findByIdOrigem(Long.parseLong(s.getIdServico().trim()));
 					
 					if (servico != null) {
 						String codigoServico = servico.getCodigo();
@@ -106,7 +107,7 @@ public class NotasThreadService implements Runnable {
 				if (sbItem.toString().isEmpty()) {
 					log.fillError(linha,
 							"Nota Fiscal Servico - Serviço não encontrado:" + listaItens.get(0).getIdServico()
-									+ " da nota " + nfOrigem.getId() + " de " + nfOrigem.getRazaoSocialPrestador());
+									+ " da nota " + nf.getNumeroNota() + " de " + nfOrigem.getRazaoSocialPrestador());
 				}
 
 				nfs.setItemListaServico(util.completarZerosEsquerda(sbItem.toString(), 4));
