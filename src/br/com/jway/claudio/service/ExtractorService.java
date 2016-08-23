@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import br.com.jway.claudio.dao.CompetenciasDao;
 import br.com.jway.claudio.dao.Dao;
@@ -781,40 +783,25 @@ public class ExtractorService {
 	}
 	
 	public void processaDadosEscrituracoes(List<String> dadosList) {
+		System.out.println("Gravando Escriturações - "+ Util.getDataHoraAtual());
 		FileLog log = new FileLog("escrituracoes");
 		
-		int totalLines = 0;
-		double perc = 0;
-		double divisor = 0;
-		int fator = 0;
-		DecimalFormat decimal = new DecimalFormat( "0.00" );
 		EscrituracoesThread escritService;
+		ExecutorService executor = Executors.newFixedThreadPool(200);	
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
-			}
-			
-			fator++;
-			totalLines++;
-			
-			if (fator == 500){
-				Util.pausar(500);
-			}
-			
-			if (fator == 1000) {
-				fator = 0;
-				divisor = dadosList.size();
-				perc = (totalLines / divisor * 100);
-				System.out.println("Linhas processadas: " + totalLines + " ou " + decimal.format(perc) + " % de " 
-						+ dadosList.size() + " - "+ Util.getDataHoraAtual());
-				Util.pausar(5000);
-			}
-			if (ExtractorService.threadsAtivas > 40){
-				Util.pausar(500);
-			}
+			}		
+
 			escritService = new EscrituracoesThread(util, linha, log);
-			new Thread(escritService).start();
+            executor.execute(escritService);
 		}
+		Util.pausar(3000);
+		executor.shutdown();
+        while (!executor.isTerminated()) {
+        	Util.pausar(5000);
+        }
+        System.out.println("Escriturações finalizada - "+ Util.getDataHoraAtual());
 
 	}
 

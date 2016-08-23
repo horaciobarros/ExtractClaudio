@@ -23,7 +23,7 @@ public class ServicosOrigem {
 	@Column(name = "data_de_criacao")
 	private String dataDeCriacao;
 	@Column(name = "id_origem")
-	private String idOrigem;
+	private long idOrigem;
 	
 	public long getId() {
 		return id;
@@ -63,7 +63,7 @@ public class ServicosOrigem {
 	}
 	public ServicosOrigem(String id, String codigo, String nome, String aliquota, String cnaes, String dataDeCriacao) {
 		super();
-		this.idOrigem = id;
+		this.idOrigem = Long.parseLong(id);
 		this.codigo = codigo;
 		this.nome = nome;
 		this.aliquota = aliquota;

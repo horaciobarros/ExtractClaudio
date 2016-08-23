@@ -38,6 +38,7 @@ public class EscrituracoesThread implements Runnable{
 			arrayAux = null;
 		} catch (Exception e) {
 			log.fillError(linha,"Escrituracoes", e);
+			e.printStackTrace();
 		}
 		finally{
 			ExtractorService.threadsAtivas--;

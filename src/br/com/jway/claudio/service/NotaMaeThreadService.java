@@ -74,7 +74,6 @@ public class NotaMaeThreadService implements Runnable {
 
 	@Override
 	public void run() {
-		int linhas = 0;
 		ExtractorService.threadsAtivas++;
 		try {
 			List<String> arrayAux = util.splitRegistro(linha);
