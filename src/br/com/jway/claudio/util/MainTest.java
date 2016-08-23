@@ -1,7 +1,5 @@
 package br.com.jway.claudio.util;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class MainTest {
 	

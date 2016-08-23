@@ -6,7 +6,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import br.com.jway.claudio.entidadesOrigem.EscrituracoesOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosOrigem;
 import br.com.jway.claudio.util.HibernateUtil;
 import br.com.jway.claudio.util.Util;
@@ -64,7 +63,7 @@ public class ServicosOrigemDao {
 			codigoServico = Integer.toString(aux);
 			Query query = sessionFactory.openSession().createQuery("from ServicosOrigem e where e.codigo = :codigoServico and e.cnaes = :codigoCnae")
 					.setParameter("codigoServico", codigoServico)
-					.setParameter("cnaes", codigoCnae);
+					.setParameter("codigoCnae", codigoCnae);
 
 			try {
 				List<ServicosOrigem> servicos = query.list();

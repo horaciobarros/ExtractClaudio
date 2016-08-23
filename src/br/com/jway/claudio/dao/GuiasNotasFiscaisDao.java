@@ -1,6 +1,5 @@
 package br.com.jway.claudio.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;

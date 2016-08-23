@@ -9,8 +9,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import br.com.jway.claudio.entidadesOrigem.EscrituracoesOrigem;
-import br.com.jway.claudio.model.NotasFiscais;
-import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.util.HibernateUtil;
 
 public class EscrituracoesOrigemDao {

@@ -495,7 +495,7 @@ public class Util {
 		return cnpj.equals(cnpj_calc);
 	}
 
-	public List<String> splitRegistro(String linha) {
+	public List<String> splitRegistroServico(String linha) {
 		// return
 		// Arrays.asList(linha.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
 		StringBuilder builder = new StringBuilder(linha);
@@ -510,7 +510,25 @@ public class Util {
 		}
 		List<String> result = Arrays.asList(builder.toString().split(","));
 		Collections.replaceAll(result, "\"", "");
-		Collections.replaceAll(result, "\\|", ",");
+		Collections.replaceAll(result, "|", ",");
+		return result;
+	}
+	
+	public List<String> splitRegistro(String linha) {
+		// return
+		// Arrays.asList(linha.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"));
+		StringBuilder builder = new StringBuilder(linha);
+		boolean inQuotes = false;
+		for (int currentIndex = 0; currentIndex < builder.length(); currentIndex++) {
+			char currentChar = builder.charAt(currentIndex);
+			if (currentChar == '\"')
+				inQuotes = !inQuotes;
+			if (currentChar == ',' && inQuotes) {
+				builder.setCharAt(currentIndex, ';');
+			}
+		}
+		List<String> result = Arrays.asList(builder.toString().split(","));
+		Collections.replaceAll(result, "\"", "");
 		return result;
 	}
 

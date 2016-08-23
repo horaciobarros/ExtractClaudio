@@ -10,7 +10,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import br.com.jway.claudio.model.Pessoa;
-import br.com.jway.claudio.model.Prestadores;
 import br.com.jway.claudio.util.HibernateUtil;
 
 public class PessoaDao {

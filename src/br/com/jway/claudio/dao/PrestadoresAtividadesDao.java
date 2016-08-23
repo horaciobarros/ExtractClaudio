@@ -7,7 +7,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import br.com.jway.claudio.model.Prestadores;
 import br.com.jway.claudio.model.PrestadoresAtividades;
 import br.com.jway.claudio.util.HibernateUtil;
 

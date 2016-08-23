@@ -6,7 +6,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import br.com.jway.claudio.model.Competencias;
 import br.com.jway.claudio.util.HibernateUtil;
 
 
