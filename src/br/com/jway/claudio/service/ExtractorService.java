@@ -17,7 +17,9 @@ import br.com.jway.claudio.dao.EscrituracoesOrigemDao;
 import br.com.jway.claudio.dao.GuiasDao;
 import br.com.jway.claudio.dao.NotasFiscaisDao;
 import br.com.jway.claudio.dao.PessoaDao;
+import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
 import br.com.jway.claudio.dao.PrestadoresDao;
+import br.com.jway.claudio.dao.PrestadoresOptanteSimplesDao;
 import br.com.jway.claudio.dao.ServicosOrigemDao;
 import br.com.jway.claudio.entidadesOrigem.EscrituracoesOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosNotasFiscaisOrigem;
@@ -410,6 +412,17 @@ public class ExtractorService {
 		Util.pausar(3000);
 		System.out.println("Escriturações finalizada - " + Util.getDataHoraAtual());
 
+	}
+
+	public void processaExclusaoPrestadoresSemNotas() {
+		System.out.println("Excluindo Prestadores Atividades");
+		new PrestadoresAtividadesDao().excluiPrestadoresSemNotas();
+		System.out.println("Excluindo Prestadores optante simples");
+		new PrestadoresOptanteSimplesDao().excluiPrestadoresSemNotas();
+		System.out.println("Excluindo Prestadores");
+		prestadoresDao.excluiPrestadoresSemNotas();
+		System.out.println("Excluindo Pessoas");
+		pessoaDao.excluiPrestadoresSemNotas();
 	}
 
 }

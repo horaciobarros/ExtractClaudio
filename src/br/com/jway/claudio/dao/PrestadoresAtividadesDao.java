@@ -73,4 +73,19 @@ public class PrestadoresAtividadesDao {
 	
 	}
 
+	public void excluiPrestadoresSemNotas() {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		StringBuilder builder = new StringBuilder();
+		builder.append("delete from prestadores_atividades where "
+				+ "inscricao_prestador not in (select n.inscricao_prestador from notas_fiscais n) and "
+				+ "inscricao_prestador not in(select g.inscricao_prestador from guias g)");
+
+		String sql = builder.toString();
+		Query query = session.createSQLQuery(sql);
+		query.executeUpdate();
+		tx.commit();session.close();
+		
+	}
+
 }

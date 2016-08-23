@@ -55,4 +55,19 @@ public class PrestadoresOptanteSimplesDao {
 		tx.commit();session.close();
 	}
 
+	public void excluiPrestadoresSemNotas() {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		StringBuilder builder = new StringBuilder();
+		builder.append("delete from Prestadores_optante_simples where "
+				+ "inscricao_prestador not in (select n.inscricao_prestador from notas_fiscais n) and "
+				+ "inscricao_prestador not in(select g.inscricao_prestador from guias g)");
+
+		String sql = builder.toString();
+		Query query = session.createSQLQuery(sql);
+		query.executeUpdate();
+		tx.commit();session.close();
+		
+	}
+
 }

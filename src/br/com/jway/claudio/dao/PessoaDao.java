@@ -133,4 +133,19 @@ public class PessoaDao {
 			return mapPessoa;
 		}
 
+	public void excluiPrestadoresSemNotas() {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		StringBuilder builder = new StringBuilder();
+		builder.append("delete from pessoa where "
+				+ "cnpj_cpf not in (select n.inscricao_prestador from notas_fiscais n) and "
+				+ "cnpj_cpf not in(select g.inscricao_prestador from guias g); ");
+
+		String sql = builder.toString();
+		Query query = session.createSQLQuery(sql);
+		query.executeUpdate();
+		tx.commit();session.close();
+		
+	}
+
 }

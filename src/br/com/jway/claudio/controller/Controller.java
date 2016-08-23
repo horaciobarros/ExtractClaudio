@@ -1,5 +1,6 @@
 package br.com.jway.claudio.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.jway.claudio.service.ExtractorService;
@@ -17,12 +18,12 @@ public class Controller {
 
 	public void importaNfe() {
 
-		int nivelProcessamento = 3;
+		int nivelProcessamento = 5;
 
 		// limpando o banco
 		System.out.println("Limpando o banco...");
 
-		List<String> entidades = null;
+		List<String> entidades = new ArrayList<String>();
 		if (nivelProcessamento == 2) {
 			entidades = extractorService.excluiParaProcessarNivel2();
 		} else if (nivelProcessamento == 3) {
@@ -119,6 +120,11 @@ public class Controller {
 			System.out.println("--- Fim de guias notas fiscais ---");
 
 		}
+		
+		if (nivelProcessamento <= 5) {
+			System.out.println("Limpando Prestadores Sem Notas");
+			extractorService.processaExclusaoPrestadoresSemNotas();
+		}
 
 		System.out.println("--- Processo encerrado. " + Util.getDataHoraAtual() + " Registros gravados: ");
 
@@ -129,7 +135,7 @@ public class Controller {
 				e.printStackTrace();
 			}
 		}
-		Util.desligarComputador();
+		//Util.desligarComputador();
 
 	}
 
