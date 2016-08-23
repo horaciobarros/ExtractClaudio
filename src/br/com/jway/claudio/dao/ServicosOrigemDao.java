@@ -36,9 +36,7 @@ public class ServicosOrigemDao {
 	}
 
 	public ServicosOrigem findByCodigo(String codigo) {
-		Integer aux = Util.castToInteger(codigo);
 		try {
-			codigo = Integer.toString(aux);
 			Query query = sessionFactory.openSession().createQuery("from ServicosOrigem e where e.codigo = :codigo")
 					.setParameter("codigo", codigo);
 
@@ -58,9 +56,8 @@ public class ServicosOrigemDao {
 	}
 	
 	public ServicosOrigem findByCodigoServicoCodigoCnae(String codigoServico, String codigoCnae) {
-		Integer aux = Util.castToInteger(codigoServico);
+
 		try {
-			codigoServico = Integer.toString(aux);
 			Query query = sessionFactory.openSession().createQuery("from ServicosOrigem e where e.codigo = :codigoServico and e.cnaes = :codigoCnae")
 					.setParameter("codigoServico", codigoServico)
 					.setParameter("codigoCnae", codigoCnae);

@@ -48,9 +48,12 @@ public class AtividadeContribuinteThread implements Runnable{
 			}
 			Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
 			Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
-
-			ServicosOrigem servico = servicosOrigemDao.findByCodigoServicoCodigoCnae(cnae.getServicoCodigo().replace(".", "").replace("a", "").replace("b", "").replace("/", "").replace("-", ""), cnae.getCnaeCodigo().replace(".", "").replace("a", "").replace("b", "").replace("/", "").replace("-", ""));
-
+			String codigoServico = cnae.getServicoCodigo().replace(".", "").replace("a", "").replace("b", "").replace("/", "").replace("-", "");
+			codigoServico = util.completarZerosEsquerda(codigoServico, 4);
+			ServicosOrigem servico = servicosOrigemDao.findByCodigoServicoCodigoCnae(codigoServico, cnae.getCnaeCodigo().replace(".", "").replace("a", "").replace("b", "").replace("/", "").replace("-", ""));
+			if (servico==null){
+				servico = servicosOrigemDao.findByCodigo(codigoServico);
+			}
 			try {
 				PrestadoresAtividades pa = new PrestadoresAtividades();
 				pa.setAliquota(BigDecimal.valueOf(util.corrigeDouble(servico.getAliquota())));
@@ -65,13 +68,13 @@ public class AtividadeContribuinteThread implements Runnable{
 				pa.setPrestadores(pr);
 				prestadoresAtividadesDao.save(pa);
 			} catch (Exception e) {
-				System.out.println(linha);
+				System.out.println(codigoServico+ " - "+cnae.getCnaeCodigo());
 				log.fillError(linha, "Prestadores atividades ", e);
 				e.printStackTrace();
 			}
 
 		} catch (Exception e) {
-
+			log.fillError(linha, "Prestadores atividades ", e);
 			e.printStackTrace();
 		}		
 	}
