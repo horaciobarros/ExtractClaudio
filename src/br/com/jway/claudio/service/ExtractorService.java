@@ -306,7 +306,7 @@ public class ExtractorService {
 	public void processaDadosGuiasNotasFiscais() {
 		FileLog log = new FileLog("guias_notas_fiscais");
 		
-		ExecutorService executor = Executors.newFixedThreadPool(180);
+		ExecutorService executor = Executors.newFixedThreadPool(200);
 		for (Guias guia : guiasDao.findAll()) {
 			GuiasNotasThread thread = new GuiasNotasThread(guia, log);
 			executor.execute(thread);

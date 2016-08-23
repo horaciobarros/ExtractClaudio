@@ -26,17 +26,22 @@ public class GuiasNotasThread implements Runnable{
 				String ids = guia.getIdNotasFiscais().replaceAll("\"", "");
 				String[] lista = ids.split(";");
 				for (int i = 0; i < lista.length; i++) {
-					NotasFiscais nf = notasFiscaisDao.findByIdOrigem(Long.parseLong(lista[i]));
-					if (nf != null) {
-						GuiasNotasFiscais gnf = new GuiasNotasFiscais();
-						gnf.setGuias(guia);
-						gnf.setInscricaoPrestador(guia.getInscricaoPrestador()); //
-						gnf.setNumeroGuia(guia.getNumeroGuia());
-						gnf.setNumeroNota(nf.getNumeroNota());
-						gnf.setNumeroGuiaOrigem(guia.getNumeroGuiaOrigem());
-						guiasNotasFiscaisDao.save(gnf);
-					} else {
-						log.fillError(guia.toString(), "Nota Fiscal não encontrada para relação com Guias. ID origem nota: " + Long.parseLong(lista[i]));
+					if (lista[i] == null || lista[i].trim().isEmpty()){
+						continue;
+					}
+					else{
+						NotasFiscais nf = notasFiscaisDao.findByIdOrigem(Long.parseLong(lista[i]));
+						if (nf != null) {
+							GuiasNotasFiscais gnf = new GuiasNotasFiscais();
+							gnf.setGuias(guia);
+							gnf.setInscricaoPrestador(guia.getInscricaoPrestador()); //
+							gnf.setNumeroGuia(guia.getNumeroGuia());
+							gnf.setNumeroNota(nf.getNumeroNota());
+							gnf.setNumeroGuiaOrigem(guia.getNumeroGuiaOrigem());
+							guiasNotasFiscaisDao.save(gnf);
+						} else {
+							log.fillError(guia.toString(), "Nota Fiscal não encontrada para relação com Guias. ID origem nota: " + lista[i]);
+						}
 					}
 				}
 			}
