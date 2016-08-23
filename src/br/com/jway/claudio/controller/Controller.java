@@ -18,7 +18,7 @@ public class Controller {
 
 	public void importaNfe() {
 
-		int nivelProcessamento = 5;
+		int nivelProcessamento = 1;
 
 		// limpando o banco
 		System.out.println("Limpando o banco...");

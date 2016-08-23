@@ -24,7 +24,7 @@ public class GuiasNotasThread implements Runnable{
 		try {
 			if (guia.getIdNotasFiscais() != null && !guia.getIdNotasFiscais().isEmpty()) {
 				String ids = guia.getIdNotasFiscais().replaceAll("\"", "");
-				String[] lista = ids.split(",");
+				String[] lista = ids.split(";");
 				for (int i = 0; i < lista.length; i++) {
 					NotasFiscais nf = notasFiscaisDao.findByIdOrigem(Long.parseLong(lista[i]));
 					if (nf != null) {
