@@ -46,7 +46,14 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
+		
 
+		<!-- Hibernate c3p0 connection pool -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>3.6.3.Final</version>
+		</dependency>
 
 
 
