@@ -99,7 +99,7 @@ public class Controller {
 
 			System.out.println("Lendo Notas Fiscais  " + Util.getDataHoraAtual());
 			dadosList = extractorService.lerArquivosClaudio("notas_fiscais");
-			System.out.println("Gravando Notas Fiscais");
+			System.out.println("Gravando Notas Fiscais" + Util.getDataHoraAtual());
 			try {
 				extractorService.processaDadosNotasFiscais(dadosList);
 			} catch (Exception e) {

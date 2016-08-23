@@ -127,64 +127,27 @@ public class ExtractorService {
 	public void processaDadosNotasFiscais(List<String> dadosList) throws Exception {
 
 		FileLog log = new FileLog("notas_fiscais");
-
-		int fator = 0;
-		int totalLines = 0;
-		double percent = 0;
-		double divisor = 0;
-		DecimalFormat decimal = new DecimalFormat( "0.00" );
 		
 		Map<String, Prestadores> mapPrestadores = prestadoresDao.findAllMapReturn();
 		Map<String, Pessoa> mapPessoa = pessoaDao.findAllMapReturn();
 		Map<String, EscrituracoesOrigem> mapEscrituracoesOrigem = escrituracoesOrigemDao.findAllMapReturn();
 		
+		ExecutorService executor = Executors.newFixedThreadPool(200);	
 		for (String linha : dadosList) {
-			
-			fator++;
-			totalLines++;
-			if (fator == 1000) {
-				fator = 0;
-				divisor = dadosList.size();
-				percent = (totalLines / divisor * 100);
-				System.out.println("Linhas processadas: " + totalLines + " ou " + decimal.format(percent) + " % de " 
-						+ dadosList.size() + " - "+ Util.getDataHoraAtual());
+			if (linha == null || linha.trim().isEmpty()) {
+				break;
 			}
 
-			if(ExtractorService.threadsAtivas > 7){
-				while(ExtractorService.threadsAtivas>0){
-					Util.pausar(500);
-				}
-				if(ExtractorService.threadsAtivas == 0){
-					Util.pausar(500);
-				}
-			} 
-			//pausas serão efetuadas para que o MySql respire
-			if (totalLines >=100 && totalLines%100 == 0){
-				Util.pausar(1000 * 1);
-			}
-			if (totalLines >=300 && totalLines%300 == 0){
-				Util.pausar(1000 * 3);
-			}
-			if (totalLines >=2000 && totalLines%2000 == 0){
-				Util.pausar(1000 * 5);
-			}
-			if (totalLines >=10000 && totalLines%10000 == 0){
-				Util.pausar(1000 * 10);
-			}
 			NotaMaeThreadService notaMaeThread = new NotaMaeThreadService(linha, log, mapPrestadores, mapPessoa, mapEscrituracoesOrigem,
 					mapServicosNotasFiscaisOrigem, util);
-			Thread thread = new Thread(notaMaeThread);
-			thread.start();
-
+            executor.execute(notaMaeThread);
 		}
-		
-		if(ExtractorService.threadsAtivas != 0){
-			while(ExtractorService.threadsAtivas>0){
-				Util.pausar(2000);
-			}
-		} 
-		// Pausa de 60 segundos para terminar de processar as threads filhas.
-		Util.pausar(1000 * 60);
+		Util.pausar(5000);
+		executor.shutdown();
+        while (!executor.isTerminated()) {
+        	Util.pausar(5000);
+        }
+        System.out.println("Notas Fiscais finalizada - "+ Util.getDataHoraAtual());
 		log.close();
 	}
 

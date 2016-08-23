@@ -6,33 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.jway.claudio.dao.EscrituracoesOrigemDao;
-import br.com.jway.claudio.dao.GuiasNotasFiscaisDao;
-import br.com.jway.claudio.dao.MunicipiosIbgeDao;
-import br.com.jway.claudio.dao.NotasFiscaisCanceladasDao;
 import br.com.jway.claudio.dao.NotasFiscaisDao;
-import br.com.jway.claudio.dao.NotasFiscaisEmailsDao;
-import br.com.jway.claudio.dao.NotasFiscaisPrestadoresDao;
-import br.com.jway.claudio.dao.NotasFiscaisServicosDao;
-import br.com.jway.claudio.dao.NotasFiscaisTomadoresDao;
 import br.com.jway.claudio.dao.PessoaDao;
-import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
-import br.com.jway.claudio.dao.PrestadoresDao;
 import br.com.jway.claudio.dao.TomadoresDao;
-import br.com.jway.claudio.entidadesOrigem.DadosLivroPrestador;
 import br.com.jway.claudio.entidadesOrigem.EscrituracoesOrigem;
 import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosNotasFiscaisOrigem;
-import br.com.jway.claudio.model.Guias;
-import br.com.jway.claudio.model.GuiasNotasFiscais;
 import br.com.jway.claudio.model.NotasFiscais;
-import br.com.jway.claudio.model.NotasFiscaisCanceladas;
-import br.com.jway.claudio.model.NotasFiscaisEmails;
-import br.com.jway.claudio.model.NotasFiscaisPrestadores;
-import br.com.jway.claudio.model.NotasFiscaisServicos;
-import br.com.jway.claudio.model.NotasFiscaisTomadores;
 import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.model.Prestadores;
-import br.com.jway.claudio.model.PrestadoresAtividades;
 import br.com.jway.claudio.model.Tomadores;
 import br.com.jway.claudio.util.FileLog;
 import br.com.jway.claudio.util.Util;
@@ -55,7 +37,6 @@ public class NotaMaeThreadService implements Runnable {
 	private Util util;
 	private NotasFiscaisDao notasFiscaisDao = new NotasFiscaisDao();
 	private TomadoresDao tomadoresDao = new TomadoresDao();
-	private PrestadoresDao prestadoresDao = new PrestadoresDao();
 	private PessoaDao pessoaDao = new PessoaDao();
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem;
 	private EscrituracoesOrigemDao escrituracoesOrigemDao = new EscrituracoesOrigemDao();
@@ -74,7 +55,6 @@ public class NotaMaeThreadService implements Runnable {
 
 	@Override
 	public void run() {
-		ExtractorService.threadsAtivas++;
 		try {
 			List<String> arrayAux = util.splitRegistro(linha);
 
@@ -350,8 +330,6 @@ public class NotaMaeThreadService implements Runnable {
 		} catch (Exception e) {
 			log.fillError(linha, e.getMessage());
 			e.printStackTrace();
-		} finally {
-			ExtractorService.threadsAtivas--;
 		}
 	}
 
