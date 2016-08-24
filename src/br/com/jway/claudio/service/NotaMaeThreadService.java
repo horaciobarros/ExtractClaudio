@@ -228,24 +228,32 @@ public class NotaMaeThreadService implements Runnable {
 
 				nf.setNumeroRps(nf.getNumeroNota());
 				nf.setSerieRps("C");
+				
 				List<BigDecimal> lista = Arrays.asList(nf.getValorCofins(), nf.getValorCsll(), nf.getValorInss(),
-						nf.getValorIr());
+						nf.getValorIr(), nf.getValorOutrasRetencoes());
 				BigDecimal descontos = util.getSumOfBigDecimal(lista);
 
 				nf.setValorLiquido(util.getSubtract(
 						BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())), descontos));
+				
 				if (nf.getValorLiquido().compareTo(BigDecimal.ZERO) == -1) {
 					nf.setValorLiquido(nf.getValorLiquido().multiply(BigDecimal.valueOf(-1)));
 				}
 
 				if (escrituracoes.getStatus() != null && escrituracoes.getStatus().contains("canceled")) {
 					nf.setSituacaoOriginal("C");
-					nf.setSituacao("C");
+					nf.setSituacao("N");
 				} else if (escrituracoes.getStatus() != null && escrituracoes.getStatus().contains("replaced")) {
 					nf.setSituacaoOriginal("S");
 					nf.setSituacao("S");
 				} else {
 					nf.setSituacaoOriginal("N");
+				}
+
+				if (escrituracoes.getSituacao().equals("retained")) {
+					nf.setSituacaoTributaria("R");
+				} else {
+					nf.setSituacaoTributaria("N");
 				}
 
 				nf.setEscrituracaoSituacao(escrituracoes.getSituacao());
