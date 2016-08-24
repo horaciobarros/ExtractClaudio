@@ -101,7 +101,7 @@ public class ExtractorService {
 		Map<String, Pessoa> mapPessoa = pessoaDao.findAllMapReturn();
 		Map<String, EscrituracoesOrigem> mapEscrituracoesOrigem = escrituracoesOrigemDao.findAllMapReturn();
 
-		ExecutorService executor = Executors.newFixedThreadPool(160);
+		ExecutorService executor = Executors.newFixedThreadPool(180);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;

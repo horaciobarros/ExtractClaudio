@@ -83,11 +83,14 @@ public class GuiasThread implements Runnable{
 			Prestadores prestadores = prestadoresDao.findByInscricao(guias.getInscricaoPrestador());
 			guias.setPrestadores(prestadores);
 			String situacao = "A";
-			if (guiaOrigem.getDataDePagamento() != null && !guiaOrigem.getDataDePagamento().isEmpty()) {
+			if (guiaOrigem.getStatus() != null && guiaOrigem.getStatus().equals("paid")){
 				situacao = "P";
+			} else if (guiaOrigem.getStatus()!=null && guiaOrigem.getStatus().equals("cancelled")){
+				situacao = "C";
 			}
-			guias.setSituacao(situacao);
 
+			guias.setSituacao(situacao);
+			
 			guias.setTipo("P");
 
 			guias.setValorDesconto(BigDecimal.valueOf(0.00));
