@@ -101,7 +101,7 @@ public class ExtractorService {
 		Map<String, Pessoa> mapPessoa = pessoaDao.findAllMapReturn();
 		Map<String, EscrituracoesOrigem> mapEscrituracoesOrigem = escrituracoesOrigemDao.findAllMapReturn();
 
-		ExecutorService executor = Executors.newFixedThreadPool(140);
+		ExecutorService executor = Executors.newFixedThreadPool(160);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
@@ -132,7 +132,7 @@ public class ExtractorService {
 		System.out.println("Gravando contribuintes - " + Util.getDataHoraAtual());
 
 		ContribuintesThread threadService;
-		ExecutorService executor = Executors.newFixedThreadPool(180);
+		ExecutorService executor = Executors.newFixedThreadPool(200);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
@@ -155,7 +155,7 @@ public class ExtractorService {
 		System.out.println("Gravando cnae_servicos_contribuintes - " + Util.getDataHoraAtual());
 
 		AtividadeContribuinteThread threadService;
-		ExecutorService executor = Executors.newFixedThreadPool(180);
+		ExecutorService executor = Executors.newFixedThreadPool(200);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
@@ -184,7 +184,7 @@ public class ExtractorService {
 		System.out.println("Gravando guias - " + Util.getDataHoraAtual());
 
 		GuiasThread threadService;
-		ExecutorService executor = Executors.newFixedThreadPool(180);
+		ExecutorService executor = Executors.newFixedThreadPool(200);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
@@ -348,7 +348,7 @@ public class ExtractorService {
 
 		FileLog log = new FileLog("notas_fiscais_substitutas");
 
-		ExecutorService executor = Executors.newFixedThreadPool(180);
+		ExecutorService executor = Executors.newFixedThreadPool(200);
 		for (NotasFiscais nf : notasFiscaisDao.findSubstitutas()) {
 			NotasSubstituidasThread thread = new NotasSubstituidasThread(nf, log);
 			executor.execute(thread);
@@ -395,7 +395,7 @@ public class ExtractorService {
 		FileLog log = new FileLog("escrituracoes");
 
 		EscrituracoesThread escritService;
-		ExecutorService executor = Executors.newFixedThreadPool(180);
+		ExecutorService executor = Executors.newFixedThreadPool(200);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;

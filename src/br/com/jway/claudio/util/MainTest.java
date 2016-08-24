@@ -22,29 +22,30 @@ public class MainTest {
 
 			OutputStreamWriter bo = new OutputStreamWriter(new FileOutputStream("c://temp//claudio//guias_notas_fiscais_err.txt"), "UTF-8");
 			List<String> dadosList = new ArrayList<String>();
-
+			String linha = "";
 			try {
 				br = new BufferedReader(new InputStreamReader(new FileInputStream("c://temp//claudio//zzz_guias_notas_fiscais_err.txt"), "UTF-8"));
 				br.readLine(); // cabeï¿½alho
 				while (br.ready()) {					
-					String linha = br.readLine();
+					linha = br.readLine();
 					if (linha == null || linha.trim().isEmpty()|| !linha.startsWith("erro")){
 						continue;
 					}
-					String info = linha.substring(linha.indexOf("ID origem nota:"));
-					info = info.substring(0,info.indexOf("-"));
-					String inscricaoPrestador = linha.substring(linha.indexOf("inscricaoPrestador"));
-					inscricaoPrestador = inscricaoPrestador.substring(0,inscricaoPrestador.indexOf(","));
-					String dataVencimento = linha.substring(linha.indexOf("dataVencimento"));
-					dataVencimento = dataVencimento.substring(0,dataVencimento.indexOf(","));
+					String info = linha.substring(linha.indexOf("\""));
+					info = info.substring(0,info.indexOf(" - con")-4);
+					//String inscricaoPrestador = linha.substring(linha.indexOf("inscricaoPrestador"));
+					//inscricaoPrestador = inscricaoPrestador.substring(0,inscricaoPrestador.indexOf(","));
+					//String dataVencimento = linha.substring(linha.indexOf("dataVencimento"));
+					//dataVencimento = dataVencimento.substring(0,dataVencimento.indexOf(","));
 					//System.out.println(info +" - "+inscricaoPrestador+" - "+dataVencimento);
-					bo.write(info +" - "+inscricaoPrestador+" - "+dataVencimento+"\n");
+					bo.write(info+"\n");
 				}
 				br.close();
 				bo.close();
 				return dadosList;
 			} catch (Exception e) {
 				e.printStackTrace();
+				System.out.println(linha);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
