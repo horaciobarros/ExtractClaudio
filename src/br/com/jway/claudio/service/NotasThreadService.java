@@ -10,6 +10,7 @@ import br.com.jway.claudio.dao.NotasFiscaisEmailsDao;
 import br.com.jway.claudio.dao.NotasFiscaisPrestadoresDao;
 import br.com.jway.claudio.dao.NotasFiscaisServicosDao;
 import br.com.jway.claudio.dao.NotasFiscaisTomadoresDao;
+import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
 import br.com.jway.claudio.dao.ServicosOrigemDao;
 import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosNotasFiscaisOrigem;
@@ -23,6 +24,7 @@ import br.com.jway.claudio.model.NotasFiscaisServicos;
 import br.com.jway.claudio.model.NotasFiscaisTomadores;
 import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.model.Prestadores;
+import br.com.jway.claudio.model.PrestadoresAtividades;
 import br.com.jway.claudio.model.Tomadores;
 import br.com.jway.claudio.util.FileLog;
 import br.com.jway.claudio.util.Util;
@@ -44,6 +46,7 @@ public class NotasThreadService implements Runnable {
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem;
 	private NotasFiscaisCanceladasDao notasFiscaisCanceladasDao = new NotasFiscaisCanceladasDao();
 	private ServicosOrigemDao servicosOrigemDao = new ServicosOrigemDao();
+	private PrestadoresAtividadesDao prestadoresAtividadesDao = new PrestadoresAtividadesDao();
 
 	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
 			String tipoNotaFilha, Guias guia, Tomadores tomadores, Pessoa pessoa, Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem2) {
@@ -102,12 +105,16 @@ public class NotasThreadService implements Runnable {
 							mapServicosAux.put(util.completarZerosEsquerda(codigoServico,4), servico);
 							break;
 						}
+					} else { // id de serviço perdido
+						nfs.setIdServicoPerdido(Long.parseLong(s.getIdServico()));
+						
 					}
 				}
 				if (sbItem.toString().isEmpty()) {
 					log.fillError(linha,
 							"Nota Fiscal Servico - Serviço não encontrado:" + listaItens.get(0).getIdServico()
 									+ " da nota " + nf.getNumeroNota() + " de " + nfOrigem.getRazaoSocialPrestador());
+					sbItem.append(consideraCnaePrestador(nf.getInscricaoPrestador()));
 				}
 
 				nfs.setItemListaServico(util.completarZerosEsquerda(sbItem.toString(), 4));
@@ -259,6 +266,13 @@ public class NotasThreadService implements Runnable {
 
 		}
 
+	}
+
+	private String consideraCnaePrestador(String inscricaoPrestador) {
+		
+		PrestadoresAtividades pa = prestadoresAtividadesDao.findByInscricao(inscricaoPrestador);
+		return pa.getIlistaservicos();		
+		
 	}
 
 }

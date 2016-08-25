@@ -90,8 +90,17 @@ public class NotasFiscaisServicos implements Serializable {
 
    @Column(name="hash")
    private String hash;
+   
+   @Column(name="id_servico_perdido")
+   private Long idServicoPerdido;
 
-   public Long getId() { 
+   public Long getIdServicoPerdido() {
+	return idServicoPerdido;
+}
+public void setIdServicoPerdido(Long idServicoPerdido) {
+	this.idServicoPerdido = idServicoPerdido;
+}
+public Long getId() { 
       return id;
    }
    public void  setId(Long id) { 
