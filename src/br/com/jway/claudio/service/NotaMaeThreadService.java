@@ -80,9 +80,11 @@ public class NotaMaeThreadService implements Runnable {
 				}
 
 				String inscricaoPrestador = util.getCpfCnpj(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
-				pr = mapPrestadores.get(inscricaoPrestador);
-				pessoa = mapPessoa.get(inscricaoPrestador);
+				try{pr = mapPrestadores.get(inscricaoPrestador);} catch(Exception e){e.printStackTrace();}
+				try{pessoa = mapPessoa.get(inscricaoPrestador);} catch(Exception e){e.printStackTrace();}
+				
 				try {
+					
 					if (pr == null || pr.getId() == 0
 							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
 						System.out.println("Prestador nÃ£o encontrado:" + inscricaoPrestador);

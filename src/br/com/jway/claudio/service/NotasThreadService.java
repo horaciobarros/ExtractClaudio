@@ -11,8 +11,10 @@ import br.com.jway.claudio.dao.NotasFiscaisPrestadoresDao;
 import br.com.jway.claudio.dao.NotasFiscaisServicosDao;
 import br.com.jway.claudio.dao.NotasFiscaisTomadoresDao;
 import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
+import br.com.jway.claudio.dao.ServicosDao;
 import br.com.jway.claudio.dao.ServicosOrigemDao;
 import br.com.jway.claudio.entidadesOrigem.NotasFiscaisOrigem;
+import br.com.jway.claudio.entidadesOrigem.Servicos;
 import br.com.jway.claudio.entidadesOrigem.ServicosNotasFiscaisOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosOrigem;
 import br.com.jway.claudio.model.Guias;
@@ -45,11 +47,12 @@ public class NotasThreadService implements Runnable {
 	private Pessoa pessoa;
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem;
 	private NotasFiscaisCanceladasDao notasFiscaisCanceladasDao = new NotasFiscaisCanceladasDao();
+	private ServicosDao servicosDao = new ServicosDao();
 	private ServicosOrigemDao servicosOrigemDao = new ServicosOrigemDao();
 	private PrestadoresAtividadesDao prestadoresAtividadesDao = new PrestadoresAtividadesDao();
 
-	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
-			String tipoNotaFilha, Guias guia, Tomadores tomadores, Pessoa pessoa, Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem2) {
+	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha, String tipoNotaFilha, Guias guia,
+			Tomadores tomadores, Pessoa pessoa, Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem2) {
 		this.pessoa = pessoa;
 		this.pr = pr;
 		this.nf = nf;
@@ -61,9 +64,9 @@ public class NotasThreadService implements Runnable {
 		this.mapServicosNotasFiscaisOrigem = mapServicosNotasFiscaisOrigem2;
 
 	}
-	
-	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
-			String tipoNotaFilha, Guias guia, Tomadores tomadores, Pessoa pessoa) {
+
+	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha, String tipoNotaFilha, Guias guia,
+			Tomadores tomadores, Pessoa pessoa) {
 		this.pessoa = pessoa;
 		this.pr = pr;
 		this.nf = nf;
@@ -75,90 +78,141 @@ public class NotasThreadService implements Runnable {
 
 	}
 
-	
-
 	@Override
 	public void run() {
 		if (tipoNotaFilha.equals("S")) { // serviços
-			NotasFiscaisServicos nfs = new NotasFiscaisServicos();
 			try {
-
+				NotasFiscaisServicos nfs;
 				List<ServicosNotasFiscaisOrigem> listaItens = mapServicosNotasFiscaisOrigem.get(nfOrigem.getId());
-
-				nfs.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
-				nfs.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
-				nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
-
-				StringBuilder sbItem = new StringBuilder();
-				
-				Map<String, ServicosOrigem> mapServicosAux = new Hashtable<String, ServicosOrigem>();
 				for (ServicosNotasFiscaisOrigem s : listaItens) {
-					
-					ServicosOrigem servico = servicosOrigemDao.findByIdOrigem(Long.parseLong(s.getIdServico().trim()));
-					
-					if (servico != null) {
-						String codigoServico = servico.getCodigo();
+					try {
+						nfs = new NotasFiscaisServicos();
+						nfs.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
+						nfs.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
+						nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
+						nfs.setAliquota(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getAliquota())));
 						
-						if (codigoServico!=null && !codigoServico.trim().isEmpty()) {
-							codigoServico = codigoServico.replaceAll("\\.", "").replace("a", "").replace("b", "");
-							sbItem.append(codigoServico);
-							mapServicosAux.put(util.completarZerosEsquerda(codigoServico,4), servico);
-							break;
+						StringBuilder sbItem = new StringBuilder();
+
+						//Map<String, Servicos> mapServicosAux = new Hashtable<String, Servicos>();
+
+						Servicos servico = servicosDao.findByIdOrigem(Long.parseLong(s.getIdServico().trim()));
+
+						if (servico != null) {
+							String codigoServico = servico.getCodigo();
+
+							if (codigoServico != null && !codigoServico.trim().isEmpty()) {
+								codigoServico = codigoServico.replaceAll("\\.", "").replace("a", "").replace("b", "");
+								codigoServico = util.completarZerosEsquerda(codigoServico, 4);
+								sbItem.append(codigoServico);
+								nfs.setIcnaes(servico.getCnaes());
+
+								if (servico.getNome() != null && servico.getNome().length() > 200) {
+									nfs.setDescricaoCnae(servico.getNome().substring(0, 200));
+								} else {
+									nfs.setDescricaoCnae(servico.getNome());
+								}
+							}
 						}
-					} else { // id de serviço perdido
-						nfs.setIdServicoPerdido(Long.parseLong(s.getIdServico()));
+
+						if (sbItem.toString().isEmpty()) {
+							nfs.setIdServicoPerdido(Long.parseLong(s.getIdServico()));
+							ServicosOrigem serv = servicosOrigemDao.findByIdOrigem(Long.parseLong(s.getIdServico()));
+							String codigoServico = "";
+							if (serv!=null){
+								codigoServico = serv.getCodigo();
+							}
+
+							if (codigoServico != null && !codigoServico.trim().isEmpty()) {
+								codigoServico = codigoServico.replaceAll("\\.", "").replace("a", "").replace("b", "");
+								codigoServico = util.completarZerosEsquerda(codigoServico, 4);
+								sbItem.append(codigoServico);
+								nfs.setIcnaes(serv.getCnaes());
+
+								if (serv.getNome() != null && serv.getNome().length() > 200) {
+									nfs.setDescricaoCnae(serv.getNome().substring(0, 200));
+								} else {
+									nfs.setDescricaoCnae(serv.getNome());
+								}
+							}
+
+						}
 						
+						if (sbItem.toString().isEmpty()){
+							PrestadoresAtividades pa = consideraCnaePrestador(nfs.getInscricaoPrestador(), nfs.getAliquota());
+							String codigoServico = "";
+							if (pa!=null){
+								codigoServico = pa.getIlistaservicos();
+							}
+
+							if (codigoServico != null && !codigoServico.trim().isEmpty()) {
+								codigoServico = codigoServico.replaceAll("\\.", "").replace("a", "").replace("b", "");
+								codigoServico = util.completarZerosEsquerda(codigoServico, 4);
+								sbItem.append(codigoServico);
+								nfs.setIcnaes(pa.getIcnaes());
+								Servicos serv = servicosDao.findByCodigoServicoCodigoCnae(codigoServico, pa.getIcnaes());
+								if (serv == null){
+									serv = servicosDao.findByCodigo(codigoServico);
+								}
+								String descricaoCnae = "";
+								if (serv != null){
+									descricaoCnae = serv.getNome();
+								}
+								if (descricaoCnae.isEmpty()){
+									ServicosOrigem servOrigem = servicosOrigemDao.findByCodigoServicoCodigoCnae(codigoServico, pa.getIcnaes());
+									if (servOrigem == null){
+										servOrigem = servicosOrigemDao.findByCodigo(codigoServico);
+									}
+									if (servOrigem!=null){
+										descricaoCnae = servOrigem.getNome();
+									}
+								}
+								if (descricaoCnae != null && descricaoCnae.length() > 200) {
+									nfs.setDescricaoCnae(descricaoCnae.substring(0, 200));
+								} else {
+									nfs.setDescricaoCnae(descricaoCnae);
+								}
+							}
+						}
+
+						if (sbItem.toString().isEmpty()){
+							log.fillError(linha,
+									"Nota Fiscal Servico - Serviço não encontrado:" + listaItens.get(0).getIdServico() + " da nota " + nf.getNumeroNota() + " de "
+											+ nfOrigem.getRazaoSocialPrestador());
+						}
+						nfs.setItemListaServico(util.completarZerosEsquerda(sbItem.toString(), 4));
+
+						try {
+							if (nfOrigem.getDescricaoDoServico().length() > 2000) {
+								nfs.setDescricao(nfOrigem.getDescricaoDoServico().substring(0, 2000));
+							} else {
+								nfs.setDescricao(nfOrigem.getDescricaoDoServico());
+							}
+						} catch (Exception e) {
+							System.out.println(nfs.getItemListaServico());
+							e.printStackTrace();
+							log.fillError(linha, "Nota Fiscal Servico", e);
+						}
+
+						
+						nfs.setValorServico(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
+						nfs.setQuantidade(BigDecimal.valueOf(1));
+						nfs.setValorDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
+						nfs.setValorBaseCalculo(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
+						nfs.setValorIss(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDoIssqnDevido())));
+						nfs.setNotasFiscais(nf);
+						nfs.setValorUnitario(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
+						if (nfs.getAliquota().compareTo(BigDecimal.ZERO) == 0) {
+							nfs.setAliquota(BigDecimal.valueOf(1));
+						}
+						notasFiscaisServicosDao.save(nfs);
+						nfs = null;
+					} catch (Exception e) {
+						System.out.println(linha);
+						e.printStackTrace();
+						log.fillError(linha, "Nota Fiscal Servico", e);
 					}
 				}
-				if (sbItem.toString().isEmpty()) {
-					log.fillError(linha,
-							"Nota Fiscal Servico - Serviço não encontrado:" + listaItens.get(0).getIdServico()
-									+ " da nota " + nf.getNumeroNota() + " de " + nfOrigem.getRazaoSocialPrestador());
-					sbItem.append(consideraCnaePrestador(nf.getInscricaoPrestador()));
-				}
-
-				nfs.setItemListaServico(util.completarZerosEsquerda(sbItem.toString(), 4));
-
-				try {
-					if (nfOrigem.getDescricaoDoServico().length() > 2000) {
-						nfs.setDescricao(nfOrigem.getDescricaoDoServico().substring(0, 2000));
-					} else {
-						nfs.setDescricao(nfOrigem.getDescricaoDoServico());
-					}
-				} catch (Exception e) {
-					System.out.println(nfs.getItemListaServico());
-					e.printStackTrace();
-					log.fillError(linha, "Nota Fiscal Servico", e);
-				}
-
-				nfs.setAliquota(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getAliquota())));
-				nfs.setValorServico(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
-				nfs.setQuantidade(BigDecimal.valueOf(1));
-				nfs.setValorDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
-				nfs.setValorBaseCalculo(
-						BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
-				nfs.setValorIss(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDoIssqnDevido())));
-				nfs.setNotasFiscais(nf);
-				nfs.setValorUnitario(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
-				if (nfs.getAliquota().compareTo(BigDecimal.ZERO) == 0) {
-					nfs.setAliquota(BigDecimal.valueOf(1));
-				}
-				if (mapServicosAux != null && mapServicosAux.size() > 0) {
-					ServicosOrigem serv = (ServicosOrigem) mapServicosAux.get(nfs.getItemListaServico());
-					nfs.setIcnaes(serv.getCnaes());
-					
-					if (serv.getNome()!=null && serv.getNome().length()>200){
-						nfs.setDescricaoCnae(serv.getNome().substring(0,200));
-					}
-					else{
-						nfs.setDescricaoCnae(serv.getNome());
-					}
-					
-				}
-				
-				notasFiscaisServicosDao.save(nfs);
-				nfs = null;
-
 			} catch (Exception e) {
 				System.out.println(linha);
 				e.printStackTrace();
@@ -184,8 +238,7 @@ public class NotasThreadService implements Runnable {
 			}
 		}
 
-		if (tipoNotaFilha.equals("E") && pr.getEmail() != null && !pr.getEmail().isEmpty()
-				&& Util.validarEmail(util.trataEmail(pr.getEmail()))) { // email
+		if (tipoNotaFilha.equals("E") && pr.getEmail() != null && !pr.getEmail().isEmpty() && Util.validarEmail(util.trataEmail(pr.getEmail()))) { // email
 			try {
 				NotasFiscaisEmails nfe = new NotasFiscaisEmails();
 				nfe.setEmail(util.trataEmail(pr.getEmail()));
@@ -267,11 +320,13 @@ public class NotasThreadService implements Runnable {
 		}
 
 	}
-
-	private String consideraCnaePrestador(String inscricaoPrestador) {
-		
-		PrestadoresAtividades pa = prestadoresAtividadesDao.findByInscricao(inscricaoPrestador);
-		return pa.getIlistaservicos();		
+	
+	private PrestadoresAtividades consideraCnaePrestador(String inscricaoPrestador, BigDecimal aliquota) {
+		PrestadoresAtividades pa = prestadoresAtividadesDao.findByInscricaoAliquota(inscricaoPrestador, aliquota);
+		if (pa == null || pa.getId() == 0){
+			pa = prestadoresAtividadesDao.findByInscricao(inscricaoPrestador);
+		}
+		return pa;		
 		
 	}
 

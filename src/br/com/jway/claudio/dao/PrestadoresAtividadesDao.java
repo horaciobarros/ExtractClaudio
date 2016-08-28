@@ -1,5 +1,6 @@
 package br.com.jway.claudio.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -86,6 +87,24 @@ public class PrestadoresAtividadesDao {
 		query.executeUpdate();
 		tx.commit();session.close();
 		
+	}
+
+	public PrestadoresAtividades findByInscricaoAliquota(String inscricaoPrestador, BigDecimal aliquota) {	
+		Query query = sessionFactory.openSession()
+				.createQuery("from PrestadoresAtividades pa  " + " where pa.inscricaoPrestador like :inscricao and pa.aliquota = :aliquota")
+				.setParameter("inscricao", "%" + inscricaoPrestador.trim()+ "%")
+				.setParameter("aliquota", aliquota);
+		
+		try {
+			List<PrestadoresAtividades> prestadoresAtividadesList = query.list();
+
+			if (prestadoresAtividadesList.size() > 0) {
+				return prestadoresAtividadesList.get(0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
