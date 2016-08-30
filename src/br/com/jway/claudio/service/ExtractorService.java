@@ -20,8 +20,11 @@ import br.com.jway.claudio.dao.PessoaDao;
 import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
 import br.com.jway.claudio.dao.PrestadoresDao;
 import br.com.jway.claudio.dao.PrestadoresOptanteSimplesDao;
+import br.com.jway.claudio.dao.ServicosDao;
 import br.com.jway.claudio.dao.ServicosOrigemDao;
+import br.com.jway.claudio.entidadesOrigem.CnaeServicosContribuinte;
 import br.com.jway.claudio.entidadesOrigem.EscrituracoesOrigem;
+import br.com.jway.claudio.entidadesOrigem.Servicos;
 import br.com.jway.claudio.entidadesOrigem.ServicosNotasFiscaisOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosOrigem;
 import br.com.jway.claudio.model.Competencias;
@@ -44,6 +47,7 @@ public class ExtractorService {
 	private Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem = new Hashtable<String, List<ServicosNotasFiscaisOrigem>>();
 	private EscrituracoesOrigemDao escrituracoesOrigemDao = new EscrituracoesOrigemDao();
 	private ServicosOrigemDao servicosOrigemDao = new ServicosOrigemDao();
+	private ServicosDao servicosDao = new ServicosDao();
 
 	public List<String> excluiParaProcessarNivel1() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos", "NotasFiscaisEmails", "NotasFiscaisObras",
@@ -56,14 +60,14 @@ public class ExtractorService {
 	public List<String> excluiParaProcessarNivel2() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos", "NotasFiscaisEmails", "NotasFiscaisObras",
 				"NotasFiscaisPrestadores", "NotasFiscaisServicos", "NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais",
-				"EscrituracoesOrigem", "ServicosOrigem", "Pagamentos", "PrestadoresAtividades", "PrestadoresOptanteSimples", "Guias", "Competencias", "Tomadores");
+				"EscrituracoesOrigem", "ServicosOrigem", "Pagamentos", "PrestadoresAtividades", "PrestadoresOptanteSimples", "Guias", "Competencias", "Tomadores","Servicos");
 
 	}
 
 	public List<String> excluiParaProcessarNivel3() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos", "NotasFiscaisEmails", "NotasFiscaisObras",
 				"NotasFiscaisPrestadores", "NotasFiscaisServicos", "NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais",
-				"EscrituracoesOrigem", "ServicosOrigem", "Tomadores");
+				"EscrituracoesOrigem", "Tomadores");
 	}
 
 	public List<String> excluiParaProcessarNivel4() {
@@ -361,7 +365,7 @@ public class ExtractorService {
 
 	}
 
-	public void processaDadosServicos(List<String> dadosList) {
+	public void processaDadosServicosArquivoOrigem(List<String> dadosList) {
 		FileLog log = new FileLog("servicos");
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
@@ -385,6 +389,65 @@ public class ExtractorService {
 					log.fillError(linha, "serviços", e);
 					e.printStackTrace();
 				}
+			}
+		}
+
+	}
+	
+	public void processaDadosServicosArquivoCnae(List<String> dadosList) {
+		FileLog log = new FileLog("servicos");
+		for (String linha : dadosList) {
+			if (linha == null || linha.trim().isEmpty()) {
+				break;
+			}
+			try{
+				List<String> arrayAux = util.splitRegistro(linha);
+				CnaeServicosContribuinte cnae = new CnaeServicosContribuinte(arrayAux.get(0), arrayAux.get(1),
+						arrayAux.get(2), arrayAux.get(3), arrayAux.get(4), arrayAux.get(5), arrayAux.get(6),
+						arrayAux.get(7), arrayAux.get(8), arrayAux.get(9), arrayAux.get(10), arrayAux.get(11),
+						arrayAux.get(12));
+				if (cnae.getServicoCodigo().equals("7.17")) {
+					cnae.setServicoCodigo("7.19");
+				}
+				if (cnae != null && cnae.getServicoCodigo() != null) {
+					cnae.setServicoCodigo(cnae.getServicoCodigo().replace("a", "").replace("b", "").replace(".", ""));
+					cnae.setServicoCodigo(util.completarZerosEsquerda(cnae.getServicoCodigo(), 4));
+				}
+				if (cnae.getId().trim().equals("928")){
+					System.out.println();
+				}
+				if (cnae.getIdServico().trim().equals("1861")||cnae.getIdServico().trim().equals("1826")){
+					System.out.println(linha);
+				}
+				Servicos s = servicosDao.findByIdOrigem(Long.parseLong(cnae.getIdServico()));
+				if (s == null || s.getId() == 0){
+					s = new Servicos();
+					s.setCnaes(cnae.getCnaeCodigo().replace(".", "").replace("a", "").replace("b", "").replace("/", "").replace("-", ""));
+					ServicosOrigem origem = servicosOrigemDao.findByCodigoServicoCodigoCnae(cnae.getServicoCodigo(), s.getCnaes());		
+					if (origem!=null){
+						s.setAliquota(""+util.corrigeDouble(origem.getAliquota()));
+						s.setNome(origem.getNome());
+					}
+					else{
+						log.fillError(linha, "Serviço origem não encontrado "+s.getCnaes()+" - "+cnae.getServicoCodigo());
+						s.setAliquota(""+util.corrigeDouble(cnae.getAliquota()));
+						if (cnae.getServico().length() > 200){
+							s.setNome(cnae.getServico().substring(200));
+						}
+						else{
+							s.setNome(cnae.getServico());
+						}
+						
+					}
+					s.setCodigo(cnae.getServicoCodigo());
+					s.setDataDeCriacao(cnae.getDataDeCriacao());
+					s.setIdOrigem(Long.parseLong(cnae.getIdServico()));
+					servicosDao.save(s);
+				}
+			}
+			catch(Exception e){
+				log.fillError(linha, "Servicos", e);
+				e.printStackTrace();
 			}
 		}
 

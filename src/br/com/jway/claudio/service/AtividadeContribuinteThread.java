@@ -6,8 +6,10 @@ import java.util.List;
 import br.com.jway.claudio.dao.PessoaDao;
 import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
 import br.com.jway.claudio.dao.PrestadoresDao;
+import br.com.jway.claudio.dao.ServicosDao;
 import br.com.jway.claudio.dao.ServicosOrigemDao;
 import br.com.jway.claudio.entidadesOrigem.CnaeServicosContribuinte;
+import br.com.jway.claudio.entidadesOrigem.Servicos;
 import br.com.jway.claudio.entidadesOrigem.ServicosOrigem;
 import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.model.Prestadores;
@@ -21,6 +23,7 @@ public class AtividadeContribuinteThread implements Runnable{
 	private FileLog log;
 	private PessoaDao pessoaDao = new PessoaDao();
 	private ServicosOrigemDao servicosOrigemDao = new ServicosOrigemDao();
+	private ServicosDao servicosDao = new ServicosDao();
 	private PrestadoresDao prestadoresDao = new PrestadoresDao();
 	private PrestadoresAtividadesDao prestadoresAtividadesDao = new PrestadoresAtividadesDao();
 	
@@ -58,7 +61,14 @@ public class AtividadeContribuinteThread implements Runnable{
 				PrestadoresAtividades pa = new PrestadoresAtividades();
 				pa.setAliquota(BigDecimal.valueOf(util.corrigeDouble(servico.getAliquota())));
 				if (pa.getAliquota().compareTo(BigDecimal.ZERO) == 0) {
-					pa.setAliquota(BigDecimal.ONE);
+					Servicos s = servicosDao.findByCodigoServicoCodigoCnae(codigoServico, cnae.getCnaeCodigo());
+					if (s == null){
+						s = servicosDao.findByCodigo(codigoServico);
+					}
+					pa.setAliquota(BigDecimal.valueOf(util.corrigeDouble(s.getAliquota())));
+				}
+				if (pa.getAliquota().compareTo(BigDecimal.ZERO) == 0) {
+					pa.setAliquota(BigDecimal.valueOf(3));
 				}
 				pa.setCodigoAtividade(cnae.getCnaeCodigo().replace("-", "").replace("/", "").substring(0, 5));
 				pa.setIcnaes(cnae.getCnaeCodigo().replace("-", "").replace("/", ""));

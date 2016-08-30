@@ -8,8 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "servicos_origem")
-public class ServicosOrigem {
+@Table(name = "servicos")
+public class Servicos {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +24,13 @@ public class ServicosOrigem {
 	@Column(name = "id_origem")
 	private long idOrigem;
 	
+	
+	public long getIdOrigem() {
+		return idOrigem;
+	}
+	public void setIdOrigem(long idOrigem) {
+		this.idOrigem = idOrigem;
+	}
 	public long getId() {
 		return id;
 	}
@@ -60,19 +67,6 @@ public class ServicosOrigem {
 	public void setDataDeCriacao(String dataDeCriacao) {
 		this.dataDeCriacao = dataDeCriacao;
 	}
-	public ServicosOrigem(String id, String codigo, String nome, String aliquota, String cnaes, String dataDeCriacao) {
-		super();
-		this.idOrigem = Long.parseLong(id);
-		this.codigo = codigo;
-		this.nome = nome.replaceAll("\\|", "");
-		this.aliquota = aliquota;
-		this.cnaes = cnaes.replace("-", "").replace("/", "");
-		this.dataDeCriacao = dataDeCriacao;
-	}		
 	
-	public ServicosOrigem() {
-		
-	}
-
 
 }

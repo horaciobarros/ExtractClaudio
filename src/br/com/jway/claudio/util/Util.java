@@ -510,7 +510,7 @@ public class Util {
 		}
 		List<String> result = Arrays.asList(builder.toString().split(","));
 		Collections.replaceAll(result, "\"", "");
-		Collections.replaceAll(result, "|", ",");
+		Collections.replaceAll(result, "\\d|\\|", ",");
 		return result;
 	}
 	
