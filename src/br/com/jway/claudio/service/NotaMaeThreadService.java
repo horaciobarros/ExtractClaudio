@@ -185,9 +185,19 @@ public class NotaMaeThreadService implements Runnable {
 					}
 				}
 
-				nf.setNaturezaOperacao(nfOrigem.getNaturezaDaOperacao());
+				// natureza de operação
+				nf.setNaturezaOperacao("1");
+				if ("contribution_out_town".equals(nfOrigem.getNaturezaDaOperacao().trim())) {
+					nf.setNaturezaOperacao("2");
+				} else if ("no_incidence".equals(nfOrigem.getNaturezaDaOperacao().trim())) {
+					nf.setNaturezaOperacao("7");
+					
+				}  else if ("exemption".equals(nfOrigem.getNaturezaDaOperacao().trim())) {
+					nf.setNaturezaOperacao("3");
+				}
+				
 				nf.setNomePrestador(nfOrigem.getRazaoSocialPrestador());
-
+				
 				nf.setNumeroNota(Long.valueOf(escrituracoes.getNumeroNotaFiscal()));
 				nf.setPrestadores(pr);
 				if (util.getTipoPessoa(pr.getInscricaoPrestador()).equals("J")) {
@@ -203,7 +213,7 @@ public class NotaMaeThreadService implements Runnable {
 				nf.setSituacao("N");
 				nf.setSituacaoTributaria("N");
 				nf.setNumeroVerificacao(util.completarZerosEsquerda(nfOrigem.getId().toString(), 9));
-				nf.setNaturezaOperacao("1");
+				nf.setNaturezaOperacao(nfOrigem.getNaturezaDaOperacao());
 				
 				if (pessoa.getOptanteSimples()!=null && pessoa.getOptanteSimples().equals("S")){
 					nf.setOptanteSimples("S");
