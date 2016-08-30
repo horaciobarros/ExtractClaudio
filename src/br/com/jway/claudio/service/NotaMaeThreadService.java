@@ -80,69 +80,77 @@ public class NotaMaeThreadService implements Runnable {
 				}
 
 				String inscricaoPrestador = util.getCpfCnpj(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
-				try{pr = mapPrestadores.get(inscricaoPrestador);} catch(Exception e){e.printStackTrace();}
-				try{pessoa = mapPessoa.get(inscricaoPrestador);} catch(Exception e){e.printStackTrace();}
-				
 				try {
-					
+					pr = mapPrestadores.get(inscricaoPrestador);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				try {
+					pessoa = mapPessoa.get(inscricaoPrestador);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				try {
+
 					if (pr == null || pr.getId() == 0
 							|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
 						System.out.println("Prestador nÃ£o encontrado:" + inscricaoPrestador);
 						log.fillError(linha, "Prestador nÃ£o encontrado: " + inscricaoPrestador);
 						throw new Exception();
 						/*
-						if (pr == null || pr.getId() == 0
-								|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
-							System.out.println("Prestador nÃ£o encontrado:" + inscricaoPrestador);
-							log.fillError(linha, "Prestador nÃ£o encontrado: " + inscricaoPrestador);
-							throw new Exception();
-						/*
-						try{
-							if(pessoa == null || pessoa.getId() == 0){
-								Pessoa p = new Pessoa();
-								ExtractorService.idNovasPessoas++;
-								p.setPessoaId(Long.valueOf(ExtractorService.idNovasPessoas));
-								p.setCnpjCpf(inscricaoPrestador);
-								p.setEmail(util.trataEmail(nfOrigem.getEmailPrestador()));
-								p.setUf(nfOrigem.getEstadoDePrestacaoDoServico());
-								p.setInscricaoEstadual(nfOrigem.getInscricaoEstadualPrestador());
-								p.setNome(nfOrigem.getRazaoSocialPrestador());
-								p.setNomeFantasia(nfOrigem.getRazaoSocialPrestador());
-								p.setTelefone(util.getLimpaTelefone(nfOrigem.getTelefonePrestador()));
-								p.setInscricaoMunicipal(nfOrigem.getInscricaoMunicipalPrestador());
-								String tipoPessoa = util.getTipoPessoa(inscricaoPrestador);
-								p.setTipoPessoa(tipoPessoa);
-								pessoa = pessoaDao.save(p);
-
-							}
-							Prestadores prest = new Prestadores();
-							prest.setAutorizado("N");
-							prest.setEmail(pessoa.getEmail());
-							prest.setEnquadramento("N");
-							prest.setMotivo("Solicitar Cadastro");
-							prest.setInscricaoPrestador(pessoa.getCnpjCpf());
-							prest.setTelefone(pessoa.getTelefone());
-							prest.setInscricaoMunicipal(pessoa.getInscricaoMunicipal());
-							prestadoresDao.save(prest);
-							mapPrestadores = prestadoresDao.findAllMapReturn();
-							mapPessoa = pessoaDao.findAllMapReturn();
-						}
-						catch(Exception e){
-							e.printStackTrace();
-							log.fillError(linha, "Erro ao salvar Pessoas/Prestadores ", e);
-						}
-						pr = mapPrestadores.get(inscricaoPrestador);
-						pessoa = mapPessoa.get(inscricaoPrestador);
-						if (pr == null || pr.getId() == 0
-								|| !inscricaoPrestador.trim().equals(pr.getInscricaoPrestador())) {
-							System.out.println("Prestador nÃ£o encontrado:" + inscricaoPrestador);
-							log.fillError(linha, "Prestador nÃ£o encontrado: " + inscricaoPrestador);
-							throw new Exception();
-						}*/
+						 * if (pr == null || pr.getId() == 0 ||
+						 * !inscricaoPrestador.trim().equals(pr.
+						 * getInscricaoPrestador())) { System.out.println(
+						 * "Prestador nÃ£o encontrado:" + inscricaoPrestador);
+						 * log.fillError(linha, "Prestador nÃ£o encontrado: "
+						 * + inscricaoPrestador); throw new Exception(); /* try{
+						 * if(pessoa == null || pessoa.getId() == 0){ Pessoa p =
+						 * new Pessoa(); ExtractorService.idNovasPessoas++;
+						 * p.setPessoaId(Long.valueOf(ExtractorService.
+						 * idNovasPessoas)); p.setCnpjCpf(inscricaoPrestador);
+						 * p.setEmail(util.trataEmail(nfOrigem.getEmailPrestador
+						 * ()));
+						 * p.setUf(nfOrigem.getEstadoDePrestacaoDoServico());
+						 * p.setInscricaoEstadual(nfOrigem.
+						 * getInscricaoEstadualPrestador());
+						 * p.setNome(nfOrigem.getRazaoSocialPrestador());
+						 * p.setNomeFantasia(nfOrigem.getRazaoSocialPrestador())
+						 * ; p.setTelefone(util.getLimpaTelefone(nfOrigem.
+						 * getTelefonePrestador()));
+						 * p.setInscricaoMunicipal(nfOrigem.
+						 * getInscricaoMunicipalPrestador()); String tipoPessoa
+						 * = util.getTipoPessoa(inscricaoPrestador);
+						 * p.setTipoPessoa(tipoPessoa); pessoa =
+						 * pessoaDao.save(p);
+						 * 
+						 * } Prestadores prest = new Prestadores();
+						 * prest.setAutorizado("N");
+						 * prest.setEmail(pessoa.getEmail());
+						 * prest.setEnquadramento("N"); prest.setMotivo(
+						 * "Solicitar Cadastro");
+						 * prest.setInscricaoPrestador(pessoa.getCnpjCpf());
+						 * prest.setTelefone(pessoa.getTelefone());
+						 * prest.setInscricaoMunicipal(pessoa.
+						 * getInscricaoMunicipal()); prestadoresDao.save(prest);
+						 * mapPrestadores = prestadoresDao.findAllMapReturn();
+						 * mapPessoa = pessoaDao.findAllMapReturn(); }
+						 * catch(Exception e){ e.printStackTrace();
+						 * log.fillError(linha,
+						 * "Erro ao salvar Pessoas/Prestadores ", e); } pr =
+						 * mapPrestadores.get(inscricaoPrestador); pessoa =
+						 * mapPessoa.get(inscricaoPrestador); if (pr == null ||
+						 * pr.getId() == 0 ||
+						 * !inscricaoPrestador.trim().equals(pr.
+						 * getInscricaoPrestador())) { System.out.println(
+						 * "Prestador nÃ£o encontrado:" + inscricaoPrestador);
+						 * log.fillError(linha, "Prestador nÃ£o encontrado: "
+						 * + inscricaoPrestador); throw new Exception(); }
+						 */
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-					log.fillError(linha, "Erro ao salvar Prestador: "+inscricaoPrestador+" ", e);
+					log.fillError(linha, "Erro ao salvar Prestador: " + inscricaoPrestador + " ", e);
 				}
 
 				escrituracoes = mapEscrituracoesOrigem.get(nfOrigem.getId()); // pesquisa
@@ -193,13 +201,13 @@ public class NotaMaeThreadService implements Runnable {
 					nf.setNaturezaOperacao("2");
 				} else if ("no_incidence".equals(nfOrigem.getNaturezaDaOperacao().trim())) {
 					nf.setNaturezaOperacao("7");
-					
-				}  else if ("exemption".equals(nfOrigem.getNaturezaDaOperacao().trim())) {
+
+				} else if ("exemption".equals(nfOrigem.getNaturezaDaOperacao().trim())) {
 					nf.setNaturezaOperacao("3");
 				}
-				
+
 				nf.setNomePrestador(nfOrigem.getRazaoSocialPrestador());
-				
+
 				nf.setNumeroNota(Long.valueOf(escrituracoes.getNumeroNotaFiscal()));
 				nf.setPrestadores(pr);
 				if (util.getTipoPessoa(pr.getInscricaoPrestador()).equals("J")) {
@@ -215,11 +223,11 @@ public class NotaMaeThreadService implements Runnable {
 				nf.setSituacao("N");
 				nf.setSituacaoTributaria("N");
 				nf.setNumeroVerificacao(util.completarZerosEsquerda(nfOrigem.getId().toString(), 9));
-				
-				if (pessoa.getOptanteSimples()!=null && pessoa.getOptanteSimples().equals("S")){
+
+				if (pessoa.getOptanteSimples() != null && pessoa.getOptanteSimples().equals("S")) {
 					nf.setOptanteSimples("S");
-				}
-				else{
+					nf.setValorTotalIssOptante(nf.getValorTotalIss());
+				} else {
 					nf.setOptanteSimples("N");
 				}
 				nf.setValorTotalBaseCalculo(
@@ -239,14 +247,14 @@ public class NotaMaeThreadService implements Runnable {
 
 				nf.setNumeroRps(nf.getNumeroNota());
 				nf.setSerieRps("C");
-				
+
 				List<BigDecimal> lista = Arrays.asList(nf.getValorCofins(), nf.getValorCsll(), nf.getValorInss(),
 						nf.getValorIr(), nf.getValorOutrasRetencoes());
 				BigDecimal descontos = util.getSumOfBigDecimal(lista);
 
 				nf.setValorLiquido(util.getSubtract(
 						BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())), descontos));
-				
+
 				if (nf.getValorLiquido().compareTo(BigDecimal.ZERO) == -1) {
 					nf.setValorLiquido(nf.getValorLiquido().multiply(BigDecimal.valueOf(-1)));
 				}
@@ -263,6 +271,9 @@ public class NotaMaeThreadService implements Runnable {
 
 				if (escrituracoes.getSituacao().equals("retained")) {
 					nf.setSituacaoTributaria("R");
+					if (nf.getValorTotalIss().doubleValue() == 0) {
+						nf.setValorTotalIss(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getIssRetido())));
+					}
 				} else {
 					nf.setSituacaoTributaria("N");
 				}
@@ -279,6 +290,7 @@ public class NotaMaeThreadService implements Runnable {
 						nf.setIdNotaFiscalSubstituida(escrituracaoSubstituida.getIdNotaFiscal());
 					}
 				}
+
 				nf = notasFiscaisDao.save(nf);
 
 				// tomadores
