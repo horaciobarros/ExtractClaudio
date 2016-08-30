@@ -15,7 +15,7 @@
 		<property name="hibernate.connection.password">root</property>
 
 		<property name="hibernate.c3p0.min_size">20</property>
-		<property name="hibernate.c3p0.max_size">200</property>
+		<property name="hibernate.c3p0.max_size">400</property>
 		<property name="hibernate.c3p0.timeout">1000</property>
 		<property name="hibernate.c3p0.max_statements">50</property>
 		<property name="hibernate.c3p0.idle_test_period">3000</property>

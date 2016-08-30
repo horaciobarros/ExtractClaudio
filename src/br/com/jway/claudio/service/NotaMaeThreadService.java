@@ -215,7 +215,6 @@ public class NotaMaeThreadService implements Runnable {
 				nf.setSituacao("N");
 				nf.setSituacaoTributaria("N");
 				nf.setNumeroVerificacao(util.completarZerosEsquerda(nfOrigem.getId().toString(), 9));
-				nf.setNaturezaOperacao(nfOrigem.getNaturezaDaOperacao());
 				
 				if (pessoa.getOptanteSimples()!=null && pessoa.getOptanteSimples().equals("S")){
 					nf.setOptanteSimples("S");

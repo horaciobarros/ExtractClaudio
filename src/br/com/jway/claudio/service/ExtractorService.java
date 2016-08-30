@@ -458,7 +458,7 @@ public class ExtractorService {
 		FileLog log = new FileLog("escrituracoes");
 
 		EscrituracoesThread escritService;
-		ExecutorService executor = Executors.newFixedThreadPool(200);
+		ExecutorService executor = Executors.newFixedThreadPool(400);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
