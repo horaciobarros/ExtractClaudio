@@ -31,6 +31,8 @@ public class EscrituracoesThread implements Runnable{
 					arrayAux.get(12), arrayAux.get(13), arrayAux.get(14), arrayAux.get(15), arrayAux.get(16),
 					arrayAux.get(17), arrayAux.get(18), arrayAux.get(19), arrayAux.get(20));	
 			
+			escrituracoes.setAutorCpf(util.getCpfCnpj(escrituracoes.getAutorCpf()));
+			escrituracoes.setCpfCnpjContribuinte(util.getCpfCnpj(escrituracoes.getCpfCnpjContribuinte()));
 			escrituracoesDao.save(escrituracoes);
 			escrituracoesDao=null;
 			escrituracoes = null;

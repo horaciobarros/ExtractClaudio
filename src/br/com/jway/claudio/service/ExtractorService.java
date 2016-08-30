@@ -53,7 +53,7 @@ public class ExtractorService {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos", "NotasFiscaisEmails", "NotasFiscaisObras",
 				"NotasFiscaisPrestadores", "NotasFiscaisServicos", "NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "Pagamentos",
 				"PrestadoresAtividades", "" + "PrestadoresOptanteSimples", "Guias", "Competencias", "NotasFiscais", "EscrituracoesOrigem", "ServicosOrigem",
-				"Tomadores", "Prestadores", "Pessoa");
+				"Tomadores", "Prestadores", "Pessoa","Servicos");
 
 	}
 
@@ -105,7 +105,7 @@ public class ExtractorService {
 		Map<String, Pessoa> mapPessoa = pessoaDao.findAllMapReturn();
 		Map<String, EscrituracoesOrigem> mapEscrituracoesOrigem = escrituracoesOrigemDao.findAllMapReturn();
 
-		ExecutorService executor = Executors.newFixedThreadPool(180);
+		ExecutorService executor = Executors.newFixedThreadPool(230);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
@@ -136,7 +136,7 @@ public class ExtractorService {
 		System.out.println("Gravando contribuintes - " + Util.getDataHoraAtual());
 
 		ContribuintesThread threadService;
-		ExecutorService executor = Executors.newFixedThreadPool(200);
+		ExecutorService executor = Executors.newFixedThreadPool(300);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
@@ -159,7 +159,7 @@ public class ExtractorService {
 		System.out.println("Gravando cnae_servicos_contribuintes - " + Util.getDataHoraAtual());
 
 		AtividadeContribuinteThread threadService;
-		ExecutorService executor = Executors.newFixedThreadPool(200);
+		ExecutorService executor = Executors.newFixedThreadPool(400);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
@@ -188,7 +188,7 @@ public class ExtractorService {
 		System.out.println("Gravando guias - " + Util.getDataHoraAtual());
 
 		GuiasThread threadService;
-		ExecutorService executor = Executors.newFixedThreadPool(200);
+		ExecutorService executor = Executors.newFixedThreadPool(250);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
@@ -310,7 +310,7 @@ public class ExtractorService {
 	public void processaDadosGuiasNotasFiscais() {
 		FileLog log = new FileLog("guias_notas_fiscais");
 		
-		ExecutorService executor = Executors.newFixedThreadPool(200);
+		ExecutorService executor = Executors.newFixedThreadPool(300);
 		for (Guias guia : guiasDao.findAll()) {
 			GuiasNotasThread thread = new GuiasNotasThread(guia, log);
 			executor.execute(thread);
@@ -352,7 +352,7 @@ public class ExtractorService {
 
 		FileLog log = new FileLog("notas_fiscais_substitutas");
 
-		ExecutorService executor = Executors.newFixedThreadPool(200);
+		ExecutorService executor = Executors.newFixedThreadPool(300);
 		for (NotasFiscais nf : notasFiscaisDao.findSubstitutas()) {
 			NotasSubstituidasThread thread = new NotasSubstituidasThread(nf, log);
 			executor.execute(thread);
@@ -458,7 +458,7 @@ public class ExtractorService {
 		FileLog log = new FileLog("escrituracoes");
 
 		EscrituracoesThread escritService;
-		ExecutorService executor = Executors.newFixedThreadPool(400);
+		ExecutorService executor = Executors.newFixedThreadPool(450);
 		for (String linha : dadosList) {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;

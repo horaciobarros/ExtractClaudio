@@ -195,7 +195,7 @@ public class NotaMaeThreadService implements Runnable {
 					}
 				}
 
-				// natureza de operação
+				// natureza de operaï¿½ï¿½o
 				nf.setNaturezaOperacao("1");
 				if ("contribution_out_town".equals(nfOrigem.getNaturezaDaOperacao().trim())) {
 					nf.setNaturezaOperacao("2");
@@ -249,7 +249,7 @@ public class NotaMaeThreadService implements Runnable {
 				nf.setSerieRps("C");
 
 				List<BigDecimal> lista = Arrays.asList(nf.getValorCofins(), nf.getValorCsll(), nf.getValorInss(),
-						nf.getValorIr(), nf.getValorOutrasRetencoes(), BigDecimal.valueOf(Double.parseDouble(nfOrigem.getIssRetido())));
+						nf.getValorIr(), nf.getValorOutrasRetencoes());
 				BigDecimal descontos = util.getSumOfBigDecimal(lista);
 
 				nf.setValorLiquido(util.getSubtract(
