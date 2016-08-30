@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import br.com.jway.claudio.dao.MunicipiosIbgeDao;
 import br.com.jway.claudio.dao.NotasFiscaisCanceladasDao;
 import br.com.jway.claudio.dao.NotasFiscaisEmailsDao;
 import br.com.jway.claudio.dao.NotasFiscaisPrestadoresDao;
@@ -50,9 +51,11 @@ public class NotasThreadService implements Runnable {
 	private ServicosDao servicosDao = new ServicosDao();
 	private ServicosOrigemDao servicosOrigemDao = new ServicosOrigemDao();
 	private PrestadoresAtividadesDao prestadoresAtividadesDao = new PrestadoresAtividadesDao();
+	private MunicipiosIbgeDao municipiosIbgeDao = new MunicipiosIbgeDao();
 
-	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha, String tipoNotaFilha, Guias guia,
-			Tomadores tomadores, Pessoa pessoa, Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem2) {
+	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
+			String tipoNotaFilha, Guias guia, Tomadores tomadores, Pessoa pessoa,
+			Map<String, List<ServicosNotasFiscaisOrigem>> mapServicosNotasFiscaisOrigem2) {
 		this.pessoa = pessoa;
 		this.pr = pr;
 		this.nf = nf;
@@ -65,8 +68,8 @@ public class NotasThreadService implements Runnable {
 
 	}
 
-	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha, String tipoNotaFilha, Guias guia,
-			Tomadores tomadores, Pessoa pessoa) {
+	public NotasThreadService(Prestadores pr, NotasFiscais nf, NotasFiscaisOrigem nfOrigem, FileLog log, String linha,
+			String tipoNotaFilha, Guias guia, Tomadores tomadores, Pessoa pessoa) {
 		this.pessoa = pessoa;
 		this.pr = pr;
 		this.nf = nf;
@@ -89,12 +92,24 @@ public class NotasThreadService implements Runnable {
 						nfs = new NotasFiscaisServicos();
 						nfs.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
 						nfs.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
-						nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
-						nfs.setAliquota(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getAliquota())));
+
+						if (nf.getNaturezaOperacao().equals("2")) { // retenção
+							nfs.setMunicipioIbge(
+									municipiosIbgeDao.getCodigoIbge(nfOrigem.getLocalOndeFoiPrestadoOServico(),
+											nfOrigem.getEstadoDePrestacaoDoServico()));
+							if (util.isEmptyOrNull(nfs.getMunicipioIbge())) {
+								nfs.setMunicipioIbge(tomadores.getMunicipioIbge().toString());
+							}
+						} else {
+							nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
+						}
 						
+						nfs.setAliquota(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getAliquota())));
+
 						StringBuilder sbItem = new StringBuilder();
 
-						//Map<String, Servicos> mapServicosAux = new Hashtable<String, Servicos>();
+						// Map<String, Servicos> mapServicosAux = new
+						// Hashtable<String, Servicos>();
 
 						Servicos servico = servicosDao.findByIdOrigem(Long.parseLong(s.getIdServico().trim()));
 
@@ -119,7 +134,7 @@ public class NotasThreadService implements Runnable {
 							nfs.setIdServicoPerdido(Long.parseLong(s.getIdServico()));
 							ServicosOrigem serv = servicosOrigemDao.findByIdOrigem(Long.parseLong(s.getIdServico()));
 							String codigoServico = "";
-							if (serv!=null){
+							if (serv != null) {
 								codigoServico = serv.getCodigo();
 							}
 
@@ -137,11 +152,12 @@ public class NotasThreadService implements Runnable {
 							}
 
 						}
-						
-						if (sbItem.toString().isEmpty()){
-							PrestadoresAtividades pa = consideraCnaePrestador(nfs.getInscricaoPrestador(), nfs.getAliquota());
+
+						if (sbItem.toString().isEmpty()) {
+							PrestadoresAtividades pa = consideraCnaePrestador(nfs.getInscricaoPrestador(),
+									nfs.getAliquota());
 							String codigoServico = "";
-							if (pa!=null){
+							if (pa != null) {
 								codigoServico = pa.getIlistaservicos();
 							}
 
@@ -150,20 +166,22 @@ public class NotasThreadService implements Runnable {
 								codigoServico = util.completarZerosEsquerda(codigoServico, 4);
 								sbItem.append(codigoServico);
 								nfs.setIcnaes(pa.getIcnaes());
-								Servicos serv = servicosDao.findByCodigoServicoCodigoCnae(codigoServico, pa.getIcnaes());
-								if (serv == null){
+								Servicos serv = servicosDao.findByCodigoServicoCodigoCnae(codigoServico,
+										pa.getIcnaes());
+								if (serv == null) {
 									serv = servicosDao.findByCodigo(codigoServico);
 								}
 								String descricaoCnae = "";
-								if (serv != null){
+								if (serv != null) {
 									descricaoCnae = serv.getNome();
 								}
-								if (descricaoCnae.isEmpty()){
-									ServicosOrigem servOrigem = servicosOrigemDao.findByCodigoServicoCodigoCnae(codigoServico, pa.getIcnaes());
-									if (servOrigem == null){
+								if (descricaoCnae.isEmpty()) {
+									ServicosOrigem servOrigem = servicosOrigemDao
+											.findByCodigoServicoCodigoCnae(codigoServico, pa.getIcnaes());
+									if (servOrigem == null) {
 										servOrigem = servicosOrigemDao.findByCodigo(codigoServico);
 									}
-									if (servOrigem!=null){
+									if (servOrigem != null) {
 										descricaoCnae = servOrigem.getNome();
 									}
 								}
@@ -175,9 +193,10 @@ public class NotasThreadService implements Runnable {
 							}
 						}
 
-						if (sbItem.toString().isEmpty()){
+						if (sbItem.toString().isEmpty()) {
 							log.fillError(linha,
-									"Nota Fiscal Servico - Serviço não encontrado:" + listaItens.get(0).getIdServico() + " da nota " + nf.getNumeroNota() + " de "
+									"Nota Fiscal Servico - Serviço não encontrado:" + listaItens.get(0).getIdServico()
+											+ " da nota " + nf.getNumeroNota() + " de "
 											+ nfOrigem.getRazaoSocialPrestador());
 						}
 						nfs.setItemListaServico(util.completarZerosEsquerda(sbItem.toString(), 4));
@@ -194,14 +213,16 @@ public class NotasThreadService implements Runnable {
 							log.fillError(linha, "Nota Fiscal Servico", e);
 						}
 
-						
-						nfs.setValorServico(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
+						nfs.setValorServico(
+								BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 						nfs.setQuantidade(BigDecimal.valueOf(1));
 						nfs.setValorDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
-						nfs.setValorBaseCalculo(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
+						nfs.setValorBaseCalculo(
+								BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 						nfs.setValorIss(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDoIssqnDevido())));
 						nfs.setNotasFiscais(nf);
-						nfs.setValorUnitario(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
+						nfs.setValorUnitario(
+								BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 						if (nfs.getAliquota().compareTo(BigDecimal.ZERO) == 0) {
 							nfs.setAliquota(BigDecimal.valueOf(1));
 						}
@@ -238,7 +259,8 @@ public class NotasThreadService implements Runnable {
 			}
 		}
 
-		if (tipoNotaFilha.equals("E") && pr.getEmail() != null && !pr.getEmail().isEmpty() && Util.validarEmail(util.trataEmail(pr.getEmail()))) { // email
+		if (tipoNotaFilha.equals("E") && pr.getEmail() != null && !pr.getEmail().isEmpty()
+				&& Util.validarEmail(util.trataEmail(pr.getEmail()))) { // email
 			try {
 				NotasFiscaisEmails nfe = new NotasFiscaisEmails();
 				nfe.setEmail(util.trataEmail(pr.getEmail()));
@@ -320,14 +342,14 @@ public class NotasThreadService implements Runnable {
 		}
 
 	}
-	
+
 	private PrestadoresAtividades consideraCnaePrestador(String inscricaoPrestador, BigDecimal aliquota) {
 		PrestadoresAtividades pa = prestadoresAtividadesDao.findByInscricaoAliquota(inscricaoPrestador, aliquota);
-		if (pa == null || pa.getId() == 0){
+		if (pa == null || pa.getId() == 0) {
 			pa = prestadoresAtividadesDao.findByInscricao(inscricaoPrestador);
 		}
-		return pa;		
-		
+		return pa;
+
 	}
 
 }
