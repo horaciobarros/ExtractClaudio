@@ -19,7 +19,7 @@ public class Guias implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Guias [id=" + id + ", prestadores=" + prestadores + ", competencias=" + competencias
+		return "Guias [id=" + id + ", prestadores=" + prestadores.getInscricaoPrestador() + ", competencias=" + competencias.getDescricao()
 				+ ", inscricaoPrestador=" + inscricaoPrestador + ", numeroGuia=" + numeroGuia + ", situacao=" + situacao
 				+ ", dataVencimento=" + dataVencimento + ", valorDesconto=" + valorDesconto + ", valorTaxaExpediente="
 				+ valorTaxaExpediente + ", valorGuia=" + valorGuia + ", valorImposto=" + valorImposto + ", tipo=" + tipo

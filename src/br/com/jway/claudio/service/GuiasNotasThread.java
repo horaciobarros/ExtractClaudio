@@ -8,6 +8,7 @@ import br.com.jway.claudio.model.Guias;
 import br.com.jway.claudio.model.GuiasNotasFiscais;
 import br.com.jway.claudio.model.NotasFiscais;
 import br.com.jway.claudio.util.FileLog;
+import br.com.jway.claudio.util.Util;
 
 public class GuiasNotasThread implements Runnable {
 
@@ -37,7 +38,7 @@ public class GuiasNotasThread implements Runnable {
 							EscrituracoesOrigem esc = escrituracoesDao.findById(idEscrituracao);
 							// NotasFiscais nf =
 							// notasFiscaisDao.findByIdOrigem(Long.parseLong(lista[i]));
-							if (esc != null) {
+							if (esc != null && !new Util().isEmptyOrNull(esc.getIdNotaFiscal())) {
 								GuiasNotasFiscais gnf = new GuiasNotasFiscais();
 								gnf.setGuias(guia);
 								gnf.setInscricaoPrestador(guia.getInscricaoPrestador()); //
@@ -51,6 +52,7 @@ public class GuiasNotasThread implements Runnable {
 						}
 						catch(Exception e){
 							log.fillError(guia.toString(), "guias notas fiscais", e);
+							e.printStackTrace();
 						}
 					}
 				}
