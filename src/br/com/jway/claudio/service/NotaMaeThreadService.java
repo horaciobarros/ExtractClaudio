@@ -271,9 +271,7 @@ public class NotaMaeThreadService implements Runnable {
 
 				if (escrituracoes.getSituacao().equals("retained")) {
 					nf.setSituacaoTributaria("R");
-					if (nf.getValorTotalIss().doubleValue() == 0) {
-						nf.setValorTotalIss(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getIssRetido())));
-					}
+					
 				} else {
 					nf.setSituacaoTributaria("N");
 				}
