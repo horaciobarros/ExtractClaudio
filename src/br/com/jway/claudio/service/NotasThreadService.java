@@ -104,7 +104,7 @@ public class NotasThreadService implements Runnable {
 							nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
 						}
 						
-						nfs.setAliquota(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getAliquota())));
+						nfs.setAliquota(BigDecimal.valueOf(Double.parseDouble(s.getAliquota())));
 
 						StringBuilder sbItem = new StringBuilder();
 
@@ -214,15 +214,17 @@ public class NotasThreadService implements Runnable {
 						}
 
 						nfs.setValorServico(
-								BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
+								BigDecimal.valueOf(Double.parseDouble(s.getValor())));
 						nfs.setQuantidade(BigDecimal.valueOf(1));
 						nfs.setValorDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
-						nfs.setValorBaseCalculo(
-								BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
-						nfs.setValorIss(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDoIssqnDevido())));
+						nfs.setValorBaseCalculo(BigDecimal.valueOf(Double.parseDouble(s.getValor())));
+						BigDecimal iss = BigDecimal.valueOf(Double.parseDouble(s.getValor()));
+						iss = iss.multiply(BigDecimal.valueOf(Double.parseDouble(s.getAliquota())));
+						iss = iss.divide(BigDecimal.valueOf(100));
+						nfs.setValorIss(iss);
 						nfs.setNotasFiscais(nf);
 						nfs.setValorUnitario(
-								BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
+								BigDecimal.valueOf(Double.parseDouble(s.getValor())));
 						if (nfs.getAliquota().compareTo(BigDecimal.ZERO) == 0) {
 							nfs.setAliquota(BigDecimal.valueOf(1));
 						}
