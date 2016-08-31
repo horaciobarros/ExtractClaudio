@@ -264,7 +264,7 @@ public class NotaMaeThreadService implements Runnable {
 					nf.setSituacao("N");
 				} else if (escrituracoes.getStatus() != null && escrituracoes.getStatus().contains("replaced")) {
 					nf.setSituacaoOriginal("S");
-					nf.setSituacao("S");
+					nf.setSituacao("N");
 				} else {
 					nf.setSituacaoOriginal("N");
 				}
@@ -386,35 +386,12 @@ public class NotaMaeThreadService implements Runnable {
 			e.start();
 		}
 
-		// notas-fiscais-cond-pagamentos ??
-
-		// notas-fiscais-obras ??
-
 		// notas-fiscais-prestadores
 		NotasThreadService nfPrestadores = new NotasThreadService(p, nf, nfOrigem, log, linha, "P", null, t, pessoa);
 		Thread prestadoresThread = new Thread(nfPrestadores);
 		prestadoresThread.start();
 
-		// guias x notas fiscais
-		// Guias g = new Guias();
-		// if (nfOrigem.getNossoNumero() != null &&
-		// !nfOrigem.getNossoNumero().trim().isEmpty()) {
-		// g = guiasDao.findByNumeroGuia(nfOrigem.getNossoNumero());
-		// if (g != null) {
-		// NotasThreadService nfGuias = new NotasThreadService(p, nf, nfOrigem,
-		// log, linha, "G", g);
-		// Thread gThread = new Thread(nfGuias);
-		// gThread.start();
-
-		// } else {
-		// System.out.println("Numero de guia nÃ£o encontrado: " +
-		// nfOrigem.getNossoNumero());
-		//
-		// }
-		// }
-
 		// notas fiscais tomadores
-
 		if (t != null && t.getId() != null) {
 			NotasThreadService nfTomadores = new NotasThreadService(p, nf, nfOrigem, log, linha, "T", null, t, pessoa);
 			Thread nftThread = new Thread(nfTomadores);
