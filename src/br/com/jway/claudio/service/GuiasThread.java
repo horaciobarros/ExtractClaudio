@@ -43,6 +43,7 @@ public class GuiasThread implements Runnable{
 				arrayAux.get(14), arrayAux.get(15), arrayAux.get(16), arrayAux.get(17));
 
 		if (guiaOrigem.getNotaFiscalAvulsa().equalsIgnoreCase("t")) {
+			log.fillError(linha, "Guias avulsa não gravada de acordo com definição da cmm");
 			return;
 		}
 

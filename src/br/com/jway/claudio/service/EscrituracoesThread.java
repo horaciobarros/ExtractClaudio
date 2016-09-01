@@ -25,7 +25,7 @@ public class EscrituracoesThread implements Runnable{
 		try {
 			List<String> arrayAux = util.splitRegistro(linha);
 	
-			EscrituracoesOrigem escrituracoes = new EscrituracoesOrigem(arrayAux.get(0), arrayAux.get(1),
+			EscrituracoesOrigem escrituracoes = new EscrituracoesOrigem(Long.parseLong(arrayAux.get(0)), arrayAux.get(1),
 					arrayAux.get(2), arrayAux.get(3), arrayAux.get(4), arrayAux.get(5), arrayAux.get(6),
 					arrayAux.get(7), arrayAux.get(8), arrayAux.get(9), arrayAux.get(10), arrayAux.get(11),
 					arrayAux.get(12), arrayAux.get(13), arrayAux.get(14), arrayAux.get(15), arrayAux.get(16),

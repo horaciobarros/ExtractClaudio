@@ -75,7 +75,7 @@ public class NotaMaeThreadService implements Runnable {
 						arrayAux.get(49));
 
 				if (nfOrigem.getNotaFiscalAvulsa().equalsIgnoreCase("t")) { // nÃ£o
-																			// migrar
+					log.fillError(linha, "Guias avulsa não gravada de acordo com definição da cmm"); // migrar
 					return;
 				}
 
@@ -288,6 +288,11 @@ public class NotaMaeThreadService implements Runnable {
 						nf.setIdNotaFiscalSubstituida(escrituracaoSubstituida.getIdNotaFiscal());
 					}
 				}
+				
+				nf.setIdEscrituracoesOrigem(escrituracoes.getId());
+				nf.setDataDeCriacaoOrigem(nfOrigem.getDataDeCriacao());
+				nf.setDataEmissaoRpsOrigem(nfOrigem.getDataEmissaoRps());
+				nf.setCompetenciaOrigem(nfOrigem.getCompetencia());
 
 				nf = notasFiscaisDao.save(nf);
 

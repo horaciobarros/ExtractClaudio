@@ -15,7 +15,7 @@ public class EscrituracoesOrigem implements Serializable {
 
    @Id
    @Column(name="id")
-   private String id;
+   private Long id;
 
    @Column(name="id_nota_fiscal")
    private String idNotaFiscal;
@@ -77,10 +77,10 @@ public class EscrituracoesOrigem implements Serializable {
    @Column(name="servico_prestado_por_empresa_do_exterior")
    private String servicoPrestadoPorEmpresaDoExterior;
 
-   public String getId() { 
+   public Long getId() { 
       return id;
    }
-   public void  setId(String id) { 
+   public void  setId(Long id) { 
       this.id = id;
    }
 
@@ -224,7 +224,7 @@ public class EscrituracoesOrigem implements Serializable {
       this.servicoPrestadoPorEmpresaDoExterior = servicoPrestadoPorEmpresaDoExterior;
    }
    
-   public EscrituracoesOrigem(String id, String idNotaFiscal, String idContribuinte, String idTomador, String status,
+   public EscrituracoesOrigem(Long id, String idNotaFiscal, String idContribuinte, String idTomador, String status,
 			String dataDeCriacao, String idEscrituracaoSubstituida, String autorEmail, String autorNome,
 			String autorCpf, String cpfCpnjContribuinte, String numeroNotaFiscal, String serie, String situacao,
 			String dataDaEscrituracao, String aliquotaNotaFiscal, String deducoesEDescontosNotaFiscal,

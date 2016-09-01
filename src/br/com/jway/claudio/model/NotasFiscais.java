@@ -154,7 +154,51 @@ public class NotasFiscais implements Serializable {
 	@Column(name = "escrituracao_situacao")
 	private String escrituracaoSituacao;
 	
+	@Column(name = "competencia_origem")
+	private String competenciaOrigem;
 	
+	@Column(name = "data_de_criacao_origem")
+	private String dataDeCriacaoOrigem;
+	
+	@Column(name = "data_emissao_rps_origem")
+	private String dataEmissaoRpsOrigem;
+	
+	@Column(name = "id_escrituracoes_origem")
+	private Long idEscrituracoesOrigem;
+	
+	
+	public Long getIdEscrituracoesOrigem() {
+		return idEscrituracoesOrigem;
+	}
+
+	public void setIdEscrituracoesOrigem(Long idEscrituracoesOrigem) {
+		this.idEscrituracoesOrigem = idEscrituracoesOrigem;
+	}
+
+	public String getCompetenciaOrigem() {
+		return competenciaOrigem;
+	}
+
+	public void setCompetenciaOrigem(String competenciaOrigem) {
+		this.competenciaOrigem = competenciaOrigem;
+	}
+
+	public String getDataDeCriacaoOrigem() {
+		return dataDeCriacaoOrigem;
+	}
+
+	public void setDataDeCriacaoOrigem(String dataDeCriacaoOrigem) {
+		this.dataDeCriacaoOrigem = dataDeCriacaoOrigem;
+	}
+
+	public String getDataEmissaoRpsOrigem() {
+		return dataEmissaoRpsOrigem;
+	}
+
+	public void setDataEmissaoRpsOrigem(String dataEmissaoRpsOrigem) {
+		this.dataEmissaoRpsOrigem = dataEmissaoRpsOrigem;
+	}
+
 	public String getIdNotaFiscalSubstituida() {
 		return idNotaFiscalSubstituida;
 	}

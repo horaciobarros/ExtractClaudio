@@ -50,6 +50,13 @@ public class AtividadeContribuinteThread implements Runnable{
 				cnae.setServicoCodigo(cnae.getServicoCodigo().replace("a", "").replace("b", "").replace(".", ""));
 			}
 			Pessoa pessoa = pessoaDao.findByPessoaId(cnae.getIdContribuinte());
+			if (pessoa == null) {
+				try {
+				throw new Exception("Id de Pessoa não encontrada:" + cnae.getIdContribuinte());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			Prestadores pr = prestadoresDao.findByInscricao(pessoa.getCnpjCpf());
 			String codigoServico = cnae.getServicoCodigo().replace(".", "").replace("a", "").replace("b", "").replace("/", "").replace("-", "");
 			codigoServico = util.completarZerosEsquerda(codigoServico, 4);

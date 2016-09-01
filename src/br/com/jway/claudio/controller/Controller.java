@@ -20,7 +20,7 @@ public class Controller {
 
 		int nivelProcessamento = 3;
 		
-		System.out.println("-- Iniciando o processo de extração de dados no nível -->" + nivelProcessamento);
+		System.out.println("-- Iniciando o processo de extração de dados no nível " + nivelProcessamento);
 
 		// limpando o banco
 		System.out.println("Limpando o banco...");

@@ -21,10 +21,16 @@ public class GuiasDao {
 
 	public void save(Guias g) {
 		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		session.save(g);
-		session.beginTransaction().commit();
-		session.close();
+		try {
+			session.beginTransaction();
+			session.save(g);
+			session.beginTransaction().commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			session.close();
+		}
 	}
 
 	public List<Guias> findNaoEnviados() {
@@ -70,7 +76,7 @@ public class GuiasDao {
 			return null;
 		}
 	}
-	
+
 	public Guias findByIdGuiaRecolhimento(String id) {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
@@ -85,7 +91,7 @@ public class GuiasDao {
 			return null;
 		}
 	}
-	
+
 	public List<Guias> findAll() {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
@@ -96,7 +102,5 @@ public class GuiasDao {
 
 		return lista;
 	}
-
-
 
 }

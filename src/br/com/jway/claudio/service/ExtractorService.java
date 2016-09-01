@@ -203,6 +203,7 @@ public class ExtractorService {
 		}
 		Util.pausar(3000);
 		System.out.println("guias finalizada - " + Util.getDataHoraAtual());
+		log.close();
 
 	}
 
@@ -320,6 +321,7 @@ public class ExtractorService {
 		while (!executor.isTerminated()) {
 		}
 		System.out.println("Notas Fiscais finalizada - " + Util.getDataHoraAtual());
+		log.close();
 	}
 
 	public void incluiCompetencias() {
