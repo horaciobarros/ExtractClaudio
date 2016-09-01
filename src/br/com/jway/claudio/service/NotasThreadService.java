@@ -94,9 +94,14 @@ public class NotasThreadService implements Runnable {
 						nfs.setNumeroNota(Long.valueOf(nf.getNumeroNota()));
 
 						if (nf.getNaturezaOperacao().equals("2")) { // retenção
+							String localOndeFoiPrestadoServico = nfOrigem.getLocalOndeFoiPrestadoOServico();
+							String estadoDePrestacaoDoServico = nfOrigem.getEstadoDePrestacaoDoServico();
+							if (estadoDePrestacaoDoServico == null) {
+								estadoDePrestacaoDoServico = "MG";
+							}
 							nfs.setMunicipioIbge(
-									municipiosIbgeDao.getCodigoIbge(nfOrigem.getLocalOndeFoiPrestadoOServico(),
-											nfOrigem.getEstadoDePrestacaoDoServico()));
+									municipiosIbgeDao.getCodigoIbge(localOndeFoiPrestadoServico,
+											estadoDePrestacaoDoServico));
 							if (util.isEmptyOrNull(nfs.getMunicipioIbge())) {
 								nfs.setMunicipioIbge(tomadores.getMunicipioIbge().toString());
 							}

@@ -269,7 +269,7 @@ public class NotaMaeThreadService implements Runnable {
 					nf.setSituacaoOriginal("N");
 				}
 
-				if (escrituracoes.getSituacao().equals("retained")) {
+				if (escrituracoes.getSituacao().equals("retained") || nf.getNaturezaOperacao().equals("2")) {
 					nf.setSituacaoTributaria("R");
 					
 				} else {
