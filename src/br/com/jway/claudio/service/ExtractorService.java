@@ -290,7 +290,7 @@ public class ExtractorService {
 					arrayAux.get(5));
 
 			try {
-				List<ServicosNotasFiscaisOrigem> list = mapServicosNotasFiscaisOrigem.get(arrayAux.get(0));
+				List<ServicosNotasFiscaisOrigem> list = mapServicosNotasFiscaisOrigem.get(snf.getIdNotaFiscal());
 
 				if (list == null) {
 					list = new ArrayList<ServicosNotasFiscaisOrigem>();
