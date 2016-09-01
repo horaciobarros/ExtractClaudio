@@ -35,7 +35,7 @@ public class GuiasNotasThread implements Runnable {
 					} else {
 						try{
 							String idEscrituracao = lista[i].trim();
-							EscrituracoesOrigem esc = escrituracoesDao.findById(idEscrituracao);
+							EscrituracoesOrigem esc = escrituracoesDao.findById(Long.parseLong(idEscrituracao));
 							// NotasFiscais nf =
 							// notasFiscaisDao.findByIdOrigem(Long.parseLong(lista[i]));
 							if (esc != null && !new Util().isEmptyOrNull(esc.getIdNotaFiscal())) {

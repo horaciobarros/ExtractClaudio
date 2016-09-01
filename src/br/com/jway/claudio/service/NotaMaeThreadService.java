@@ -75,7 +75,7 @@ public class NotaMaeThreadService implements Runnable {
 						arrayAux.get(49));
 
 				if (nfOrigem.getNotaFiscalAvulsa().equalsIgnoreCase("t")) { // nÃ£o
-					log.fillError(linha, "Guias avulsa não gravada de acordo com definição da cmm"); // migrar
+					log.fillError(linha, "Guias avulsa nï¿½o gravada de acordo com definiï¿½ï¿½o da cmm"); // migrar
 					return;
 				}
 
@@ -280,7 +280,7 @@ public class NotaMaeThreadService implements Runnable {
 				nf.setEscrituracaoTipoDaNotafiscal(escrituracoes.getTipoDaNotaFiscal());
 				if (!util.isEmptyOrNull(escrituracoes.getIdEscrituracaoSubstituida())) {
 					escrituracaoSubstituida = escrituracoesOrigemDao
-							.findById(escrituracoes.getIdEscrituracaoSubstituida().trim());
+							.findById(Long.parseLong(escrituracoes.getIdEscrituracaoSubstituida().trim()));
 					if (escrituracaoSubstituida == null) {
 						log.fillError(linha, "Erro Escrituracao substituida nÃ£o encontrada: "
 								+ escrituracoes.getIdEscrituracaoSubstituida());

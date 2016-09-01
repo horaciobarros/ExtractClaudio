@@ -20,7 +20,7 @@ public class EscrituracoesOrigemDao {
 		sessionFactory = HibernateUtil.getSessionFactory();
 	}
 
-	public EscrituracoesOrigem findById(String id) {
+	public EscrituracoesOrigem findById(Long id) {
 		Query query = sessionFactory.openSession()
 				.createQuery("from EscrituracoesOrigem e where e.id = :id" 
 						).setParameter("id", id);
