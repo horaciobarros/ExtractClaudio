@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -231,7 +232,9 @@ public class Util {
 	}
 
 	public static void main(String args[]) {
-		System.out.print(new Util().getLimpaTelefone("379979909_"));
+		List<String> teste = new ArrayList<String>();
+		teste.add("\"Efetuando teste \"para \"\"remoção de aspas\"");
+		new Util().removeAspas(teste);
 	}
 
 	public String getLimpaTelefone(String telefone) {
@@ -511,7 +514,16 @@ public class Util {
 		List<String> result = Arrays.asList(builder.toString().split(","));
 		Collections.replaceAll(result, "\"", "");
 		Collections.replaceAll(result, "\\d|\\|", ",");
-		return result;
+		
+		return removeAspas(result);
+	}
+	
+	public List<String> removeAspas(List<String> string){
+		List<String> retorno = new ArrayList<>();
+		for (String x : string){
+			retorno.add(x.replaceAll("\"", "").replaceAll(";", ",").trim());
+		}
+		return retorno;
 	}
 	
 	public List<String> splitRegistro(String linha) {
@@ -529,7 +541,8 @@ public class Util {
 		}
 		List<String> result = Arrays.asList(builder.toString().split(","));
 		Collections.replaceAll(result, "\"", "");
-		return result;
+		Collections.replaceAll(result, "\"", "");
+		return removeAspas(result);
 	}
 
 	public double corrigeDouble(Object obj) {
