@@ -95,11 +95,11 @@ public class GuiasThread implements Runnable{
 			guias.setTipo("P");
 
 			guias.setValorDesconto(BigDecimal.valueOf(0.00));
-			guias.setValorGuia(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValorTotal())));
 			guias.setValorImposto(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValor())));
-
+			guias.setValorGuia(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValorTotal())));
 			guias.setIdGuiaRecolhimento(guiaOrigem.getId());
 			guias.setIdNotasFiscais(guiaOrigem.getIdNotasFiscais().replaceAll("\"", ""));
+			guias.setValorTaxaExpediente(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getTaxaDeExpediente())));
 			guiasDao.save(guias);
 
 			// pagamentos
