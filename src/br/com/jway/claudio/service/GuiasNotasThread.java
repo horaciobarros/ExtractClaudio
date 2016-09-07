@@ -45,7 +45,7 @@ public class GuiasNotasThread implements Runnable {
 								gnf.setNumeroGuiaOrigem(guia.getNumeroGuiaOrigem());
 								guiasNotasFiscaisDao.save(gnf);
 							} else {
-								log.fillError(guia.toString(), "Escrituração não encontrada para relação com Guias. ID origem nota: " + lista[i]);
+								log.fillError(guia.toString(), "Escrituração não encontrada para relação com Guias. ID origem escrituração: " + lista[i]);
 							}
 						}
 						catch(Exception e){

@@ -636,7 +636,7 @@ public class Util {
 	}
 	
 	public Date converteDataHora(String dataHora) {
-		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		try {
 			Date date = (Date) formatter.parse(dataHora);
 			GregorianCalendar gc = new GregorianCalendar();

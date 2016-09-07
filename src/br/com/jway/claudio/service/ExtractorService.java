@@ -431,7 +431,7 @@ public class ExtractorService {
 						s.setNome(origem.getNome());
 					}
 					else{
-						log.fillError(linha, "Serviço origem não encontrado "+s.getCnaes()+" - "+cnae.getServicoCodigo());
+						//log.fillError(linha, "Serviço origem não encontrado "+s.getCnaes()+" - "+cnae.getServicoCodigo());
 						s.setAliquota(""+util.corrigeDouble(cnae.getAliquota()));
 						if (cnae.getServico().length() > 200){
 							s.setNome(cnae.getServico().substring(200));
