@@ -16,7 +16,6 @@ public class GuiasNotasThread implements Runnable {
 	private EscrituracoesOrigemDao escrituracoesDao = new EscrituracoesOrigemDao();
 	private Guias guia;
 	private FileLog log;
-	private NotasFiscaisDao notasFiscaisDao = new NotasFiscaisDao();
 
 	public GuiasNotasThread(Guias guia, FileLog log) {
 		this.guia = guia;
@@ -28,7 +27,7 @@ public class GuiasNotasThread implements Runnable {
 		try {
 			if (guia.getIdNotasFiscais() != null && !guia.getIdNotasFiscais().isEmpty()) {
 				String ids = guia.getIdNotasFiscais().replaceAll("\"", "");
-				String[] lista = ids.split(";");
+				String[] lista = ids.split(",");
 				for (int i = 0; i < lista.length; i++) {
 					if (lista[i] == null || lista[i].trim().isEmpty()) {
 						continue;
@@ -36,8 +35,7 @@ public class GuiasNotasThread implements Runnable {
 						try{
 							String idEscrituracao = lista[i].trim();
 							EscrituracoesOrigem esc = escrituracoesDao.findById(Long.parseLong(idEscrituracao));
-							// NotasFiscais nf =
-							// notasFiscaisDao.findByIdOrigem(Long.parseLong(lista[i]));
+
 							if (esc != null && !new Util().isEmptyOrNull(esc.getIdNotaFiscal())) {
 								GuiasNotasFiscais gnf = new GuiasNotasFiscais();
 								gnf.setGuias(guia);

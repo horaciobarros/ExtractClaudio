@@ -91,12 +91,26 @@ public class ContribuintesThread implements Runnable{
 			}
 			p.setTelefone(util.getLimpaTelefone(c.getTelefone()));
 			p.setUf(c.getEstado());
+			String procuraPorte = util.getStringLimpa(p.getNome());
+			if (procuraPorte.contains("LTDAME")){
+				p.setPorteEmpresa("1");
+			} else if (procuraPorte.contains("LTDAEPP")){
+				p.setPorteEmpresa("2");
+			}
 			if (c.getTipoDaEmpresa() != null && c.getTipoDaEmpresa().equalsIgnoreCase("simple")) {
 				p.setOptanteSimples("S");
 			}
 			else{
 				p.setOptanteSimples("N");
 			}
+			
+			if (c.getTipoDaEmpresa().equalsIgnoreCase("mei")) {
+				p.setPorteEmpresa("5");
+			}
+			p.setTipoContribuinteOrigem(c.getTipoContribuinte());
+			p.setTipoDeContribuinteOrigem(c.getTipoDeContribuinte());
+			p.setTipoDaEmpresaOrigem(c.getTipoDaEmpresa());
+			
 			p = util.trataNumerosTelefones(p);
 			p = util.anulaCamposVazios(p);
 

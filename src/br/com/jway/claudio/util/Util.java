@@ -399,6 +399,17 @@ public class Util {
 		cpfCnpj = cpfCnpj.replaceAll(" ", "");
 		return cpfCnpj.trim();
 	}
+	
+	public String getStringLimpa(String string) {
+		if (string == null || string.trim().isEmpty()) {
+			return null;
+		}
+		string = string.replaceAll("\\.", "");
+		string = string.replaceAll("-", "");
+		string = string.replaceAll("/", "");
+		string = string.replaceAll(" ", "");
+		return string.trim();
+	}
 
 	public static boolean validarCpf(String cpf) {
 		if ((cpf == null) || (cpf.length() != 11))
@@ -615,6 +626,21 @@ public class Util {
 			GregorianCalendar gc = new GregorianCalendar();
 			gc.setTime(date);
 			gc.add(Calendar.HOUR, 12);
+			return gc.getTime();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+
+	}
+	
+	public Date converteDataHora(String dataHora) {
+		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+		try {
+			Date date = (Date) formatter.parse(dataHora);
+			GregorianCalendar gc = new GregorianCalendar();
+			gc.setTime(date);
 			return gc.getTime();
 		} catch (Exception e) {
 			e.printStackTrace();

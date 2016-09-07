@@ -121,8 +121,8 @@ public class NotaMaeThreadService implements Runnable {
 				}
 
 				nf.setIdOrigem(Long.parseLong(nfOrigem.getId()));
-
-				nf.setDataHoraEmissao(util.converteDataEscrituracaoClaudio(escrituracoes.getDataDaEscrituracao()));
+				
+				nf.setDataHoraEmissao(util.converteDataHora(nfOrigem.getDataDeCriacao()));
 
 				nf.setInscricaoPrestador(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()));
 				inscricaoTomador = util.getCpfCnpj(nfOrigem.getCnpjCpfTomador());
@@ -186,16 +186,11 @@ public class NotaMaeThreadService implements Runnable {
 				nf.setValorTotalDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
 				nf.setServicoPrestadoForaPais("N");
 				if (nfOrigem.getCompetencia() != null) {
-					Long ano = Long.parseLong(nfOrigem.getCompetencia().substring(0, 4));
-					if (ano < 1000) {
-						nf.setDataHoraRps(nf.getDataHoraEmissao());
-					} else {
-						nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
-					}
-				} else {
 					nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
+				} else {
+					nf.setDataHoraRps(nf.getDataHoraEmissao());
 				}
-
+				
 				nf.setNumeroRps(nf.getNumeroNota());
 				nf.setSerieRps("C");
 
@@ -277,6 +272,12 @@ public class NotaMaeThreadService implements Runnable {
 								t.setNumero(pessoaTomador.getNumero());
 								t.setMunicipio(pessoaTomador.getMunicipio());
 								t.setMunicipioIbge(pessoaTomador.getMunicipioIbge());
+								if (pessoaTomador.getPorteEmpresa()!=null){
+									t.setPorteEmpresa(pessoaTomador.getPorteEmpresa());
+								}
+								else{
+									t.setPorteEmpresa("0");
+								}
 							} else {
 								t.setBairro(null);
 								t.setCep(null);
@@ -284,7 +285,7 @@ public class NotaMaeThreadService implements Runnable {
 								t.setEndereco(null);
 								t.setMunicipio(null);
 								t.setMunicipioIbge(null);
-
+								t.setPorteEmpresa("0");
 							}
 
 							util.trataNumerosTelefones(t);

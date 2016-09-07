@@ -99,6 +99,14 @@ public class Pessoa implements Serializable {
 	@Column(name = "sexo")
 	private String sexo;
 
+	@Column(name = "tipo_de_contribuinte_origem")
+	private String tipoDeContribuinteOrigem;
+
+	@Column(name = "tipo_da_empresa_origem")
+	private String tipoDaEmpresaOrigem;
+
+	@Column(name = "tipo_contribuinte_origem")
+	private String tipoContribuinteOrigem;
 
 	public String getSexo() {
 		return sexo;
@@ -326,5 +334,29 @@ public class Pessoa implements Serializable {
 
 	public void setHash(String hash) {
 		this.hash = hash;
+	}
+
+	public String getTipoDeContribuinteOrigem() {
+		return tipoDeContribuinteOrigem;
+	}
+
+	public void setTipoDeContribuinteOrigem(String tipoDeContribuinteOrigem) {
+		this.tipoDeContribuinteOrigem = tipoDeContribuinteOrigem;
+	}
+
+	public String getTipoDaEmpresaOrigem() {
+		return tipoDaEmpresaOrigem;
+	}
+
+	public void setTipoDaEmpresaOrigem(String tipoDaEmpresaOrigem) {
+		this.tipoDaEmpresaOrigem = tipoDaEmpresaOrigem;
+	}
+
+	public String getTipoContribuinteOrigem() {
+		return tipoContribuinteOrigem;
+	}
+
+	public void setTipoContribuinteOrigem(String tipoContribuinteOrigem) {
+		this.tipoContribuinteOrigem = tipoContribuinteOrigem;
 	}
 }
