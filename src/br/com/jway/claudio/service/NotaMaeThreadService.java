@@ -186,9 +186,14 @@ public class NotaMaeThreadService implements Runnable {
 				nf.setValorTotalDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
 				nf.setServicoPrestadoForaPais("N");
 				if (nfOrigem.getCompetencia() != null) {
-					nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
+					Long ano = Long.parseLong(nfOrigem.getCompetencia().substring(0, 4));
+					if (ano < 1000) {
+						nf.setDataHoraRps(nf.getDataHoraEmissao());
+					} else {
+						nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
+					}
 				} else {
-					nf.setDataHoraRps(nf.getDataHoraEmissao());
+					nf.setDataHoraRps(util.converteDataHoraRpsClaudio(nfOrigem.getCompetencia()));
 				}
 				
 				nf.setNumeroRps(nf.getNumeroNota());

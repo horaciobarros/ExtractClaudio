@@ -369,6 +369,9 @@ public class NotasFiscaisOrigem {
 		this.id = id;
 		this.idPrestador = idPrestador;
 		this.competencia = competencia;
+		if (this.competencia!=null && this.competencia.contains("0205-")){
+			this.competencia = this.competencia.replace("0205-", "2015-");
+		}
 		this.naturezaDaOperacao = naturezaDaOperacao;
 		this.idTomador = idTomador;
 		this.cnpjCpfTomador = cnpjCpfTomador;
