@@ -128,6 +128,7 @@ public class Controller {
 		}
 		
 		if (nivelProcessamento <= 5) {
+			
 			System.out.println("Limpando Prestadores Sem Notas");
 			extractorService.processaExclusaoPrestadoresSemNotas();
 		}

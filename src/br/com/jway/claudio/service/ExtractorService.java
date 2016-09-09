@@ -313,6 +313,13 @@ public class ExtractorService {
 		
 		ExecutorService executor = Executors.newFixedThreadPool(300);
 		for (Guias guia : guiasDao.findAll()) {
+			
+			Pessoa p = pessoaDao.findByCnpjCpf(guia.getInscricaoPrestador());
+			
+			if (p != null && p.getOptanteSimples().equals("S")) {
+				continue;
+			}
+			
 			GuiasNotasThread thread = new GuiasNotasThread(guia, log);
 			executor.execute(thread);
 		}
@@ -489,5 +496,6 @@ public class ExtractorService {
 		System.out.println("Excluindo Pessoas");
 		pessoaDao.excluiPrestadoresSemNotas();
 	}
+
 
 }
