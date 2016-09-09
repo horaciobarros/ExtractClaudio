@@ -67,10 +67,18 @@ public class ExtractorService {
 	public List<String> excluiParaProcessarNivel3() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos", "NotasFiscaisEmails", "NotasFiscaisObras",
 				"NotasFiscaisPrestadores", "NotasFiscaisServicos", "NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais",
-				"EscrituracoesOrigem", "Tomadores");
+				"EscrituracoesOrigem",  "Pagamentos", "Guias", "Competencias", "Tomadores");
+	}
+	
+	public List<String> excluiParaProcessarNivel4() {
+		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos", "NotasFiscaisEmails", "NotasFiscaisObras",
+				"NotasFiscaisPrestadores", "NotasFiscaisServicos", "NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais",
+				"EscrituracoesOrigem",  "Tomadores");
 	}
 
-	public List<String> excluiParaProcessarNivel4() {
+	
+	
+	public List<String> excluiParaProcessarNivel5() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisSubst");
 	}
 
@@ -178,10 +186,6 @@ public class ExtractorService {
 
 	}
 
-	public void processaDadosGuiasPagas(List<String> dadosList) {
-
-	}
-
 	public void processaDadosGuias(List<String> dadosList) {
 
 		FileLog log = new FileLog("guias");
@@ -193,6 +197,7 @@ public class ExtractorService {
 			if (linha == null || linha.trim().isEmpty()) {
 				break;
 			}
+			
 			threadService = new GuiasThread(util, linha, log);
 			executor.execute(threadService);
 		}
@@ -313,12 +318,6 @@ public class ExtractorService {
 		
 		ExecutorService executor = Executors.newFixedThreadPool(300);
 		for (Guias guia : guiasDao.findAll()) {
-			
-			Pessoa p = pessoaDao.findByCnpjCpf(guia.getInscricaoPrestador());
-			
-			if (p != null && p.getOptanteSimples().equals("S")) {
-				continue;
-			}
 			
 			GuiasNotasThread thread = new GuiasNotasThread(guia, log);
 			executor.execute(thread);

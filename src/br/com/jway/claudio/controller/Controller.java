@@ -18,7 +18,7 @@ public class Controller {
 
 	public void importaNfe() {
 
-		int nivelProcessamento = 3;
+		int nivelProcessamento = 1;
 		
 		System.out.println("-- Iniciando o processo de extração de dados no nível " + nivelProcessamento);
 
@@ -26,14 +26,17 @@ public class Controller {
 		System.out.println("Limpando o banco...");
 
 		List<String> entidades = new ArrayList<String>();
-		if (nivelProcessamento == 2) {
+		
+		if (nivelProcessamento == 1) {
+			entidades = extractorService.excluiParaProcessarNivel1();
+		} else if (nivelProcessamento == 2) {
 			entidades = extractorService.excluiParaProcessarNivel2();
 		} else if (nivelProcessamento == 3) {
 			entidades = extractorService.excluiParaProcessarNivel3();
-		} else if (nivelProcessamento == 1) {
-			entidades = extractorService.excluiParaProcessarNivel1();
 		} else if (nivelProcessamento == 4) {
 			entidades = extractorService.excluiParaProcessarNivel4();
+		} else if (nivelProcessamento == 5) {
+			entidades = extractorService.excluiParaProcessarNivel5();
 		}
 
 		for (String nomeEntidade : entidades) {
@@ -73,12 +76,14 @@ public class Controller {
 			dadosList = extractorService.lerArquivosClaudio("cnae_servicos_contribuintes");
 			System.out.println("Gravando servicos");
 			extractorService.processaDadosServicosArquivoCnae(dadosList);
-			
 			System.out.println("--- Fim de servicos ---");
+
 			System.out.println("Gravando atividades");
 			extractorService.processaDadosAtividadeEconomicaContribuinte(dadosList);
 			System.out.println("--- Fim de atividade de contribuintes ---");
 			
+		}
+		if (nivelProcessamento <= 3) {
 			System.out.println("Gravando competencias");
 			extractorService.incluiCompetencias();
 			System.out.println("--- Fim de competencias ---");
@@ -91,7 +96,7 @@ public class Controller {
 
 		}
 
-		if (nivelProcessamento <= 3) {
+		if (nivelProcessamento <= 4) {
 	
 			System.out.println("Lendo escrituracoes");
 			dadosList = extractorService.lerArquivosClaudio("Escrituracoes");
@@ -116,7 +121,7 @@ public class Controller {
 
 		}
 
-		if (nivelProcessamento <= 4) {
+		if (nivelProcessamento <= 5) {
 			System.out.println("Gravando Notas Fiscais substituidas");
 			extractorService.processaDadosNotasFiscaisSubstituidas();
 			System.out.println("--- Fim de Notas Fiscais substituidas ---");
@@ -127,7 +132,7 @@ public class Controller {
 
 		}
 		
-		if (nivelProcessamento <= 5) {
+		if (nivelProcessamento <= 6) {
 			
 			System.out.println("Limpando Prestadores Sem Notas");
 			extractorService.processaExclusaoPrestadoresSemNotas();
@@ -145,9 +150,9 @@ public class Controller {
 		//Util.desligarComputador();
 
 	}
-	
+
 	public Controller() {
-		
+
 	}
 
 }

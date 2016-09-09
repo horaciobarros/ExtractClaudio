@@ -17,7 +17,7 @@ import br.com.jway.claudio.model.Prestadores;
 import br.com.jway.claudio.util.FileLog;
 import br.com.jway.claudio.util.Util;
 
-public class GuiasThread implements Runnable{
+public class GuiasThread implements Runnable {
 	private Util util;
 	private String linha;
 	private FileLog log;
@@ -26,7 +26,7 @@ public class GuiasThread implements Runnable{
 	private PrestadoresDao prestadoresDao = new PrestadoresDao();
 	private GuiasDao guiasDao = new GuiasDao();
 	private PagamentosDao pagamentosDao = new PagamentosDao();
-	
+
 	public GuiasThread(Util util, String linha, FileLog log) {
 		this.util = util;
 		this.linha = linha;
@@ -38,12 +38,29 @@ public class GuiasThread implements Runnable{
 		List<String> arrayAux = util.splitRegistro(linha);
 
 		GuiaOrigem guiaOrigem = new GuiaOrigem(arrayAux.get(0), arrayAux.get(1), arrayAux.get(2), arrayAux.get(3),
-				arrayAux.get(4), arrayAux.get(5), arrayAux.get(6), arrayAux.get(7), arrayAux.get(8),
-				arrayAux.get(9), arrayAux.get(10), arrayAux.get(11), arrayAux.get(12), arrayAux.get(13),
-				arrayAux.get(14), arrayAux.get(15), arrayAux.get(16), arrayAux.get(17));
+				arrayAux.get(4), arrayAux.get(5), arrayAux.get(6), arrayAux.get(7), arrayAux.get(8), arrayAux.get(9),
+				arrayAux.get(10), arrayAux.get(11), arrayAux.get(12), arrayAux.get(13), arrayAux.get(14),
+				arrayAux.get(15), arrayAux.get(16), arrayAux.get(17));
+
+		Pessoa p = pessoaDao.findByPessoaId(guiaOrigem.getIdContribuinte());
 
 		if (guiaOrigem.getNotaFiscalAvulsa().equalsIgnoreCase("t")) {
-			log.fillError(linha, "Guias avulsa não gravada de acordo com definição da cmm");
+			log.fillError(linha, "Guias avulsa não gravada de acordo com definição da cmm. " + "contribuinte:"
+					+ p.getNome() + " - " + p.getCnpjCpf() + " guia:" + guiaOrigem.getId());
+			return;
+		}
+
+		if (p.getOptanteSimples().equals("S")) {
+			log.fillError(linha, "Guias contribuinte optante pelo simples não gravada de acordo com definição da cmm. "
+					+ "contribuinte:" + p.getNome() + " - " + p.getCnpjCpf() + " guia:" + guiaOrigem.getId());
+			return;
+		}
+
+		if ("retained".equals(guiaOrigem.getIssRetidoTributado().trim())) {
+			log.fillError(linha,
+					"Guia com status de retenção não gravada de acordo com definição da cmm. " + "contribuinte:"
+							+ p.getNome() + " - " + p.getCnpjCpf() + " guia:" + guiaOrigem.getId() + " status:"
+							+ guiaOrigem.getIssRetidoTributado());
 			return;
 		}
 
@@ -68,15 +85,17 @@ public class GuiasThread implements Runnable{
 		}
 
 		try {
+
 			Guias guias = new Guias();
 			guias.setCompetencias(cp);
 			guias.setDataVencimento(util.getStringToDate(guiaOrigem.getDataDeVencimento(), "yyyy-MM-dd"));
-			Pessoa p = pessoaDao.findByPessoaId(guiaOrigem.getIdContribuinte());
 			guias.setInscricaoPrestador(p.getCnpjCpf());
 
 			guias.setIntegrarGuia("N"); // TODO sanar dï¿½vida
 
-			String numeroGuia = guiaOrigem.getId(); // TODO CONFIRMAR COM O SANDRO(NÃO HÁ N. GUIA NO TXT)
+			String numeroGuia = guiaOrigem.getId(); // TODO CONFIRMAR COM O
+													// SANDRO(NÃO HÁ N. GUIA NO
+													// TXT)
 			guias.setNumeroGuiaOrigem(numeroGuia);
 			int proximoNumeroGuia = 60000000 + Integer.parseInt(numeroGuia);
 			guias.setNumeroGuia(Long.valueOf(proximoNumeroGuia));
@@ -84,14 +103,14 @@ public class GuiasThread implements Runnable{
 			Prestadores prestadores = prestadoresDao.findByInscricao(guias.getInscricaoPrestador());
 			guias.setPrestadores(prestadores);
 			String situacao = "A";
-			if (guiaOrigem.getStatus() != null && guiaOrigem.getStatus().equals("paid")){
+			if (guiaOrigem.getStatus() != null && guiaOrigem.getStatus().equals("paid")) {
 				situacao = "P";
-			} else if (guiaOrigem.getStatus()!=null && guiaOrigem.getStatus().equals("cancelled")){
+			} else if (guiaOrigem.getStatus() != null && guiaOrigem.getStatus().equals("cancelled")) {
 				situacao = "C";
 			}
 
 			guias.setSituacao(situacao);
-			
+
 			guias.setTipo("P");
 
 			guias.setValorDesconto(BigDecimal.valueOf(0.00));
@@ -126,7 +145,7 @@ public class GuiasThread implements Runnable{
 		} catch (Exception e) {
 			log.fillError(linha, "Guias", e);
 			e.printStackTrace();
-		}		
+		}
 	}
 
 }
