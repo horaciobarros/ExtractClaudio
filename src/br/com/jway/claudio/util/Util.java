@@ -230,6 +230,15 @@ public class Util {
 
 		return calendar.getTime();
 	}
+	
+	public Date getVencimentoCompetencia(Date dataFim) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(dataFim);
+		calendar.set(Calendar.MONTH, calendar.get(calendar.MONTH) + 1);
+		calendar.set(Calendar.DAY_OF_MONTH, 28);
+
+		return calendar.getTime();
+	}
 
 	public static void main(String args[]) {
 		List<String> teste = new ArrayList<String>();

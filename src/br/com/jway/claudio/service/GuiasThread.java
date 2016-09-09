@@ -59,7 +59,7 @@ public class GuiasThread implements Runnable{
 						guiaOrigem.getCompetencia().substring(5, 7)));
 				cp.setDataFim(util.getLastDayOfMonth(guiaOrigem.getCompetencia().substring(0, 4),
 						guiaOrigem.getCompetencia().substring(5, 7)));
-				cp.setDataVencimento(util.getDecimoDiaMesPosterior(cp.getDataFim()));
+				cp.setDataVencimento(util.getVencimentoCompetencia(cp.getDataFim()));
 
 				competenciasDao.save(cp);
 			}

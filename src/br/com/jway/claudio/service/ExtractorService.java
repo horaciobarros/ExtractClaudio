@@ -345,7 +345,7 @@ public class ExtractorService {
 						cp.setDescricao(descricao.trim());
 						cp.setDataInicio(util.getFirstDayOfMonth(Integer.toString(ano), Integer.toString(mes)));
 						cp.setDataFim(util.getLastDayOfMonth(Integer.toString(ano), Integer.toString(mes)));
-						cp.setDataVencimento(util.getDecimoDiaMesPosterior(cp.getDataFim()));
+						cp.setDataVencimento(util.getVencimentoCompetencia(cp.getDataFim()));
 
 						competenciasDao.save(cp);
 					}
