@@ -15,7 +15,9 @@ import br.com.jway.claudio.dao.CompetenciasDao;
 import br.com.jway.claudio.dao.Dao;
 import br.com.jway.claudio.dao.EscrituracoesOrigemDao;
 import br.com.jway.claudio.dao.GuiasDao;
+import br.com.jway.claudio.dao.GuiasNotasFiscaisDao;
 import br.com.jway.claudio.dao.NotasFiscaisDao;
+import br.com.jway.claudio.dao.PagamentosDao;
 import br.com.jway.claudio.dao.PessoaDao;
 import br.com.jway.claudio.dao.PrestadoresAtividadesDao;
 import br.com.jway.claudio.dao.PrestadoresDao;
@@ -29,6 +31,7 @@ import br.com.jway.claudio.entidadesOrigem.ServicosNotasFiscaisOrigem;
 import br.com.jway.claudio.entidadesOrigem.ServicosOrigem;
 import br.com.jway.claudio.model.Competencias;
 import br.com.jway.claudio.model.Guias;
+import br.com.jway.claudio.model.GuiasNotasFiscais;
 import br.com.jway.claudio.model.NotasFiscais;
 import br.com.jway.claudio.model.Pessoa;
 import br.com.jway.claudio.model.Prestadores;
@@ -494,6 +497,31 @@ public class ExtractorService {
 		prestadoresDao.excluiPrestadoresSemNotas();
 		System.out.println("Excluindo Pessoas");
 		pessoaDao.excluiPrestadoresSemNotas();
+	}
+	
+	public void excluiGuiasSemNotas() {
+		
+		GuiasDao guiasDao = new GuiasDao();
+		GuiasNotasFiscaisDao guiasNotasFiscaisDao = new GuiasNotasFiscaisDao();
+		PagamentosDao pagamentosDao = new PagamentosDao();
+
+		int contador = 0;
+		System.out.println("Excluindo guias " );
+		for (Guias guias : guiasDao.findAll()) {
+			try {
+				List<GuiasNotasFiscais> gnfValues = guiasNotasFiscaisDao.findPorNumeroGuia(guias.getNumeroGuia());
+				if (gnfValues == null || gnfValues.size() == 0) {
+					pagamentosDao.deleteByGuia(guias);
+					guiasDao.delete(guias);
+					contador++;
+					System.out.println(guias.getId());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+		System.out.println("Guias excluidas:" + contador);
 	}
 
 
