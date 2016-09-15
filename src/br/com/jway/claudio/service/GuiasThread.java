@@ -114,7 +114,11 @@ public class GuiasThread implements Runnable {
 			guias.setTipo("P");
 
 			guias.setValorDesconto(BigDecimal.valueOf(0.00));
-			guias.setValorImposto(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValor())));
+			BigDecimal valorImposto = BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValorTotal()));
+			valorImposto = valorImposto.subtract(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getJuros())));
+			valorImposto = valorImposto.subtract(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getMulta())));
+			valorImposto = valorImposto.subtract(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getTaxaDeExpediente())));
+			guias.setValorImposto(valorImposto);
 			guias.setValorGuia(BigDecimal.valueOf(util.corrigeDouble(guiaOrigem.getValorTotal())));
 			guias.setIdGuiaRecolhimento(guiaOrigem.getId());
 			guias.setIdNotasFiscais(guiaOrigem.getIdNotasFiscais().replaceAll("\"", ""));

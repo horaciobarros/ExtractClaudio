@@ -502,26 +502,17 @@ public class ExtractorService {
 	public void excluiGuiasSemNotas() {
 		
 		GuiasDao guiasDao = new GuiasDao();
-		GuiasNotasFiscaisDao guiasNotasFiscaisDao = new GuiasNotasFiscaisDao();
-		PagamentosDao pagamentosDao = new PagamentosDao();
 
-		int contador = 0;
 		System.out.println("Excluindo guias " );
+		ExecutorService executor = Executors.newFixedThreadPool(300);
 		for (Guias guias : guiasDao.findAll()) {
-			try {
-				List<GuiasNotasFiscais> gnfValues = guiasNotasFiscaisDao.findPorNumeroGuia(guias.getNumeroGuia());
-				if (gnfValues == null || gnfValues.size() == 0) {
-					pagamentosDao.deleteByGuia(guias);
-					guiasDao.delete(guias);
-					contador++;
-					System.out.println(guias.getId());
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
+			ExcluirGuiasThread thread = new ExcluirGuiasThread(guias);
+			executor.execute(thread);
 		}
-		System.out.println("Guias excluidas:" + contador);
+		executor.shutdown();
+		while (!executor.isTerminated()) {
+		}
+		System.out.println("Guias excluidas");
 	}
 
 
