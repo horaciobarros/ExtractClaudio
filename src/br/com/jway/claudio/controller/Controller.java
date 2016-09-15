@@ -134,6 +134,9 @@ public class Controller {
 		
 		if (nivelProcessamento <= 6) {
 			
+			System.out.println("Iniciando processo de excluir guias sem notas... ");
+			extractorService.excluiGuiasSemNotas();
+			
 			System.out.println("Limpando Prestadores Sem Notas");
 			extractorService.processaExclusaoPrestadoresSemNotas();
 		}

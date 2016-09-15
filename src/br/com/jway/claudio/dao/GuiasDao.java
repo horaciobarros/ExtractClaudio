@@ -103,4 +103,13 @@ public class GuiasDao {
 		return lista;
 	}
 
+	public void delete(Guias guias) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		session.delete(guias);
+		session.beginTransaction().commit();
+		session.close();
+		
+	}
+
 }

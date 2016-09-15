@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import br.com.jway.claudio.model.Guias;
 import br.com.jway.claudio.model.Pagamentos;
 import br.com.jway.claudio.util.HibernateUtil;
 
@@ -53,6 +54,19 @@ public class PagamentosDao {
 		Query query = session.createQuery(sql);
 		query.executeUpdate();
 		tx.commit();session.close();
+	} 
+	
+	public void deleteByGuia(Guias guia) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		StringBuilder builder = new StringBuilder();
+		builder.append("delete from pagamentos where guia_id = " + guia.getId());
+		String sql = builder.toString();
+		Query query = session.createSQLQuery(sql);
+		query.executeUpdate();
+		tx.commit();session.close();
 	}
+
+	
 
 }
