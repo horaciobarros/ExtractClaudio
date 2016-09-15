@@ -168,10 +168,15 @@ public class Util {
 	}
 
 	public String getTipoPessoa(String inscricao) {
-		if (inscricao == null) {
-			return "";
+		if (inscricao == null || inscricao.trim().isEmpty()) {
+			return "O";
+		} else if (inscricao.trim().length() == 11){
+			return "F";
+		} else if (inscricao.trim().length() == 14){
+			return "J";
+		} else{
+			return "O";
 		}
-		return (inscricao.trim().length() == 11 ? "F" : "J");
 	}
 
 	public BigDecimal getSumOfBigDecimal(List<BigDecimal> lista) {
@@ -730,6 +735,10 @@ public class Util {
 		
 		if (isEmptyOrNull(t.getNumero())) {
 			t.setNumero(null);
+		}
+		
+		if (isEmptyOrNull(t.getTipoPessoa())){
+			t.setTipoPessoa(null);
 		}
 
 		return t;

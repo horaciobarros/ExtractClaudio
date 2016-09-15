@@ -327,11 +327,15 @@ public class NotasThreadService implements Runnable {
 				if (tomadores.getMunicipioIbge() != null) {
 					nft.setMunicipioIbge(Long.toString(tomadores.getMunicipioIbge()));
 				}
-				nft.setNome(tomadores.getNome());
-				nft.setNomeFantasia(tomadores.getNomeFantasia());
-				if (nft.getNomeFantasia() == null) {
-					nft.setNomeFantasia(tomadores.getNome());
+				if (util.isEmptyOrNull(nf.getNomeTomador())){
+					nft.setNome(tomadores.getNome());
+					nft.setNomeFantasia(tomadores.getNomeFantasia());	
 				}
+				else{
+					nft.setNome(nf.getNomeTomador());
+					nft.setNomeFantasia(nf.getNomeTomador());
+				}
+				
 				nft.setNotasFiscais(nf);
 				nft.setNumero(tomadores.getNumero());
 				nft.setNumeroNota(nf.getNumeroNota());

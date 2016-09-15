@@ -144,6 +144,12 @@ public class NotaMaeThreadService implements Runnable {
 							nf.setNomeTomador("Não informado");
 						}
 					}
+				} else {
+					if (!util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())) {
+						nf.setNomeTomador(nfOrigem.getRazaoSocialTomador());
+					} else {
+						nf.setNomeTomador("Não informado");
+					}
 				}
 
 				// natureza de opera��o
@@ -250,14 +256,24 @@ public class NotaMaeThreadService implements Runnable {
 				// tomadores
 				t = null;
 
-				if (!util.isEmptyOrNull(nf.getInscricaoTomador())) {
+				if (util.isEmptyOrNull(nf.getInscricaoTomador())) {
+					nf.setInscricaoTomador("");
+				}
 					t = tomadoresDao.findByInscricao(nf.getInscricaoTomador(), nf.getInscricaoPrestador());
 					if (t == null || t.getId() == null) {
 						try {
 							t = new Tomadores();
 							t.setOptanteSimples(util.getOptantePeloSimplesNacional("N"));
-							t.setNome(nf.getNomeTomador());
-							t.setNomeFantasia(nf.getNomeTomador());
+							if (util.isEmptyOrNull(nf.getNomeTomador())){
+								nf.setNomeTomador("Não informado.");
+								t.setNome(nf.getNomeTomador());
+								t.setNomeFantasia(nf.getNomeTomador());
+							}
+							else{
+								t.setNome(nf.getNomeTomador());
+								t.setNomeFantasia(nf.getNomeTomador());
+							}
+							
 							t.setPrestadores(nf.getPrestadores());
 							t.setInscricaoTomador(nf.getInscricaoTomador());
 							t.setTipoPessoa(util.getTipoPessoa(t.getInscricaoTomador()));
@@ -304,7 +320,7 @@ public class NotaMaeThreadService implements Runnable {
 						}
 
 					}
-				}
+				//}
 
 				processaDemaisTiposNotas(pr, nf, nfOrigem, log, linha, t, pessoa);
 
