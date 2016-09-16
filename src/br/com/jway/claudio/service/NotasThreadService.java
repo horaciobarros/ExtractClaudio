@@ -222,11 +222,8 @@ public class NotasThreadService implements Runnable {
 								BigDecimal.valueOf(Double.parseDouble(s.getValor())));
 						nfs.setQuantidade(BigDecimal.valueOf(1));
 						nfs.setValorDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
-						nfs.setValorBaseCalculo(BigDecimal.valueOf(Double.parseDouble(s.getValor())));
-						BigDecimal iss = BigDecimal.valueOf(Double.parseDouble(s.getValor()));
-						iss = iss.multiply(BigDecimal.valueOf(Double.parseDouble(s.getAliquota())));
-						iss = iss.divide(BigDecimal.valueOf(100));
-						nfs.setValorIss(iss);
+						nfs.setValorBaseCalculo(nf.getValorTotalBaseCalculo());
+						nfs.setValorIss(nf.getValorTotalIss());
 						nfs.setNotasFiscais(nf);
 						nfs.setValorUnitario(
 								BigDecimal.valueOf(Double.parseDouble(s.getValor())));

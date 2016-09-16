@@ -187,9 +187,9 @@ public class NotaMaeThreadService implements Runnable {
 				} else {
 					nf.setOptanteSimples("N");
 				}
-				nf.setValorTotalBaseCalculo(
-						BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
+				nf.setValorTotalBaseCalculo(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 				nf.setValorTotalDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
+				nf.setValorTotalBaseCalculo(nf.getValorTotalBaseCalculo().subtract(nf.getValorTotalDeducao()));
 				nf.setServicoPrestadoForaPais("N");
 				if (nfOrigem.getCompetencia() != null) {
 					Long ano = Long.parseLong(nfOrigem.getCompetencia().substring(0, 4));
@@ -257,9 +257,10 @@ public class NotaMaeThreadService implements Runnable {
 				t = null;
 
 				if (util.isEmptyOrNull(nf.getInscricaoTomador())) {
-					nf.setInscricaoTomador("");
+					nf.setInscricaoTomador("77339186425");
 				}
-					t = tomadoresDao.findByInscricao(nf.getInscricaoTomador(), nf.getInscricaoPrestador());
+				t = tomadoresDao.findByInscricao(nf.getInscricaoTomador(), nf.getInscricaoPrestador());
+					
 					if (t == null || t.getId() == null) {
 						try {
 							t = new Tomadores();

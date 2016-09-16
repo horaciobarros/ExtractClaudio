@@ -37,6 +37,24 @@ public class TomadoresDao {
 		return null;
 	}
 
+	public Tomadores findByNome(String nome, String inscricaoPrestador) {
+		Query query = sessionFactory.openSession()
+				.createQuery("select t from Tomadores t  inner join t.prestadores p "
+						+ " where t.no,e like '%" + nome.trim() + "%' "
+						+ " and p.inscricaoPrestador like '%" + inscricaoPrestador + "%'");
+
+		try {
+			List<Tomadores> tomadores = query.list();
+
+			if (tomadores.size() > 0) {
+				return tomadores.get(0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public Tomadores save(Tomadores t) {
 		Session session = sessionFactory.openSession();
 		try{

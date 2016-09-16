@@ -43,10 +43,11 @@ public class GuiasThread implements Runnable {
 				arrayAux.get(15), arrayAux.get(16), arrayAux.get(17));
 
 		Pessoa p = pessoaDao.findByPessoaId(guiaOrigem.getIdContribuinte());
-
+		if (p == null)
+		{return;}
 		if (guiaOrigem.getNotaFiscalAvulsa().equalsIgnoreCase("t")) {
-			log.fillError(linha, "Guias avulsa não gravada de acordo com definição da cmm. " + "contribuinte:"
-					+ p.getNome() + " - " + p.getCnpjCpf() + " guia:" + guiaOrigem.getId());
+			//log.fillError(linha, "Guias avulsa não gravada de acordo com definição da cmm. " + "contribuinte:"
+					//+ p.getNome() + " - " + p.getCnpjCpf() + " guia:" + guiaOrigem.getId());
 			return;
 		}
 
@@ -97,7 +98,7 @@ public class GuiasThread implements Runnable {
 													// SANDRO(NÃO HÁ N. GUIA NO
 													// TXT)
 			guias.setNumeroGuiaOrigem(numeroGuia);
-			int proximoNumeroGuia = 60000000 + Integer.parseInt(numeroGuia);
+			int proximoNumeroGuia = 900234000 + Integer.parseInt(numeroGuia);
 			guias.setNumeroGuia(Long.valueOf(proximoNumeroGuia));
 
 			Prestadores prestadores = prestadoresDao.findByInscricao(guias.getInscricaoPrestador());
@@ -107,6 +108,8 @@ public class GuiasThread implements Runnable {
 				situacao = "P";
 			} else if (guiaOrigem.getStatus() != null && guiaOrigem.getStatus().equals("cancelled")) {
 				situacao = "C";
+			} else {
+				guias.setIntegrarGuia("S");
 			}
 
 			guias.setSituacao(situacao);

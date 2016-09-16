@@ -76,13 +76,13 @@ public class ExtractorService {
 	public List<String> excluiParaProcessarNivel4() {
 		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisCanceladas", "NotasFiscaisCondPagamentos", "NotasFiscaisEmails", "NotasFiscaisObras",
 				"NotasFiscaisPrestadores", "NotasFiscaisServicos", "NotasFiscaisSubst", "NotasFiscaisTomadores", "NotasFiscaisXml", "NotasFiscais",
-				"EscrituracoesOrigem",  "Tomadores");
+				"EscrituracoesOrigem","Tomadores" ,"Pagamentos", "Guias");
 	}
 
 	
 	
 	public List<String> excluiParaProcessarNivel5() {
-		return Arrays.asList("GuiasNotasFiscais", "NotasFiscaisSubst");
+		return Arrays.asList("Pagamentos", "Guias", "GuiasNotasFiscais", "NotasFiscaisSubst");
 	}
 
 	public void excluiDados(String nomeEntidade) {

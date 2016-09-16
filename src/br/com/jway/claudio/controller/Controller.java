@@ -18,7 +18,7 @@ public class Controller {
 
 	public void importaNfe() {
 
-		int nivelProcessamento = 1;
+		int nivelProcessamento = 4;
 		
 		System.out.println("-- Iniciando o processo de extração de dados no nível " + nivelProcessamento);
 
@@ -87,13 +87,6 @@ public class Controller {
 			System.out.println("Gravando competencias");
 			extractorService.incluiCompetencias();
 			System.out.println("--- Fim de competencias ---");
-
-			System.out.println("Lendo guias "); // a ordem é essa mesma
-			dadosList = extractorService.lerArquivosClaudio("Guias");
-			System.out.println("Gravando guias e ajustando competencias");
-			extractorService.processaDadosGuias(dadosList);
-			System.out.println("--- Fim de guias paga ---");
-
 		}
 
 		if (nivelProcessamento <= 4) {
@@ -120,8 +113,14 @@ public class Controller {
 			System.out.println("--- Fim de Notas Fiscais ---");
 
 		}
-
+		
 		if (nivelProcessamento <= 5) {
+			System.out.println("Lendo guias "); // a ordem é essa mesma
+			dadosList = extractorService.lerArquivosClaudio("Guias");
+			System.out.println("Gravando guias e ajustando competencias");
+			extractorService.processaDadosGuias(dadosList);
+			System.out.println("--- Fim de guias paga ---");
+			
 			System.out.println("Gravando Notas Fiscais substituidas");
 			extractorService.processaDadosNotasFiscaisSubstituidas();
 			System.out.println("--- Fim de Notas Fiscais substituidas ---");
@@ -150,7 +149,7 @@ public class Controller {
 				e.printStackTrace();
 			}
 		}
-		Util.desligarComputador();
+		//Util.desligarComputador();
 
 	}
 
