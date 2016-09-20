@@ -96,6 +96,9 @@ public class HibernateUtil {
 				configuration
 				.addAnnotatedClass(br.com.jway.claudio.entidadesOrigem.Servicos.class);
 				
+				configuration
+				.addAnnotatedClass(br.com.jway.claudio.model.GuiasPagto.class);
+				
 				SessionFactory sessionFactory = configuration.configure(file)
 						.buildSessionFactory();
 				return sessionFactory;

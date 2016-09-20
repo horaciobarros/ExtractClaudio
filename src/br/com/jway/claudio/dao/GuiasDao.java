@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import br.com.jway.claudio.model.Guias;
+import br.com.jway.claudio.model.GuiasNotasFiscais;
 import br.com.jway.claudio.util.HibernateUtil;
 
 public class GuiasDao {
@@ -110,6 +111,15 @@ public class GuiasDao {
 		session.beginTransaction().commit();
 		session.close();
 		
+	}
+
+	public void deleteGuiasNaoPagas() {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("delete from Guias g where g.situacao not like 'P'");
+		query.executeUpdate();
+		tx.commit();session.close();
+
 	}
 
 }

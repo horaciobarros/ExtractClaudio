@@ -68,4 +68,24 @@ public class GuiasNotasFiscaisDao {
 		return lista;
 	}
 
+	public List<GuiasNotasFiscais> findPorGuiasNaoPagas() {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from GuiasNotasFiscais gnf where gnf.guias.situacao not like 'P'");
+		List<GuiasNotasFiscais> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
+	}
+	
+	public void delete(GuiasNotasFiscais gnf) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		session.delete(gnf);
+		session.beginTransaction().commit();
+		session.close();
+		
+	}
+
 }

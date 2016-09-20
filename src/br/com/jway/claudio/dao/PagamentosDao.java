@@ -38,6 +38,15 @@ public class PagamentosDao {
 
 		return lista;
 	}
+	
+	public Pagamentos findPorIdGuia(Long idGuia) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session
+				.createQuery("from Pagamentos c Left Join Fetch c.guias g where g.id = :id").setParameter("id", idGuia);
+		Pagamentos pagamento = (Pagamentos) query.uniqueResult();
+		return pagamento;
+	}
 
 	public void saveHash(List<Pagamentos> listaAtualizados, String hash){
 		Session session = sessionFactory.openSession();

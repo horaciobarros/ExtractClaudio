@@ -7,6 +7,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import br.com.jway.claudio.model.Guias;
+import br.com.jway.claudio.model.GuiasNotasFiscais;
 import br.com.jway.claudio.model.NotasFiscais;
 import br.com.jway.claudio.util.HibernateUtil;
 
@@ -127,5 +129,5 @@ public class NotasFiscaisDao {
 
 		return lista;
 	}
-
+	
 }
