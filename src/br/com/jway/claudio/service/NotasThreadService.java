@@ -314,7 +314,7 @@ public class NotasThreadService implements Runnable {
 				nft.setCelular(util.getLimpaTelefone(tomadores.getCelular()));
 				nft.setCep(util.trataCep(tomadores.getCep()));
 				nft.setComplemento(tomadores.getComplemento());
-				nft.setEmail(util.trataEmail(tomadores.getEmail()));
+				nft.setEmail(util.trataEmail(nfOrigem.getEmailTomador()));
 				nft.setEndereco(tomadores.getEndereco());
 				nft.setInscricaoEstadual(tomadores.getInscricaoEstadual());
 				nft.setInscricaoMunicipal(tomadores.getInscricaoMunicipal());
