@@ -18,7 +18,7 @@ public class Controller {
 
 	public void importaNfe() {
 
-		int nivelProcessamento = 4;
+		int nivelProcessamento = 3;
 		
 		System.out.println("-- Iniciando o processo de extração de dados no nível " + nivelProcessamento);
 

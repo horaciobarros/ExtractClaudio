@@ -87,5 +87,13 @@ public class GuiasNotasFiscaisDao {
 		session.close();
 		
 	}
+	
+	public void update(GuiasNotasFiscais p) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		session.update(p);
+		session.beginTransaction().commit();
+		session.close();
+	}
 
 }

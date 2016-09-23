@@ -33,6 +33,20 @@ public class GuiasDao {
 			session.close();
 		}
 	}
+	
+	public void update(Guias g) {
+		Session session = sessionFactory.openSession();
+		try {
+			session.beginTransaction();
+			session.update(g);
+			session.beginTransaction().commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			session.close();
+		}
+	}
 
 	public List<Guias> findNaoEnviados() {
 		Session session = sessionFactory.openSession();

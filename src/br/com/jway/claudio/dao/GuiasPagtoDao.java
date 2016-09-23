@@ -42,18 +42,19 @@ public class GuiasPagtoDao {
 	}
 	
 	public GuiasPagto findById(int id) {
-		Query query = sessionFactory.openSession()
+		Session session = sessionFactory.openSession();
+		Query query = session
 				.createQuery("from GuiasPagto e where e.id = :id" 
 						).setParameter("id", id);
 
 		try {
-			List<GuiasPagto> g = query.list();
-
-			if (g.size() > 0) {
-				return g.get(0);
-			}
+			GuiasPagto g = (GuiasPagto) query.uniqueResult();
+			return g;
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		finally{
+			session.close();
 		}
 		return null;
 	}

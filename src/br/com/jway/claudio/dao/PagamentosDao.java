@@ -28,6 +28,15 @@ public class PagamentosDao {
 		session.close();
 	}
 	
+	public void update(Pagamentos p) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		session.update(p);
+		session.beginTransaction().commit();
+		session.close();
+	}
+	
+	
 	public List<Pagamentos> findNaoEnviados() {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
@@ -41,10 +50,10 @@ public class PagamentosDao {
 	
 	public Pagamentos findPorIdGuia(Long idGuia) {
 		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
 		Query query = session
-				.createQuery("from Pagamentos c Left Join Fetch c.guias g where g.id = :id").setParameter("id", idGuia);
+				.createQuery("from Pagamentos c left join fetch c.guias g where g.id = :id").setParameter("id", idGuia);
 		Pagamentos pagamento = (Pagamentos) query.uniqueResult();
+		session.close();
 		return pagamento;
 	}
 

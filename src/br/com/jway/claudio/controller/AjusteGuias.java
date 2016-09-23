@@ -28,6 +28,7 @@ public class AjusteGuias {
 	
 	public static void main(String args[]){
 		new AjusteGuias().alteraNummeracaoDasGuiasPagas();
+		//new AjusteGuias().excluiGuiasQueNaoDevemSerAlteradas();
 	}
 	
 	/**
@@ -47,17 +48,27 @@ public class AjusteGuias {
 	 */
 	public void alteraNummeracaoDasGuiasPagas(){
 		List<Guias> listaGuias = guiasDao.findAll();
+		int contador = 1;
 		for (Guias g : listaGuias){
 			Pagamentos pagamento = pagamentosDao.findPorIdGuia(g.getId());
+			List<GuiasNotasFiscais> guiasNotasFiscais = guiasNotasFiscaisDao.findPorNumeroGuia(g.getNumeroGuia());
 			GuiasPagto numeracaoNova = guiasPagtoDao.findById(Integer.parseInt(g.getIdGuiaRecolhimento()));
-			
+			if (numeracaoNova==null){
+				System.out.println("Guia "+g.getIdGuiaRecolhimento()+" não encontrada");
+				continue;
+			}
 			g.setNumeroGuiaOrigem(""+g.getNumeroGuia()); // Gravando numeração antiga
 			g.setNumeroGuia(Long.parseLong(numeracaoNova.getNumeroGuia())); // Trocando numero da guia
 			pagamento.setNumeroGuia(g.getNumeroGuia());// Trocando numero da guia em pagamentos
 			pagamento.setNumeroPagamento(Long.parseLong(numeracaoNova.getNumeroPagamento())); // Trocando numero do pagamento
-			
-			//guiasDao.save(g);
-			//pagamentosDao.save(pagamento);
+			for (GuiasNotasFiscais gnf : guiasNotasFiscais){
+				gnf.setNumeroGuia(g.getNumeroGuia());
+				guiasNotasFiscaisDao.update(gnf);
+			}
+			guiasDao.update(g);
+			pagamentosDao.update(pagamento);
+			System.out.println("Registro "+contador+" processado. Id: "+g.getId());
+			contador++;
 		}
 	}
 }

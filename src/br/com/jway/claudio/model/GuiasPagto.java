@@ -15,11 +15,10 @@ import javax.persistence.Table;
  * (31) 98594-8242
  */
 @Entity
-@Table(name = "guias_pagto")
+@Table(name = "guia_pagto")
 public class GuiasPagto {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="id")
 	private int id;
 	@Column(name = "numero_guia")

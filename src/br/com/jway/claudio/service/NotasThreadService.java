@@ -313,17 +313,27 @@ public class NotasThreadService implements Runnable {
 				nft.setComplemento(tomadores.getComplemento());
 				nft.setEmail(util.trataEmail(nfOrigem.getEmailTomador()));
 				nft.setEndereco(tomadores.getEndereco());
-				nft.setInscricaoEstadual(nfOrigem.getInscricaoEstadualTomador());
-				nft.setInscricaoMunicipal(nfOrigem.getInscricaoMunicipalTomador());
+				nft.setInscricaoEstadual(util.getStringLimpa(nfOrigem.getInscricaoEstadualTomador()));
+				if (!util.isEmptyOrNull(nft.getInscricaoEstadual())){
+					if (nft.getInscricaoEstadual().length()>15){
+						nft.setInscricaoEstadual(nft.getInscricaoEstadual().substring(0,15));
+					}
+				}
+				nft.setInscricaoMunicipal(util.getStringLimpa(nfOrigem.getInscricaoMunicipalTomador()));
+				if (!util.isEmptyOrNull(nft.getInscricaoMunicipal())){
+					if (nft.getInscricaoMunicipal().length()>20){
+						nft.setInscricaoMunicipal(nft.getInscricaoMunicipal().substring(0,20));
+					}
+				}
 				nft.setInscricaoPrestador(nf.getInscricaoPrestador());
 				nft.setInscricaoTomador(tomadores.getInscricaoTomador());
 				nft.setMunicipio(tomadores.getMunicipio());
 				if (tomadores.getMunicipioIbge() != null) {
 					nft.setMunicipioIbge(Long.toString(tomadores.getMunicipioIbge()));
 				}
-				if (util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())) {
+				if (!util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())) {
 					nft.setNome(nfOrigem.getRazaoSocialTomador());
-					nft.setNomeFantasia(tomadores.getNomeFantasia());
+					nft.setNomeFantasia(nfOrigem.getRazaoSocialTomador());
 				} else {
 					nft.setNome(nf.getNomeTomador());
 					nft.setNomeFantasia(nf.getNomeTomador());
