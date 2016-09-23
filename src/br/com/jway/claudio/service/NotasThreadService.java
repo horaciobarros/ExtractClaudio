@@ -99,16 +99,15 @@ public class NotasThreadService implements Runnable {
 							if (estadoDePrestacaoDoServico == null) {
 								estadoDePrestacaoDoServico = "MG";
 							}
-							nfs.setMunicipioIbge(
-									municipiosIbgeDao.getCodigoIbge(localOndeFoiPrestadoServico,
-											estadoDePrestacaoDoServico));
+							nfs.setMunicipioIbge(municipiosIbgeDao.getCodigoIbge(localOndeFoiPrestadoServico,
+									estadoDePrestacaoDoServico));
 							if (util.isEmptyOrNull(nfs.getMunicipioIbge())) {
 								nfs.setMunicipioIbge(tomadores.getMunicipioIbge().toString());
 							}
 						} else {
 							nfs.setMunicipioIbge(util.CODIGO_IBGE_CLAUDIO);
 						}
-						
+
 						nfs.setAliquota(BigDecimal.valueOf(Double.parseDouble(s.getAliquota())));
 
 						StringBuilder sbItem = new StringBuilder();
@@ -218,15 +217,13 @@ public class NotasThreadService implements Runnable {
 							log.fillError(linha, "Nota Fiscal Servico", e);
 						}
 
-						nfs.setValorServico(
-								BigDecimal.valueOf(Double.parseDouble(s.getValor())));
+						nfs.setValorServico(BigDecimal.valueOf(Double.parseDouble(s.getValor())));
 						nfs.setQuantidade(BigDecimal.valueOf(1));
 						nfs.setValorDeducao(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getDeducoes())));
 						nfs.setValorBaseCalculo(nf.getValorTotalBaseCalculo());
 						nfs.setValorIss(nf.getValorTotalIss());
 						nfs.setNotasFiscais(nf);
-						nfs.setValorUnitario(
-								BigDecimal.valueOf(Double.parseDouble(s.getValor())));
+						nfs.setValorUnitario(BigDecimal.valueOf(Double.parseDouble(s.getValor())));
 						if (nfs.getAliquota().compareTo(BigDecimal.ZERO) == 0) {
 							nfs.setAliquota(BigDecimal.valueOf(1));
 						}
@@ -316,23 +313,22 @@ public class NotasThreadService implements Runnable {
 				nft.setComplemento(tomadores.getComplemento());
 				nft.setEmail(util.trataEmail(nfOrigem.getEmailTomador()));
 				nft.setEndereco(tomadores.getEndereco());
-				nft.setInscricaoEstadual(tomadores.getInscricaoEstadual());
-				nft.setInscricaoMunicipal(tomadores.getInscricaoMunicipal());
+				nft.setInscricaoEstadual(nfOrigem.getInscricaoEstadualTomador());
+				nft.setInscricaoMunicipal(nfOrigem.getInscricaoMunicipalTomador());
 				nft.setInscricaoPrestador(nf.getInscricaoPrestador());
 				nft.setInscricaoTomador(tomadores.getInscricaoTomador());
 				nft.setMunicipio(tomadores.getMunicipio());
 				if (tomadores.getMunicipioIbge() != null) {
 					nft.setMunicipioIbge(Long.toString(tomadores.getMunicipioIbge()));
 				}
-				if (util.isEmptyOrNull(nf.getNomeTomador())){
-					nft.setNome(tomadores.getNome());
-					nft.setNomeFantasia(tomadores.getNomeFantasia());	
-				}
-				else{
+				if (util.isEmptyOrNull(nfOrigem.getRazaoSocialTomador())) {
+					nft.setNome(nfOrigem.getRazaoSocialTomador());
+					nft.setNomeFantasia(tomadores.getNomeFantasia());
+				} else {
 					nft.setNome(nf.getNomeTomador());
 					nft.setNomeFantasia(nf.getNomeTomador());
 				}
-				
+
 				nft.setNotasFiscais(nf);
 				nft.setNumero(tomadores.getNumero());
 				nft.setNumeroNota(nf.getNumeroNota());
