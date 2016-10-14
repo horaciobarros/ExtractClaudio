@@ -177,6 +177,7 @@ public class NotaMaeThreadService implements Runnable {
 				nf.setValorTotalServico(
 						BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDosServicosPrestados())));
 				nf.setValorTotalIss(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getValorDoIssqnDevido())));
+				nf.setValorPisPasep(BigDecimal.valueOf(Double.parseDouble(nfOrigem.getPis())));
 				nf.setSituacao("N");
 				nf.setSituacaoTributaria("N");
 				nf.setNumeroVerificacao(util.completarZerosEsquerda(nfOrigem.getId().toString(), 9));
@@ -206,7 +207,7 @@ public class NotaMaeThreadService implements Runnable {
 				nf.setSerieRps("C");
 
 				List<BigDecimal> lista = Arrays.asList(nf.getValorCofins(), nf.getValorCsll(), nf.getValorInss(),
-						nf.getValorIr(), nf.getValorOutrasRetencoes());
+						nf.getValorIr(), nf.getValorOutrasRetencoes(), nf.getValorPisPasep());
 				BigDecimal descontos = util.getSumOfBigDecimal(lista);
 
 				nf.setValorLiquido(util.getSubtract(

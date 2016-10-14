@@ -37,6 +37,23 @@ public class NotasFiscaisDao {
 		}
 		return nf;
 	}
+	
+	public NotasFiscais update(NotasFiscais nf) {
+		Session session = sessionFactory.openSession();
+		try{
+			session.beginTransaction();
+			session.update(nf);
+			session.getTransaction().commit();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+		finally{
+			session.close();
+		}
+		return nf;
+	}
 
 	public List<NotasFiscais> findNaoEnviados() {
 		Session session = sessionFactory.openSession();
