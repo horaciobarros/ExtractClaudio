@@ -93,8 +93,19 @@ public class Tomadores implements Serializable {
 	@Column(name = "dh_envio")
 	private Date dhEnvio;
 
+	public Date getDataAtualizacao() {
+		return dataAtualizacao;
+	}
+
+	public void setDataAtualizacao(Date dataAtualizacao) {
+		this.dataAtualizacao = dataAtualizacao;
+	}
+
 	@Column(name = "hash")
 	private String hash;
+	
+	@Column(name = "data_atualizacao")
+	private Date dataAtualizacao;
 
 	public Long getId() {
 		return id;

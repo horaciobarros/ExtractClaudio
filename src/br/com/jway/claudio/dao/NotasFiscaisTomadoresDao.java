@@ -33,6 +33,21 @@ public class NotasFiscaisTomadoresDao {
 		}
 
 	}
+	
+	public void update(NotasFiscaisTomadores nft) {
+		Session session = sessionFactory.openSession();
+		try {
+			session.beginTransaction();
+			session.update(nft);
+			session.beginTransaction().commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			session.close();
+		}
+
+	}
 
 	public List<NotasFiscaisTomadores> findNaoEnviados() {
 		Session session = sessionFactory.openSession();
@@ -69,6 +84,23 @@ public class NotasFiscaisTomadoresDao {
 		Transaction tx = session.beginTransaction();
 		Query query = session
 				.createQuery("from NotasFiscaisTomadores nft where numeroGuia = '" + nossoNumero.trim() + "'");
+		List<NotasFiscaisTomadores> lista = query.list();
+		tx.commit();
+		session.close();
+
+		if (lista.size() > 0) {
+			return lista.get(0);
+		} else {
+			return null;
+		}
+	}
+	
+	public NotasFiscaisTomadores findByInscricaoTomadorPrestadorNumeroNota(String inscricaoTomador, String inscricaoPrestador, String numeroNota) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session
+				.createQuery("from NotasFiscaisTomadores nft where inscricaoPrestador = '" + inscricaoPrestador.trim() + "' and "
+						+ " inscricaoTomador = '" + inscricaoTomador.trim() + "' and numeroNota = '" + numeroNota.trim() + "'"  );
 		List<NotasFiscaisTomadores> lista = query.list();
 		tx.commit();
 		session.close();
