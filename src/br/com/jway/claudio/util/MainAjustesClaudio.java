@@ -99,13 +99,6 @@ public class MainAjustesClaudio {
 
 					nf = notasFiscaisDao.findByIdOrigem(Long.parseLong(nfOrigem.getId()));
 					
-					if (!nf.getInscricaoPrestador().equals("18549843000107")){  
-						continue;
-					}
-					
-					if (!nf.getNumeroNota().equals("201600000015040")) {
-						continue;
-					}
 					
 					if (!nf.getInscricaoPrestador().equals(util.getCpfCnpj(nfOrigem.getCpfCnpjPrestador()))) {
 						System.out.println("Prestador origem não bate com prestador da nota:" + pr.getInscricaoPrestador() + "-" + nfOrigem.getId());
