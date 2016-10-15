@@ -96,4 +96,15 @@ public class GuiasNotasFiscaisDao {
 		session.close();
 	}
 
+	public List<GuiasNotasFiscais> findAll() {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from GuiasNotasFiscais gnf");
+		List<GuiasNotasFiscais> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
+	}
+
 }
