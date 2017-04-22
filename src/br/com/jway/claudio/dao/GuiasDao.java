@@ -117,6 +117,17 @@ public class GuiasDao {
 
 		return lista;
 	}
+	
+	public List<Guias> findPagas() {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from Guias g where g.situacao='P'");
+		List<Guias> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
+	}
 
 	public void delete(Guias guias) {
 		Session session = sessionFactory.openSession();

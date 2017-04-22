@@ -45,8 +45,14 @@ public class Dao {
 		return null;
 
 	}
-	
-
-	
-	
+	public void ajustaDescricaoCnaeNotas() {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		
+		Query query = session.createSQLQuery("update notas_fiscais_servicos A set A.descricao_cnae = (select B.denominacao from cnae_atualizado B where B.cnae=A.iCnaes)");
+		query.executeUpdate();
+		session.beginTransaction().commit();
+		session.close();
+	}
+		
 }

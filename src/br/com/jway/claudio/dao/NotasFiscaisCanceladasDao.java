@@ -63,4 +63,15 @@ public class NotasFiscaisCanceladasDao {
 		session.close();
 	}
 
+	public List<NotasFiscaisCanceladas> findByPrestadorNumeroNota(String inscricao, String numero) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from NotasFiscaisCanceladas n where n.inscricaoPrestador like '"+inscricao+"' and n.numeroNota="+numero);
+		List<NotasFiscaisCanceladas> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
+	}
+
 }

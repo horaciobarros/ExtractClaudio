@@ -7,7 +7,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import br.com.jway.claudio.model.NotasFiscaisServicos;
 import br.com.jway.claudio.model.NotasFiscaisSubst;
+import br.com.jway.claudio.model.NotasFiscaisTomadores;
 import br.com.jway.claudio.util.HibernateUtil;
 
 public class NotasFiscaisSubstDao {
@@ -61,6 +63,17 @@ public class NotasFiscaisSubstDao {
 		query.executeUpdate();
 		tx.commit();
 		session.close();
+	}
+	
+	public List<NotasFiscaisSubst> findByPrestadorNumeroNota(String inscricao, String numero) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from NotasFiscaisSubst n where n.inscricaoPrestador like '"+inscricao+"' and n.numeroNota="+numero);
+		List<NotasFiscaisSubst> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
 	}
 
 }

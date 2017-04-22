@@ -106,5 +106,16 @@ public class GuiasNotasFiscaisDao {
 
 		return lista;
 	}
+	
+	public List<GuiasNotasFiscais> findPorPrestadorNumero(String inscricao, String numero) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from GuiasNotasFiscais gnf where gnf.inscricaoPrestador like '"+inscricao+"' and gnf.numeroNota="+numero);
+		List<GuiasNotasFiscais> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
+	}
 
 }

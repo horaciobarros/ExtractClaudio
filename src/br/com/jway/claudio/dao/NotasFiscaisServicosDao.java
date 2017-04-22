@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import br.com.jway.claudio.model.NotasFiscaisPrestadores;
 import br.com.jway.claudio.model.NotasFiscaisServicos;
 import br.com.jway.claudio.util.HibernateUtil;
 
@@ -32,6 +33,34 @@ public class NotasFiscaisServicosDao {
 		} finally {
 			session.close();
 		}
+	}
+	
+	public void update(NotasFiscaisServicos nfs) {
+		Session session = sessionFactory.openSession();
+		try {
+			session.beginTransaction();
+			session.update(nfs);
+			session.beginTransaction().commit();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			session.close();
+		}
+	}
+	
+	public List<NotasFiscaisServicos> findByPrestadorCodigo(String cnpj, String codigoAtual) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from NotasFiscaisServicos c where c.itemListaServico = :codigo and c.inscricaoPrestador = :cnpj")
+				.setParameter("codigo", codigoAtual)
+				.setParameter("cnpj", cnpj);
+		List<NotasFiscaisServicos> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
 	}
 
 	public List<NotasFiscaisServicos> findNaoEnviados() {
@@ -63,4 +92,16 @@ public class NotasFiscaisServicosDao {
 		tx.commit();
 		session.close();
 	}
+
+	public List<NotasFiscaisServicos> findByPrestadorNumeroNota(String inscricao, String numero) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from NotasFiscaisServicos n where n.inscricaoPrestador like '"+inscricao+"' and n.numeroNota="+numero);
+		List<NotasFiscaisServicos> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
+	}
+
 }

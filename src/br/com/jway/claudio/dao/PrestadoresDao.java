@@ -137,4 +137,18 @@ public class PrestadoresDao {
 		
 	}
 
+	public List<Prestadores> findAvulsos() {
+		Query query = sessionFactory.openSession()
+				.createQuery("from Prestadores pr where pr.inscricaoMunicipal like '100%'");
+
+		try {
+			List<Prestadores> prestadores = query.list();
+
+			return prestadores;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

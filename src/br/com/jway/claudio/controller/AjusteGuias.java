@@ -47,7 +47,7 @@ public class AjusteGuias {
 	 * Alteração do número das guias, fazer o load após este procedimento
 	 */
 	public void alteraNummeracaoDasGuiasPagas(){
-		List<Guias> listaGuias = guiasDao.findAll();
+		List<Guias> listaGuias = guiasDao.findPagas();
 		int contador = 1;
 		for (Guias g : listaGuias){
 			Pagamentos pagamento = pagamentosDao.findPorIdGuia(g.getId());

@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import br.com.jway.claudio.model.NotasFiscaisCanceladas;
 import br.com.jway.claudio.model.NotasFiscaisEmails;
 import br.com.jway.claudio.util.HibernateUtil;
 
@@ -63,4 +64,14 @@ public class NotasFiscaisEmailsDao {
 		session.close();
 	}
 
+	public List<NotasFiscaisEmails> findByPrestadorNumeroNota(String inscricao, String numero) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from NotasFiscaisEmails n where n.inscricaoPrestador like '"+inscricao+"' and n.numeroNota="+numero);
+		List<NotasFiscaisEmails> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
+	}
 }

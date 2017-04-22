@@ -53,6 +53,7 @@ public class MainTomadoresClaudio {
 			e.printStackTrace();
 		}
 		System.out.println("--- Fim de Notas Fiscais ---");
+		Util.desligarComputador();
 
 	}
 

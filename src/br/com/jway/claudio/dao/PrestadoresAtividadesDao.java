@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import br.com.jway.claudio.model.NotasFiscaisServicos;
 import br.com.jway.claudio.model.PrestadoresAtividades;
 import br.com.jway.claudio.util.HibernateUtil;
 
@@ -24,6 +25,15 @@ public class PrestadoresAtividadesDao {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		session.save(pa);
+		session.beginTransaction().commit();
+		session.close();
+	}
+	
+
+	public void update(PrestadoresAtividades pa) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		session.update(pa);
 		session.beginTransaction().commit();
 		session.close();
 	}
@@ -105,6 +115,19 @@ public class PrestadoresAtividadesDao {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public List<PrestadoresAtividades> findByPrestadorCodigo(String cnpj, String codigoAtual) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from PrestadoresAtividades c where c.ilistaservicos = :codigo and c.inscricaoPrestador = :cnpj")
+				.setParameter("codigo", codigoAtual)
+				.setParameter("cnpj", cnpj);
+		List<PrestadoresAtividades> lista = query.list();
+		tx.commit();
+		session.close();
+
+		return lista;
 	}
 
 }
